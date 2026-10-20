@@ -1,0 +1,16 @@
+Applied / monsters=15 / industrial lamps=5
+RecoilFactoryInterior / Rampager / 10.66667 -> 8.533336
+RecoilFactoryInterior / Rampager (1) / 10.66667 -> 8.533336
+RecoilFactoryInterior / Rampager (2) / 10.66667 -> 8.533336
+RecoilFactoryInterior / Rampager (3) / 10.66667 -> 8.533336
+RecoilFactoryInterior / Rampager / 10.66667 -> 8.533336
+RecoilFactoryWarehouse / Rampager warehouse 1 / 10.66667 -> 8.533334
+RecoilFactoryWarehouse / Rampager warehouse 2 / 10.66667 -> 8.533334
+RecoilFactoryWarehouse / Rampager warehouse 3 / 10.66667 -> 8.533334
+RecoilPrototype / Rampager / 10.66667 -> 8.533336
+RecoilPrototype / Rampager (3) / 10.66667 -> 8.533336
+RecoilPrototype / Rampager (4) / 10.66667 -> 8.533336
+RecoilPrototype / Rampager / 10.66667 -> 8.533336
+RecoilPrototype / Rampager / 10.66667 -> 8.533336
+RecoilPrototype / Rampager (2) / 10.66667 -> 8.533336
+RecoilPrototype / Rampager (1) / 10.66667 -> 8.533336

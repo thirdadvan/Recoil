@@ -1,0 +1,35 @@
+Warehouse child escort test (Unity)
+
+K: grants debug_universal_door_key. Bypasses item, clue, damaged/blocked and skylight flight requirements on RecoilDoor. Normal E interaction and existing scene destinations remain. Key travels with inventory and survives R retry; a full Shift+R restart clears newly acquired test progress.
+
+Storage scene: RecoilWarehouseStoreroom.unity / Child - interact to hold hands.
+E near child: take hand, remember child_escorted. EscortChild owns following, environmental exposure, silent footsteps, terrain collision and one-hit death. Player and child remain separate attackable actors. A thin hand connection is drawn while following.
+Shift / crouching: child follows quietly at player's sneak speed. Child follows on the ground, respects solid surfaces and soft platforms, and can ride the freight platform. Escort is carried through scene travel using Resources/RecoilEscortChild.prefab. Retry resurrects the child.
+
+Escort recoil: no Flying state or directional hover. Horizontal shot impulse 1.6, decays over .22s (about .16m displacement). Grounded downward shot adds at most 3.2 vertical speed (about .33m hop at gravity 14). Airborne shots cannot add upward impulses; repeatedly firing cannot gain height. Normal jumping is also capped at 3.2 while escorting. Original solo flight is retained.
+
+Warehouse: Warehouse escort encounter - editable / Rampager warehouse 1..3.
+Three shelf gaps at x7.3,11.9,16.5. Left two initial Sleeping; right initial Roaming. Patrol offsets -.55 to +.55. All three now have RampagerPatrolRoute and four ordered child patrol points (left/look right, centre/look around, right/look left, centre/stay). Sleeping birth states are unchanged. Components and points are editable per monster.
+
+RampagerPerception: child and player use sight cone, light-scaled distance and solid-surface visibility. Chooses nearest visible actor. Sleeping wake / sound inspection recognises either actor using existing player detection timing. Player-only shooting and broadcast intent violations remain player-only.
+RampagerController: tracks the selected target, including report target and chase position. Direct water hits prioritize the water-gun holder until attack state ends; a reachable contact target may still be struck. High-flying stop behavior applies to the player only.
+RampagerAttack: each monster retains its independent 1.5s cooldown; strikes the nearest reachable actor in contact range. Child takes one hit and ends the run; player retains the existing three-hit health rules.
+RecoilPrototype: inventory/debug key, child scene travel/reset, failure and interaction routing.
+RecoilPlayerController: K input, escort recoil and horizontal hand tether.
+RecoilDoor: universal test key bypass.
+KBKStackerCrane: carries the child on the moving soft fork platform.
+
+Backups: Backups/WarehouseEscort (original warehouse and storage scenes).
+Validated in Play: child interaction, Shift sync, no flight under W/repeated shooting, .33m hop and .16m backward movement of both actors, universal key restrictions, scene travel persistence, initial monster states, sleeping enemy waking/seeing child with player out of sight, nearest-player vs nearest-child attack, cooldown, child one-hit game over. Scene visuals inspected. Browser prototype is not updated by this Unity feature.
+
+Uniform Rampager setup: RampagerController.EnsureStandardComponents is shared by builders and runtime initialization. It supplies missing perception, movement, attack, visuals and patrol route; authored routes are retained. The existing no-route/disabled-route Evaluate fallback remains. Current scene audit: 15 actors, 12 already complete, 3 warehouse actors repaired. Standard route movement and fallback were both checked in Play. Backups/audit: Backups/RampagerStandard.
+
+Child waiting / E input: while holding hands, only ContinuousInteractionItem entries with interactionDuration<=0 are selectable. Doors, lamp heads, readables and the electrical panel remain instant interactions. E taps dispatch on release while escorting; holding E for EscortChild.waitHoldDuration (default .6s) releases the child to wait at its current location, consumes that key press and prevents a simultaneous item search. Nearby E takes the hand again. Waiting removes escort restrictions, so player can search, climb ladders and use normal recoil. Child remains vulnerable while waiting. Waiting location is restored when revisiting its scene within the current run; a full restart clears waiting state. UI shows the hold action and progress bar. Verified instant-only selection, short tap, long hold, same-press suppression, stationary waiting, retake and scene roundtrip.
+
+Interaction-range priority: while escorting, any available item/door/readable/panel/lamp interaction range suppresses the child-wait action and HUD. Hold items count toward this suppression even though escorting still forbids their use. E presses in an object range route directly to normal allowed interactions. Walking into an interaction range during a pending child-wait hold cancels its timer and consumes the remainder of the press, so it cannot resume or fire an unintended interaction until release.
+
+Attack timing: RampagerAttack has Windup Duration .2s and Recovery Duration .4s. On contact, commits to nearest reachable target and stops active movement/jumps. At impact it checks that original target remains in range and unobstructed; escaping can make the swing miss. Hit or miss enters recovery before pursuit resumes. Existing independent 1.5s cooldown is measured from the swing impact. Stun, leaving Attack or resetting cancels an unfinished swing. Isolated runtime checks passed for .2/.4 timing, controller movement lock/release, cooldown, dodge and cancellation.
+
+2026-10-15 automatic first hand-holding: EscortChild autoTakeHandOnApproach=true, storyConditionSatisfied=true and requiredStoryFlag empty by default in the storeroom and Resources prefab. Passing within autoHandRange=.9 on the same floor while player is grounded starts escort without E. Future story can use SetStoryConditionSatisfied(bool) or a requiredStoryFlag in the game inventory. Initial manual E prompt is suppressed; when AskToWait/RestoreWaiting is used, the child waits and requires E to resume, preventing immediate auto re-grab. Automatic hand-taking does not count as a player forbidden interaction. Tested condition gating, missing/present story flag, automatic attachment, persistent waiting and manual reattachment. No compile/console errors.
+
+2026-10-15 revision: removed manual E hand-taking entirely, including its input dispatch and HUD prompt. All first/repeat hand-taking uses the same story-gated auto approach. AskToWait/RestoreWaiting/scene retry require leaving autoHandRange + .25 before automatic pickup is re-armed, then returning inside autoHandRange=.9. This preserves the ability to leave the child waiting without immediate re-grab. Long-hold E to ask the child to wait remains unchanged.

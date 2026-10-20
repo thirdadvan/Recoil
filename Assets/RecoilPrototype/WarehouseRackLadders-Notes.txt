@@ -1,0 +1,13 @@
+Warehouse rack ladders and Freight local sound (Unity)
+
+All four Steel rack - pallets and freight objects have Left rack ladder - editable as a child. Each includes grouped rails/rungs, a trigger area and the existing ClimbableLadder component. Height 5, width .6, left offset 1.8; editing/moving the rack carries its ladder. Reusable prefab: Prefabs/WarehouseRackLadder.prefab.
+
+Escort restriction is enforced both at RecoilPrototype.FindLadder and RecoilPlayerController input/active-climb handling. Taking a child's hand releases an active ladder. Normal solo ladder climbing remains.
+
+FreightNoiseEmitter is attached to the KBKStackerCrane object and reusable crane prefab. When powered and moving (raise/travel/lower), it emits immediately, then every player footstepInterval. Radius, propagation speed, line width and colour match PlayerNoiseEmitter. Default footstep values: radius 3.2, interval .45s, speed 10. The sound origin follows travelRig at its ground-level base; Inspector soundOrigin can override it. Idle and loss of power stop new pulses. Existing pulses finish normally; game pause stops their simulation.
+
+LocalSoundWaveEmitter is the shared ripple rendering/hearing helper used by PlayerNoiseEmitter and FreightNoiseEmitter. Player/child sound timings remain owned by their actor scripts. Freight noise wakes and directs nearby monsters through existing HearNoise, with the same local propagation as footsteps.
+
+Warehouse lighting has now been converted to RecoilIndustrialLamp (downward soft cone and radial spill); see IndustrialLighting-Notes.txt. Fixture transforms and authored radius/intensity were preserved.
+
+Checked in Play: four ladder components, solo climb, escort ladder refusal; 3 Freight pulses over 1.2s, sleeping monster hears Freight, no new pulses when idle/unpowered, player hearing still works after shared helper extraction. No script compilation errors. Backup: Backups/WarehouseRackLadders.

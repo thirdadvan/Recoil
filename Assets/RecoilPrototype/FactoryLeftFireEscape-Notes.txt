@@ -1,0 +1,23 @@
+Factory left fire escapes (Unity)
+
+Exterior: Factory Building - four storeys / Exterior fire escape - W up S down.
+Interior: Left fire escape - four floors editable. Existing right stairwell remains.
+Both sides have three equal-width switchback flights connecting floor levels 0, 7.6, 11.6, 15.6, and a fire exit on each floor. Existing third-floor shortcut door state and destinations are retained. Ground-floor exterior side door requires employee_access_card.
+
+Second-floor exit assemblies contain Floor 2 entrance - impassable piled freight, with a 3.2 x 3.3 solid collider and grouped visible crates/cabinet. The obstruction blocks approach and sight to the door; stair entry is separate, so climbing past the floor is possible.
+
+Fourth-floor landing: only hanging broken grating and bent railing visuals, no bearing collider. Interior fourth-floor slab/skirting begin at x5.3, leaving the left exit gap open while preserving the rest of that floor and its rooms. Both final stair flights have upperLandingAvailable=false: broken endpoint cannot be used as a descending entry or airborne catch surface. Completed ascent exits the stairs and falls into the gap.
+
+Fourth-floor doors: irreparableDamage=true, blockedMessage="The door is severely warped. It cannot be used." Mechanical deformation cannot be bypassed with the universal test key. Existing door locks and shortcuts retain their behavior.
+
+All new geometry is grouped under the floor exit/landing or stair root for editing. Backups: Backups/FactoryLeftFireEscape. Layout previews: output/level-previews/fire-escape-exterior.png and fire-escape-interior.png (darkness hidden for inspection).
+
+Checks: four exits and three flights per side, solid second-floor blockers, continued stair access, no physical support or catch at fourth floor, simulated falling through both gaps, warped-door message and refusal even with test key, blocked second-floor door interaction. Warehouse unsaved scene edits were not saved or regenerated.
+
+Revision: interior left switchback flights removed at user request. Only the exterior fire escape has three left-side flights; interior uses the original right stairwell. Left-side doors, landings, blockers and spawn points remain. Earlier checks above describe the pre-removal arrangement. The editor builder no longer creates interior left flights.
+
+Exterior soft-platform revision: all eight existing bearing surfaces (three half-landings, two balconies, three steel exit decks) now have SoftRoofPlatform and trigger colliders. Second-floor freight obstruction remains hard. Destroyed fourth-floor upper landing still has no support. Source editor builders create these exterior surfaces as soft platforms as well.
+
+Ground-floor fire exit pair removed (outside Floor 1 side fire exit / interior Floor 1 left fire exit), together with their unused spawn markers. Main entry, stairs and landing platforms retained. Builder no longer creates ground-floor fire doors.
+
+2026-10-15: exterior floor-2 entrance clutter rebuilt as two separate filing cabinets and three tilted/stacked chairs. Removed old crate grid and opaque plate-like silhouettes. Existing 3.2 x 3.3 physical blocker retained; RecoilSurfaceVisibility.blocksSight=false added on that collider so monster vision and player sight shadows pass through it. Interior entrance clutter unchanged. Validated solid collision=true and RecoilSightOcclusion.IsBlocker=false. Preview: output/level-previews/floor2-exterior-furniture.png.

@@ -1,0 +1,11 @@
+Factory interior camera ground visibility fix (2026-10-15)
+
+Research: Unity Position Composer uses screen-space target position, damping and hard composition limits. Confiner2D instead constrains viewport edges to authored room bounds; that is useful for room framing but does not by itself guarantee the character's feet/floor remain visible when mouse offsets are added.
+https://github.com/Unity-Technologies/com.unity.cinemachine/blob/main/com.unity.cinemachine/Documentation~/CinemachinePositionComposer.md
+https://docs.unity3d.com/Packages/com.unity.cinemachine@2.9/manual/CinemachineConfiner2D.html
+
+Implementation is in the existing RecoilCameraController. preserveFootFraming is opt-in; minimumFootScreenMargin=.1 preserves the lower 10% beneath the tracked feet. Constraint is applied after mouse look and again after positional damping. It uses the existing CameraFollowPosition anchor so chain swing stabilization remains effective. No physics queries, room scans, external camera package or extra runtime controller were introduced. Outdoor height zoom/framing bypasses this indoor constraint.
+
+Factory interior scene settings: viewSize remains 4.7; minimumY 4.8 -> 3; followOffset.y 2.8 -> 1.8; preserveFootFraming=true; minimumFootScreenMargin=.1. Horizontal mouse look, downward offset allowance, smoothing and maximum height retained. Other scenes retain their camera settings. Builder defaults updated too.
+
+Validation: actual Unity Play tests at floor heights 0/7.6/11.6/15.6. Settled floor viewport positions .181/.221/.221/.287 respectively. After artificially raising the camera 5 units to simulate excessive upward offset/follow lag, the next follow update constrained all four floor viewport positions to .100. Scene-entry snap also respected framing. Test positions were not saved, and original warehouse edit scene was restored.

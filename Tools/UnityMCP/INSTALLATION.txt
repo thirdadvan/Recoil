@@ -1,0 +1,22 @@
+Unity MCP installation for Recoil
+
+Package: CoplayDev MCP for Unity 10.3.0
+Official source: https://github.com/CoplayDev/unity-mcp/tree/v10.3.0
+Unity package: Packages/com.coplaydev.unity-mcp (embedded package, pinned version)
+Service: http://127.0.0.1:8080/mcp
+Codex server name: unityMCP
+
+Unity: Window > MCP for Unity. Start the local server if stopped, then connect.
+Project shortcut: Recoil > Unity MCP > Connect Local.
+Codex: restart the app after initial configuration so the tools are loaded.
+
+Verified: Unity registered Recoil and a read-only manage_scene/get_hierarchy request
+returned the RecoilPrototype hierarchy successfully. No scene modifications were made.
+
+Tools/UnityMCP/uv and uvx wrap a project-local uv runtime and cache in Library/RecoilMCP.
+If Library is deleted, this runtime and dependency cache need reinstalling.
+The Codex MCP entry is in the user's global .codex/config.toml.
+
+Token efficiency: query specific objects, use pagination and compact console results,
+and batch independent editor operations. Do not dump entire scenes routinely.
+MCP tool descriptions and returned data also consume context; savings are workload dependent.

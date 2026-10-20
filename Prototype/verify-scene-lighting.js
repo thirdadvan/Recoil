@@ -1,0 +1,7 @@
+'use strict';
+const assert=require('node:assert/strict'),{Game}=require('./game.js');
+function run(name,fn){fn();console.log('PASS '+name);}
+run('saved all-outdoor scene uses ambient 0.249 on both sides of original factory boundary',()=>{const g=new Game();assert(!g.lighting.factoryArea.enabled);assert.equal(g.lighting.outdoorAmbient,.249);const values=[];for(const x of [15.99,16,16.01,17]){g.pos={x,y:.825};values.push(g.illumination);assert(!g.lighting.isIndoors(g.pos));}for(const value of values)assert(Math.abs(value-(.4+.6*.249/.45))<1e-8);});
+run('dark-area toggle updates exposure immediately without time advancing',()=>{const g=new Game();g.pos={x:30,y:.825};const outdoor=g.illumination;g.lighting.factoryArea.enabled=true;assert.equal(g.illumination,.4);g.lighting.factoryArea.enabled=false;assert.equal(g.illumination,outdoor);});
+run('disabled dark area remains outdoor through red warning and flicker',()=>{const g=new Game();g.pos={x:30,y:.825};const before=g.illumination;g.soundWaves.start();for(const time of [.15,.7,1.55]){g.time=time;assert.equal(g.illumination,before);}});
+run('enabled configurable bounds drive inside/outside, not the original factory coordinates',()=>{const g=new Game();g.lighting.factoryArea={enabled:true,minX:5,maxX:10,minY:0,maxY:3};g.pos={x:8,y:1};assert.equal(g.illumination,.4);g.pos.x=30;assert(Math.abs(g.illumination-(.4+.6*.249/.45))<1e-8);});

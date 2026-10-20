@@ -87,3 +87,9 @@ Coverage/
 # =========================
 packages/
 *.nupkg
+mono_crash.0.0.json
+output/refraction-test
+output/refraction-test-3d
+output/presentations
+output/level-previews
+output/red-alarm-3d

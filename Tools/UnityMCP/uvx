@@ -1,0 +1,8 @@
+#!/bin/sh
+export UV_CACHE_DIR="/Volumes/RestartRoll/Unity/Recoil/Library/RecoilMCP/cache"
+export UV_TOOL_DIR="/Volumes/RestartRoll/Unity/Recoil/Library/RecoilMCP/tools"
+export UV_TOOL_BIN_DIR="/Volumes/RestartRoll/Unity/Recoil/Library/RecoilMCP/bin"
+export UV_PYTHON="/Users/zhangxiuyu/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3.12"
+export UNITY_MCP_LOG_DIR="/Volumes/RestartRoll/Unity/Recoil/Library/RecoilMCP/logs"
+export UNITY_MCP_DISABLE_TELEMETRY=1
+exec "/Volumes/RestartRoll/Unity/Recoil/Library/RecoilMCP/runtime/bin/uvx" "$@"

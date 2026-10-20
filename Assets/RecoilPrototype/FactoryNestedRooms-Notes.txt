@@ -1,0 +1,30 @@
+FACTORY THIRD-LEVEL ROOMS
+
+Structure: Outdoor (RecoilPrototype) -> Factory public circulation (RecoilFactoryInterior)
+-> individual room scene. E enters/exits rooms using RecoilDoor.
+All six scenes are in Assets/Scenes/FactoryRooms and enabled in Build Settings.
+Each room has its own player, camera, room geometry, lighting, return door and spawn.
+
+Floor 2 (feet 7.6): FactoryWashroomF2, FactoryChangingRoomF2.
+Open circulation space: break alcove with drinking water, seating and noticeboard.
+Floor 3 (feet 11.6): FactoryArchiveF3, FactoryShiftOfficeF3.
+Open circulation space: reception counter and waiting chairs.
+Floor 4 (feet 15.6): FactoryManagerOfficeF4, FactoryMeetingRoomF4.
+Open circulation space: clerk desks.
+
+Factory corridor entrance doors are front-facing backdrop doors, not partitions
+that obstruct horizontal travel. The previous in-line partition doors are removed.
+Return markers: Room Return - <room scene name>, to the right of each corridor door.
+Room entrance marker: Room Entrance Spawn.
+Scene transitions reuse the existing player health/inventory travel system.
+All six new rooms initially contain no Rampagers, pickups or periodic broadcasts.
+These can be added in their individual scenes using the existing components.
+The factory's existing broadcast manager and third-floor fire escape remain intact.
+
+Architectural research:
+https://www.hse.gov.uk/simple-health-safety/workplace-facilities/welfare.htm
+https://historicengland.org.uk/images-books/publications/built-to-last/built-to-last/
+The room choices and their open/closed presentation are level-design decisions
+informed by the references, not claims that these exact rooms occur in every factory.
+Backup before conversion: Backups/FactoryNestedRooms.
+Browser build exports all scene files in FactoryRooms automatically.

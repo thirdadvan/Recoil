@@ -1,0 +1,21 @@
+Industrial spot lighting and monster vision (Unity)
+
+All five warehouse environmental lamps are now RecoilIndustrialLamp, on the existing Light - fixture child GameObjects. Fixture positions and authored intensity/radius are preserved. Reusable component prefab: Prefabs/IndustrialSpotLamp.prefab.
+
+Inspector:
+Intensity: main cone brightness.
+Radius: scattered light radius.
+Cone Length / Cone Half Width: cone dimensions; direction is local down (-transform.up), so rotating the light rotates the cone.
+Edge Softness: fraction of cone width fading at the outer edge (default .25).
+Scatter Intensity: radial spill relative to main intensity (default .18).
+
+Main cone gently attenuates with depth and fades at its end. Radial spill is weaker and falls smoothly to zero. RecoilLight2D is now the common environmental-light base; automatic registration and WarehouseLightingPower apply equally to point lights and industrial lamps. Player's own light remains excluded from gameplay exposure. Street lamp behavior remains as before.
+
+RecoilLighting2D and RecoilDarkness.shader use matching cone/spill formulas for environmental brightness and screen darkness. No render readback or physics-light rewrite. Existing nearest-light selection capacity remains unchanged.
+
+All 15 existing scene Rampagers had their authored idealSightRange multiplied by .8, from about 10.66667 to 8.53333. New component default is also 8.533334. RampagerController sightPitchOffset=-10 is applied once to roaming, broadcast, source inspection and dynamic tracking. Normal roaming -25 becomes -35; broadcast +15 becomes +5. Field-of-view aperture is unchanged. Save marker ProjectSettings/RecoilIndustrialVisionUpdate.txt prevents rerunning the migration from scaling again.
+
+Water-hit priority: RampagerController remembers the water-gun holder as its preferred chase target until Attack ends or reset. RampagerPerception does not switch chase to a nearer child under this priority; it retains ordinary last-seen/search behavior if the holder is occluded. Independent RampagerAttack can still hit an immediately reachable actor within its contact radius, choosing the nearest reachable actor. Contact attacks are checked before movement to avoid stepping away from an available victim. Existing .65s water-hit stun and 1.5s attack cooldown remain.
+
+Verified: shader compiles, all 5 lamps are registered and respond to Lighting power, main cone vs spill brightness (sample .66 vs .06), roaming/broadcast pitch, water-hit chase stays on shooter despite nearer child, immediately reachable child can still be attacked; actual Game appearance inspected.
+Backups: Backups/IndustrialLightingVision.

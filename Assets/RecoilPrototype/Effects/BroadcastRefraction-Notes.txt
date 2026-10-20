@@ -1,0 +1,38 @@
+BROADCAST REFRACTION TEST — 2026-10-19
+
+Open Assets/Scenes/Tests/BroadcastRippleTest.unity, enter Play, and start normally.
+B: actual broadcast sequence (3s warning, randomized expanding/contracting direction waves).
+1: an expanding ripple; 2: contracting ripple; 3: warning ripple.
+V: toggle refraction instantly for A/B comparison.
+C: toggle the original line circles during a broadcast.
+H: toggle the brighter reference lights added only to this test copy.
+0: clear active ripple packets. Existing movement and gun controls are unchanged.
+
+The scene is a separate copy of the saved factory interior. Enemies are inactive and doors cannot change scenes, so the effect can be inspected safely. The original factory and broadcast gameplay are unchanged. Reference lights help show distortion in the dark scene and can be disabled with H. This scene is intentionally not added to the normal game progression or build scene list.
+
+Main Camera > BroadcastRefractionEffect:
+Strength = world-space displacement (default 0.28m).
+Packet Width = soft band width (4m).
+Wavelength = spacing of bending crests (1.1m).
+Irregularity = low-frequency unevenness (0.25).
+Chromatic Aberration = subtle separation (0.045; set 0 for fewer texture samples).
+Emitter = optional world-space source. If empty, a source is positioned beyond the left edge when each pulse is emitted. Source stays fixed in world space afterwards, including while the camera moves. Expanding moves rightward across the view; contracting moves leftward.
+
+Implementation:
+BroadcastRefraction.shader displaces samples of the camera's existing colour image. The smooth radial wave packet bends scenery and lighting, instead of painting a ring. At most four packets are combined in a single fullscreen pass; no GrabPass, new capture camera, per-frame textures, or CPU ring vertices are needed in shader mode. Inactive frames use a direct copy. Screen-edge displacement fades to prevent border streaking. OnGUI/HUD is drawn afterwards and remains readable.
+BroadcastRefractionEffect observes SoundWaveManager's warning phase and command index. It never decides monster reactions. The only manager addition is drawBroadcastCircles, default true; test scene overrides it to false. Toggling old circles on can recreate visuals for already-active waves. The effect supports orthographic and perspective cameras in the Built-in renderer. Perspective uses a camera-plane metric at Perspective Reference Distance (18m in the 3D test), with a world-space source projected each frame; this is screen refraction, not a depth-resolved volumetric simulation. URP would need a different render hook.
+
+Verification:
+Shader compiled on the current graphics backend, isSupported=true, no shader errors.
+Rendered identical paused scenes with effect off/on and verified changed pixels on machinery edges.
+Captured an expansion/contraction preview from actual Unity frames: output/refraction-test/broadcast-refraction-preview.gif.
+Play checks confirmed warning/directional pulses and live circle comparison; no runtime errors observed.
+
+3D interior test
+The existing Assets/Scenes/RecoilFactoryArt3D.unity now has the effect appended after FactoryArtCamera on the same camera, preserving the original film grade. Original art geometry, light placement and camera FOV are unchanged. A scene backup was saved under Backups/BroadcastRefraction3D before installation.
+BroadcastRefractionDemo3D automatically loops a warning plus three random direction waves. B restarts a sequence; 1/2/3 play isolated pulses; V toggles the effect; F toggles automatic playback; 0 clears. Existing A/D, wheel and Home camera controls remain available.
+3D preset: Strength .38, Packet Width 4.6m, Wavelength 1.2m, Perspective Reference Distance 18m. Preview: output/refraction-test-3d/broadcast-refraction-preview.gif. GPU rendering comparison confirmed visible differences in the perspective camera with the original colour grade active; runtime console had no errors.
+
+3D red alarm lighting — 2026-10-20
+The 3D factory now contains three additional grouped physical red fixtures at X 6/16/26, plus the original emergency fixture. Light children remain under each housing. BroadcastAlarmLamp3D drives a 1.4-second cycle with a 0.45-second soft pulse (0.1-second rise, then gradual decay); red lights are off outside a broadcast/manual pulse. Existing cold lights remain as contrast. New red point lights have no realtime shadows to bound rendering cost. The legacy FactoryArtLamp on the indoor emergency fixture is disabled only in this scene; the outdoor beacon's behavior is unchanged.
+The visual demo exposes RedAlertActive, including manual 1/2/3 waves. No gameplay AI rules changed. Adjust Peak Intensity, Period and Flash Duration on individual fixtures. Scene backup: Backups/FactoryBroadcastAlarm. Captured lighting comparison: output/red-alarm-3d/lit.png and dark.png. Checked lit/dark envelope, outside-broadcast shutoff and runtime errors.

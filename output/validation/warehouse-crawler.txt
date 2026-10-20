@@ -1,0 +1,8 @@
+PASS: floor -> wall -> ceiling and ladder -> floor; 286 cached nodes.
+Pathfinding: 100 full warehouse paths in 40 ms (Editor, not a frame profiler).
+PASS: actual crawling around floor/wall/ceiling corners and switchback stair routing.
+PASS: continuous 20s timer, loss-of-sight reset, hidden-only spawn and one-instance limit.
+PASS: stationary 1.2s preparation, one hit, knockback, flight cancellation, recovery and reposition.
+PASS: 6m limit and dodgeable direction locked at takeoff.
+PASS: swept collision prevents tunnelling and through-wall pounces.
+PASS: moving Freight refresh and retry reset; original Rampagers=3.

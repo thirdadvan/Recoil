@@ -1,0 +1,25 @@
+GSMD MUSIC AND SOUND COLLABORATION ART STUDIES - 12 October 2026
+
+Interior: Assets/Scenes/RecoilFactoryArt3D.unity
+Updated against the saved RecoilFactoryInterior layout: current ceiling height,
+maintenance platform position, chain length/anchor and two riveted handhold machines.
+Static art characters show the current saved enemy positions.
+Original factory art scene backup:
+Backups/ArtStudies/RecoilFactoryArt3D_before_GSMD_20261012.unity
+
+Outdoor: Assets/Scenes/RecoilOutdoorArt3D.unity
+Independent 3D study using the saved store doorway, fuel island and alarm tower X
+positions. Four nozzles, stranded car, small service store, streetlamp and distant
+industrial silhouettes communicate the opening. Visual test only, not a gameplay port.
+
+Camera captures: output/presentations/atmosphere/
+The pitch uses station-exterior, factory-entry and town-approach.
+factory-machinery is an additional alternate view.
+
+These scenes are editable, separate from the 2D playable scenes and their Build
+Settings. The playable sources were read, not rewritten. Existing built-in materials,
+Unity primitives and the project's art grading shader provide the visuals.
+Art grading now exposes an Exposure control. No purchased models or new packages.
+
+Recoil/Art Test/Update GSMD Studies and Capture regenerates the visual study additions
+and outdoor study, so edit their saved scenes directly for further manual art work.

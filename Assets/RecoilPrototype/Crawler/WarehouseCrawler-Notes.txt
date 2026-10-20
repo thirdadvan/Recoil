@@ -1,0 +1,38 @@
+WAREHOUSE SURFACE CRAWLER — 2026-10-16
+
+Scope
+Only RecoilFactoryWarehouse contains this encounter. The three original Rampagers and their patrol routes remain in place. No external pathfinding package or Rigidbody conversion.
+
+Scene hierarchy
+RECOIL warehouse world
+  Warehouse Crawler Encounter - editable [WarehouseCrawlerEncounter]
+    Climbable navigation bounds [trigger BoxCollider2D, CrawlerNavigation]
+    Surface Crawler - slow climber [prefab]
+      SurfaceCrawlerController
+      SurfaceCrawlerMovement
+      SurfaceCrawlerVisuals
+      Visual - articulated silhouette (hidden until summoned)
+  Existing warehouse doors
+    ... - crawler entry (candidate Transform, follows its door)
+
+Defaults
+L test key: remove the crawler and cancel/suppress automatic spawning for the current attempt. P re-enables and refreshes it; retry resets suppression.
+P test key: refresh the single crawler immediately, bypassing the 20s timer. Existing crawler and attack state reset. Hidden reachable spawning still applies; if none is available, keep a pending request and retry. Only active warehouse gameplay receives the key.
+Continuous discovery: 20 seconds while at least one enabled, awake Rampager actually sees Dun. Briefly losing all witnesses resets the timer. Attacking/searching without visibility does not count; seeing only the child does not count. Crossing the threshold latches a summon request. One crawler per attempt; R / retry resets the encounter. Leaving the warehouse unloads it.
+Spawn: pick a reachable surface fully outside the camera plus an 8% margin; door candidates must also be hidden. If none exists, wait and try twice per second. Darkness inside the viewport is deliberately not treated as a safe spawn location.
+Crawl speed: 0.9 m/s. Once summoned, continuously pursue Dun's position; the crawler does not use Rampager sound-wave rules or target the child.
+Pounce: within 6m, with an unobstructed body-width corridor. Stay on the support for 1.2 seconds, crouch/tighten limbs and pulse eyes; lock the target direction at takeoff. Straight lunge at 13 m/s, maximum 6m. The attack cannot turn mid-flight. Hard surfaces block it; soft platforms can catch it from above.
+Impact: one normal monster hit, interruption of interaction, cancellation of flight and recoil pool, plus a short collision-checked knockback. Existing three-hit health rules remain in effect; monster hits no longer slow movement. The crawler's nearby unobstructed observation also prevents passive health recovery.
+After hit or miss: 0.8s recovery, fall/attach if airborne, then relocate roughly 1.4–2.5m along a path before preparing the next pounce. A direct water hit interrupts it and causes 0.65s recovery.
+
+Navigation
+Generate exposed offset edges of enabled hard BoxCollider2D surfaces, the top face of SoftRoofPlatform, ladder centerlines and WalkableStairway.routePoints. Do not infer collision or climbing from decorative sprites. Clip to the editable navigation bounds, split real intersections, sample at about 0.5m, reject body-sized blocked edges, and use A* with a binary heap. The pounce range defines a set of reachable launch positions rather than trying to path to a flying player. A failed route stays on the reachable component; no teleporting to disconnected surfaces.
+Static geometry is scanned on entry/reset. Existing collider motion/activation is checked at most every 0.5s and rebuilds the small graph when changed; a rider follows its support transform. Targets replan at most every 0.5s, or immediately after graph changes. Re-enter Play to include newly added colliders/ladders/stairs. If changing the warehouse envelope, adjust the navigation bounds too.
+Scene-only gizmos: select Climbable navigation bounds with Show Graph enabled during Play to see routes; select the crawler to see the 6m attack radius. No navigation lines are drawn in Game.
+
+Integration
+RecoilPrototype binds and resets the optional encounter, routes water hits, and exposes the knockback form of CatchPlayer. RecoilPlayerController applies a 0.3s external push and temporarily blocks re-grabbing climb supports. Existing callers of CatchPlayer() have unchanged behavior.
+
+Validation
+Recoil > Validate > Warehouse Crawler runs on a temporary scene copy: real movement around wall/ceiling corners, ladder and switchback routing, timing/reset, hidden spawning, 6m/1.2s pounce, hit/flight cancellation/knockback, fixed-direction dodge, recovery/reposition, thin-wall sweep and moving Freight refresh. Results: output/validation/warehouse-crawler.txt.
+A separate Play check confirmed the actual Rampager perception triggered the encounter after 20s and spawned it outside the viewport. No new compilation/runtime errors were observed.

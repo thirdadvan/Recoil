@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('node:assert/strict'),Chain=require('./swinging-chain.js'),{Game}=require('./game.js'),cfg=require('./scene-config.js');
+function run(name,fn){fn();console.log('PASS '+name);}
+function energy(c){return .5*c.grip*c.grip*c.omega*c.omega+c.gravity*c.grip*(1-Math.cos(c.angle));}
+function setup(){const g=new Game(null);g.enemies=[];g.blocks=[];g.ladders=[];g.softRoofs=[];g.soundWaves.remaining=1000;const c=new Chain({x:0,y:5,length:3,initialAngle:0});g.chains=[c];g.pos={x:0,y:2};g.velocity={x:0,y:0};g.grounded=false;return {g,c};}
+run('pendulum exchanges potential and kinetic energy without significant drift',()=>{const c=new Chain({x:0,y:5,length:3,initialAngle:25,damping:0});c.grip=3;const initial=energy(c);let peak=0;for(let n=0;n<2000;n++){c.idle(.01);peak=Math.max(peak,Math.abs(energy(c)/initial-1));}assert(peak<.015);});
+run('input aligned with swing adds energy; opposing input removes energy',()=>{for(const input of [1,-1]){const c=new Chain({x:0,y:5,length:3,initialAngle:0,damping:0});c.grip=3;c.omega=.5;const initial=energy(c);c.drive(input,0,.02);assert(input>0?energy(c)>initial:energy(c)<initial);}});
+run('shot recoil changes tangential energy according to aim',()=>{for(const aim of [-1,1]){const c=new Chain({x:0,y:5,length:3,initialAngle:0});c.grip=3;c.omega=2;const initial=energy(c);c.shot({x:aim,y:0});assert(aim<0?energy(c)>initial:energy(c)<initial);}});
+run('W/S catches chain, climbs, refills ammo; shooting remains attached; jumping releases',()=>{const {g,c}=setup();g.ammo=0;g.tick({y:1},.01);assert.equal(g.climbingChain,c);const grip=c.grip;for(let n=0;n<110;n++)g.tick({y:0},.01);assert.equal(g.ammo,1);g.tick({y:1},.03);assert(c.grip<grip);const before=c.grip;g.tick({y:-1},.03);assert(c.grip>before);g.aim={x:-1,y:0};g.shoot();assert.equal(g.ammo,0);assert.equal(g.climbingChain,c);assert(!g.flying);g.tick({jump:true},.01);assert(!g.climbingChain);assert(!c.occupied);});
+run('ladder refills ammo while holding still',()=>{const {g}=setup();g.chains=[];g.ladders=[{x:-.55,y:0,w:1.1,h:5,climbSpeed:2.4}];g.ammo=0;g.tick({y:1},.01);assert(g.climbingLadder);for(let n=0;n<110;n++)g.tick({},.01);assert.equal(g.ammo,1);});
+run('free flight still cannot refill ammo',()=>{const {g}=setup();g.chains=[];g.ammo=0;for(let n=0;n<150;n++)g.tick({},.01);assert.equal(g.ammo,0);});
+run('saved interior contains reusable chain next to entrance',()=>{const s=cfg.scenes.RecoilFactoryInterior;assert.equal(s.chains.length,1);assert(s.chains[0].x>s.spawn.x);assert(s.chains[0].y<5);});

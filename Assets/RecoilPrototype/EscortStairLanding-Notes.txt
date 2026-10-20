@@ -1,0 +1,7 @@
+Escort child stair landing handoff
+
+Cause: child retained authored stair support only while the player was WalkingStairs. At the interior upper endpoint x28, the floor ends at x28; walking left leaves the trailing child around x28.75. Player stepped onto the floor, released the stairs, and child's gravity resumed over empty space.
+
+Fix: player exposes readonly CurrentStairway. Child remembers the last stair and, on exit near an endpoint, checks for a real hard or soft top surface at that endpoint. It retains stair support while walking onto that surface and temporarily clamps the follow offset to the available floor. Normal following/gravity resumes once the usual follow target fits on the floor. Jumping away, leaving the endpoint area, missing floor and destroyed upper landings do not provide this support. Resetting the child or letting go clears the remembered stair.
+
+Validation: simulated the trailing child outside the floor at x28.75 while player stood x27.8. On all three interior upper landings (7.6, 11.6, 15.6), after 40 steps child was grounded at x27.78 with feet exactly at the floor height. No console errors; interior scene was tested without saving test changes. Warehouse unsaved edits preserved.

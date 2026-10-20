@@ -1,0 +1,86 @@
+{
+  "output": "/Volumes/RestartRoll/Unity/Recoil/Builds/Recoil-JavaScript/index.html",
+  "scenes": [
+    {
+      "scene": "RecoilPrototype",
+      "enemies": 6,
+      "colliders": 12,
+      "sprites": 651,
+      "items": 3,
+      "doors": 3,
+      "broadcasts": false
+    },
+    {
+      "scene": "RecoilFactoryInterior",
+      "enemies": 5,
+      "colliders": 11,
+      "sprites": 422,
+      "items": 0,
+      "doors": 8,
+      "broadcasts": true
+    },
+    {
+      "scene": "RecoilServiceStore",
+      "enemies": 0,
+      "colliders": 7,
+      "sprites": 68,
+      "items": 1,
+      "doors": 2,
+      "broadcasts": false
+    },
+    {
+      "scene": "FactoryArchiveF3",
+      "enemies": 0,
+      "colliders": 4,
+      "sprites": 114,
+      "items": 0,
+      "doors": 1,
+      "broadcasts": false
+    },
+    {
+      "scene": "FactoryChangingRoomF2",
+      "enemies": 0,
+      "colliders": 4,
+      "sprites": 81,
+      "items": 0,
+      "doors": 1,
+      "broadcasts": false
+    },
+    {
+      "scene": "FactoryManagerOfficeF4",
+      "enemies": 0,
+      "colliders": 4,
+      "sprites": 32,
+      "items": 0,
+      "doors": 1,
+      "broadcasts": false
+    },
+    {
+      "scene": "FactoryMeetingRoomF4",
+      "enemies": 0,
+      "colliders": 4,
+      "sprites": 25,
+      "items": 0,
+      "doors": 1,
+      "broadcasts": false
+    },
+    {
+      "scene": "FactoryShiftOfficeF3",
+      "enemies": 0,
+      "colliders": 4,
+      "sprites": 30,
+      "items": 0,
+      "doors": 1,
+      "broadcasts": false
+    },
+    {
+      "scene": "FactoryWashroomF2",
+      "enemies": 0,
+      "colliders": 4,
+      "sprites": 46,
+      "items": 0,
+      "doors": 1,
+      "broadcasts": false
+    }
+  ]
+}

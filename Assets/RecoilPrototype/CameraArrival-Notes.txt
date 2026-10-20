@@ -1,0 +1,22 @@
+Scene arrival and camera framing
+
+Responsibilities:
+- RecoilDoor: requests travel to a destination scene and spawn marker.
+- RecoilSceneLoader: selects and loads the scene (Editor and player builds).
+- RecoilPrototype: restores inventory/health, resolves the spawn, resets the player, then asks the camera to snap.
+- RecoilCameraController: owns camera size, bounds, mouse look and following. SnapToTarget uses the same target calculation as LateUpdate, without smoothing.
+
+Lifecycle:
+RecoilPrototype.Awake -> BindScene -> resolve destination spawn -> ResetController -> SnapToTarget.
+RecoilCameraController.Start -> SnapToTarget after scene Awake initialization, before the first Update/render.
+Subsequent LateUpdate -> smooth following during gameplay.
+
+Mouse look is measured using settled base framing rather than the current camera position. This prevents camera position from feeding back into the look target, and makes arrival independent of the authored camera position. Inspector settings remain authoritative per scene.
+
+No additional persistent GameManager is needed for the current single-scene travel model. A dedicated transition coordinator would become useful for asynchronous loading, fades or additive scene streaming; it should orchestrate preparation and reveal, while the camera still owns framing.
+
+Unity 2022.3 lifecycle reference:
+https://docs.unity3d.com/2022.3/Documentation/Manual/ExecutionOrder.html
+Scene-loaded notification follows Awake/OnEnable and precedes Start. Scene Start callbacks precede the first Update/render. The current explicit preparation order avoids relying on arbitrary Awake order among unrelated objects.
+
+Checks: RecoilCameraArrivalValidation.Validate opens scene assets without saving them and checks immediate/stable framing and mouse bounds across arrival markers. Run in a disposable project copy when the working editor is open.

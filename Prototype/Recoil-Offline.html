@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RECOIL · 试玩原型</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#080e12;color:#dce7e4;font-family:system-ui,-apple-system,sans-serif;display:grid;place-items:center;min-height:100vh}.shell{position:relative;width:min(100vw,177.778vh);aspect-ratio:16/9;overflow:hidden;background:#15222a}canvas{width:100%;height:100%;display:block;cursor:crosshair}header{position:absolute;top:0;left:0;right:0;height:13%;padding:1.5% 2.3%;display:flex;justify-content:space-between;background:#0c151bed;pointer-events:none}.brand{letter-spacing:.22em;font-size:clamp(18px,2.3vw,32px);font-weight:700}.eyebrow{font-size:clamp(9px,.95vw,13px);color:#8ba09f;letter-spacing:.13em;margin-top:5px}.objective{font-size:clamp(12px,1.4vw,20px);text-align:right;line-height:1.7}.objective small{color:#8da1a6;font-size:clamp(9px,.95vw,13px)}footer{position:absolute;bottom:0;width:100%;height:8%;padding:1.4% 2.3%;font-size:clamp(10px,1vw,14px);display:flex;justify-content:space-between;background:#0c151bf0;color:#a1b5b9;pointer-events:none}#speech{position:absolute;left:20%;right:20%;bottom:12%;padding:1.3% 2%;text-align:center;background:#0b151beb;border-left:2px solid #78cbd9;font-size:clamp(12px,1.3vw,18px);line-height:1.6;pointer-events:none}#overlay{position:absolute;inset:13% 0 8%;display:flex;align-items:center;justify-content:center;background:#08131bee}.content{width:61%}h1{font-size:clamp(24px,4vw,56px);letter-spacing:.12em;margin:0 0 4%}.content p{color:#bccbc9;font-size:clamp(12px,1.35vw,19px);line-height:1.9;margin:2% 0}.content .intro{color:#e2e8db;font-size:clamp(14px,1.6vw,23px)}button{border:1px solid #76c8d7;background:#23434c;color:#e1f8ff;padding:14px 34px;font-size:clamp(13px,1.3vw,18px);cursor:pointer;margin-top:4%;letter-spacing:.08em}button:hover{background:#315c68}#overlay[hidden],#speech[hidden]{display:none}.hint{color:#85a8b0!important;font-size:clamp(10px,1vw,14px)!important}.controls{display:grid;grid-template-columns:1fr 1fr;gap:4px 30px;font-size:clamp(12px,1.25vw,18px);line-height:1.8;color:#bccbc9}kbd{display:inline-block;min-width:24px;text-align:center;padding:1px 6px;background:#25383f;border:1px solid #43565c;color:#d5eeef;border-radius:3px;font-family:inherit}.bar{height:4px;background:#2b3e46;width:140px;margin-top:5px}.bar span{display:block;background:#65d4ec;height:100%}a{color:#78cedc}
+</style>
+<main class="shell">
+<canvas id="game" width="1280" height="720" tabindex="0" aria-label="RECOIL 二维动作潜行原型，用键盘移动，鼠标瞄准射击"></canvas>
+<header><div><div class="brand">RECOIL</div><div class="eyebrow">01 / TOWN ENTRANCE · 玩法原型</div></div><div class="objective"><div id="objective">进入工厂，寻找失踪者的线索。</div><small>鼠标瞄准 · 按住左键射击 · 按住 W，朝下射击起飞</small></div></header>
+<div id="speech"></div>
+<footer><div><span id="status">院子 / 地面</span><div class="bar" id="bar" hidden><span id="fuel"></span></div></div><span>A / D 移动　W / S 飞行　C 蹲行　E 按住搜索 / 调查　B 广播　R 重试　Esc 暂停</span></footer>
+<section id="overlay"><div class="content" id="content"></div></section>
+</main>
+<script>
+// Generated from RecoilPrototype.unity by export-scene-lighting.py.
+(function(root){
+  const config={
+  "streetLamps": [
+    {
+      "x": 41.73,
+      "y": 4.8,
+      "coneLength": 4.8,
+      "coneHalfWidth": 2.0,
+      "interactionRange": 1.2,
+      "initiallyOn": true
+    },
+    {
+      "x": 22.0,
+      "y": 4.8,
+      "coneLength": 4.8,
+      "coneHalfWidth": 2.0,
+      "interactionRange": 1.2,
+      "initiallyOn": true
+    }
+  ],
+  "outdoorAmbient": 0.249,
+  "factoryArea": {
+    "enabled": false,
+    "minX": 16.0,
+    "maxX": 39.0,
+    "minY": -1.0,
+    "maxY": 6.0
+  },
+  "fixedLights": [
+    {
+      "x": 18.6,
+      "y": 2.3,
+      "radius": 2.0,
+      "intensity": 0.22,
+      "enabled": true
+    },
+    {
+      "x": 25.0,
+      "y": 5.4,
+      "radius": 2.2,
+      "intensity": 0.26,
+      "enabled": true
+    },
+    {
+      "x": 37.5,
+      "y": 2.8,
+      "radius": 2.4,
+      "intensity": 0.35,
+      "enabled": true
+    }
+  ],
+  "playerLightRadius": 5.4,
+  "playerLightIntensity": 0.48,
+  "swarmFlickerIntensity": 0.45,
+  "swarmFlickerPeriod": 1.4,
+  "swarmFlashDuration": 0.45,
+  "fullyLitBrightness": 0.45
+};
+  root.RecoilSceneLightingConfig=config;if(typeof module!=='undefined')module.exports=config;
+})(globalThis);
+
+</script><script>
+(function(root){
+  'use strict';
+  const SceneConfig=typeof module!=='undefined'?require('./scene-lighting-config.js'):root.RecoilSceneLightingConfig;
+  const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
+  const smooth=t=>t*t*(3-2*t);
+  class SceneLighting {
+    constructor(game){
+      this.game=game;this.fullyLitBrightness=.45;this.outdoorAmbient=.28;
+      this.playerLightRadius=5.4;this.playerLightIntensity=.48;
+      this.swarmFlickerIntensity=.45;this.swarmFlickerPeriod=1.4;this.swarmFlashDuration=.45;
+      this.fixedLights=[{x:18.6,y:2.3,radius:2,intensity:.22},{x:25,y:5.4,radius:2.2,intensity:.26},{x:37.5,y:2.8,radius:2.4,intensity:.35}];
+      Object.assign(this,SceneConfig);this.factoryArea={...SceneConfig.factoryArea};this.fixedLights=SceneConfig.fixedLights.map(light=>({...light}));
+      this.reset();
+    }
+    reset(){this.alarmWasActive=false;this.alarmStartedAt=0;this.sampleKey=null;}
+    get swarmAmbient(){
+      const alarm=!!(this.game.soundWaves&&this.game.soundWaves.redAlert);
+      if(alarm&&!this.alarmWasActive)this.alarmStartedAt=this.game.time;
+      this.alarmWasActive=alarm;if(!alarm)return 0;
+      const period=Math.max(.1,this.swarmFlickerPeriod),phase=((this.game.time-this.alarmStartedAt)%period+period)%period;
+      const duration=Math.min(period,Math.max(.05,this.swarmFlashDuration));
+      const rise=clamp(phase/(duration*.25),0,1),fade=clamp((phase-duration*.35)/(duration*.65),0,1);
+      return this.swarmFlickerIntensity*smooth(rise)*(1-smooth(fade));
+    }
+    isIndoors(p){const a=this.factoryArea;return !!(a&&a.enabled&&p.x>=a.minX&&p.x<=a.maxX&&p.y>=a.minY&&p.y<=a.maxY);}
+    environmentBrightness(p){
+      let brightness=this.isIndoors(p)?this.swarmAmbient:this.outdoorAmbient;
+      for(const light of this.fixedLights.filter(l=>l.enabled!==false).slice(0,7)){
+        const t=clamp(Math.hypot(p.x-light.x,p.y-light.y)/Math.max(.001,light.radius),0,1);
+        brightness=Math.max(brightness,light.intensity*(1-smooth(t)));
+      }
+      if(this.game.streetLamps&&this.game.streetLamps.some(lamp=>lamp.contains(p)))brightness=1;
+      return brightness;
+    }
+    get illumination(){
+      const g=this.game,half=g.crouched?.35:.65;
+      const key=[g.time,g.pos.x,g.pos.y,half,!!(g.soundWaves&&g.soundWaves.redAlert),this.fullyLitBrightness,this.outdoorAmbient,this.factoryArea.enabled,this.factoryArea.minX,this.factoryArea.maxX,this.factoryArea.minY,this.factoryArea.maxY];
+      if(this.sampleKey&&key.every((value,i)=>value===this.sampleKey[i]))return this.sampledIllumination;
+      let brightness=0;for(let i=-1;i<=1;i++)brightness+=this.environmentBrightness({x:g.pos.x,y:g.pos.y+half*i});
+      this.sampledIllumination=.4+.6*clamp(brightness/(3*Math.max(.001,this.fullyLitBrightness)),0,1);if(g.streetLamps&&g.streetLamps.some(lamp=>lamp.contains(g.pos)))this.sampledIllumination=1;this.sampleKey=key;
+      return this.sampledIllumination;
+    }
+  }
+  root.SceneLighting=SceneLighting;if(typeof module!=='undefined')module.exports=SceneLighting;
+})(globalThis);
+
+</script><script>
+(function(root){
+  'use strict';
+  // Coordinates are fixed world positions, matching Unity's captured child behaviour points.
+  class RampagerPatrolRoute {
+    constructor(points=[],loop=true){this.points=points.map((p,index)=>({...p,index})).sort((a,b)=>a.order-b.order||a.index-b.index);this.loop=loop;this.reset();}
+    reset(){this.index=0;this.complete=false;this.lastFacing=-1;this.suspend();}
+    suspend(){this.elapsed=0;this.arrived=false;this.entryFacing=-1;}
+    get current(){return this.points[this.index];}
+    advance(){if(this.index+1<this.points.length)this.index++;else if(this.loop)this.index=0;else this.complete=true;}
+    evaluate(x,dt,facing,speed){
+      if(!this.points.length)return null;
+      if(this.complete)return {direction:0,distance:0,facing:this.lastFacing};
+      for(let skipped=0;skipped<this.points.length;skipped++){
+        const point=this.current,delta=point.x-x;
+        if(Math.abs(delta)>.025)return {direction:Math.sign(delta),distance:Math.min(Math.abs(delta),speed*dt),facing:Math.sign(delta)};
+        if(!this.arrived){this.arrived=true;this.entryFacing=facing;}
+        const duration=Math.max(0,point.duration),actionDt=Math.min(dt,Math.max(0,duration-this.elapsed));this.elapsed+=actionDt;
+        let look=this.entryFacing;
+        if(point.action==='lookLeft')look=-1;
+        else if(point.action==='lookRight')look=1;
+        else if(point.action==='lookAround')look=Math.floor(this.elapsed/Math.max(.05,point.lookInterval||.75))%2===0?-1:1;
+        this.lastFacing=look;
+        if(this.elapsed<duration)return {direction:0,distance:0,facing:look};
+        this.advance();this.suspend();
+        if(duration>0||this.complete)return {direction:0,distance:0,facing:look};
+      }
+      return {direction:0,distance:0,facing};
+    }
+    static example(home,left,right){return new RampagerPatrolRoute([
+      {order:0,x:left,duration:1.5,action:'lookRight'},
+      {order:1,x:home,duration:3,action:'lookAround',lookInterval:.75},
+      {order:2,x:right,duration:1.5,action:'lookLeft'},
+      {order:3,x:home,duration:1.5,action:'stay'}
+    ]);}
+  }
+  root.RampagerPatrolRoute=RampagerPatrolRoute;if(typeof module!=='undefined')module.exports=RampagerPatrolRoute;
+})(globalThis);
+
+</script><script>
+(function(root){
+  'use strict';
+  class SoundWaveManager {
+    constructor(game){
+      this.game=game;this.rounds=3;this.maxRounds=4;this.warningDuration=3;this.moveDelay=.1;this.holdDuration=1.5;this.commandDuration=1;this.reactionGrace=0;this.recoveryDuration=1.25;this.noiseSpeed=10;
+      this.source={x:-35,y:2.5};this.broadcastSpeed=25;this.reset();
+    }
+    reset(){this.phase='idle';this.round=0;this.totalWaves=this.rounds;this.nextCount=this.rounds;this.remaining=12;this.waves=[];this.serial=0;this.cueIndex=0;this.cueDelay=this.cueHold=this.cueMove=0;this.cueDirection=0;}
+    get redAlert(){return this.phase!=='idle';}
+    get direction(){return this.cueDirection;}
+    get active(){return this.cueDelay<=0&&this.cueMove>0;}
+    get commandAge(){return this.commandDuration-this.cueMove;}
+    get waveInterval(){return this.moveDelay+this.commandDuration+this.holdDuration;}
+    contains(p){return p.x>=-2&&p.x<=39&&p.y>=-5&&p.y<=15;}
+    start(){
+      if(this.phase!=='idle')return;
+      this.totalWaves=this.nextCount;this.nextCount=this.totalWaves>=Math.max(this.rounds,this.maxRounds)?this.rounds:this.totalWaves+1;
+      this.round=0;this.cueIndex=0;this.cueDirection=0;this.cueDelay=this.cueMove=0;this.cueHold=this.warningDuration;this.phase='warning';this.remaining=this.warningDuration;
+      this.wave(this.source,100,this.warningDuration,'warning');
+      for(const e of this.game.enemies)e.receiveWarning(this.warningDuration);
+      this.game.say('红色预警！灯光转红，怪物进入群行。3 秒后发出第一波方向指令。');
+    }
+    emitNoise(p,radius){this.wave(p,radius,radius/Math.max(.01,this.noiseSpeed),'noise');}
+    emitAid(p,radius){this.wave(p,radius,.8,'aid');}
+    wave(p,radius,duration,kind,direction=0){const w={x:p.x,y:p.y,radius,duration,kind,direction,age:0,shrinking:(kind==='direction'||kind==='broadcast')&&direction<0,delivered:new Set()};this.waves.push(w);return w;}
+    emitBroadcast(){
+      const direction=Math.random()<.5?-1:1;
+      const w=this.wave(this.source,100,this.waveInterval,'broadcast',direction);w.id=++this.serial;w.index=this.round+1;w.total=this.totalWaves;
+      this.cueIndex=w.index;this.cueDirection=direction;this.cueDelay=this.moveDelay;this.cueMove=this.cueHold=0;
+      for(const e of this.game.enemies)if(e.receiveWave(w.id,w.index,w.total,direction))this.wave(e,3,this.commandDuration+this.moveDelay,'direction',direction);
+    }
+    tick(dt){
+      if(this.phase==='warning')this.cueHold=Math.max(0,this.cueHold-dt);
+      else if(this.phase==='commands'){
+        const d=Math.min(dt,this.cueDelay);this.cueDelay-=d;let rest=dt-d;
+        if(this.cueDelay<=0&&this.cueMove===0&&this.cueHold===0){this.cueMove=this.commandDuration;}
+        const m=Math.min(rest,this.cueMove);this.cueMove-=m;rest-=m;
+        if(m>0&&this.cueMove<=0)this.cueHold=this.holdDuration;
+        this.cueHold=Math.max(0,this.cueHold-rest);
+      }
+      this.remaining-=dt;
+      if(this.remaining<=1e-6){
+        if(this.phase==='idle')this.start();
+        else if(this.phase==='warning'){this.phase='commands';this.remaining+=this.waveInterval;this.emitBroadcast();}
+        else if(this.phase==='commands'){
+          if(this.round+1<this.totalWaves){this.round++;this.remaining+=this.waveInterval;this.emitBroadcast();}
+          else{for(const e of this.game.enemies)e.endSwarm(this.recoveryDuration);this.phase='recovery';this.remaining=this.recoveryDuration;this.cueDelay=this.cueHold=this.cueMove=0;}
+        }else if(this.phase==='recovery'){this.phase='idle';this.remaining=15;}
+      }
+      for(const w of this.waves){w.age+=dt;if(w.kind==='noise')for(const e of this.game.enemies)if(!w.delivered.has(e)&&Math.hypot(e.x-w.x,e.y-w.y)<=Math.min(w.radius,w.age*this.noiseSpeed)){e.hearNoise(w,w.radius);w.delivered.add(e);}}
+      this.waves=this.waves.filter(w=>w.age<w.duration);
+    }
+  }
+  root.SoundWaveManager=SoundWaveManager;if(typeof module!=='undefined')module.exports=SoundWaveManager;
+})(globalThis);
+
+</script><script>
+(function(root){
+  'use strict';
+  class RampagerMovement {
+    constructor(game,home,left,right){this.game=game;this.home={...home};this.left=left;this.right=right;this.patrolSpeed=.9;this.investigateSpeed=1.25;this.chaseSpeed=2.6;this.swarmAttackSpeedMultiplier=1.4;this.jumpHeightInBodies=.7;this.jumpCooldown=5;this.jumpGravity=14;this.jumpTriggerDistance=2.5;this.reset();}
+    reset(){this.airborne=false;this.verticalSpeed=this.nextJumpAt=0;this.x=this.home.x;this.y=this.home.y;this.facing=-1;}
+    get grounded(){return this.game.blocks.some(b=>this.x+.3>b.x&&this.x-.3<b.x+b.w&&Math.abs(this.y-.8-b.y-b.h)<.035);}
+    get jumpCooldownRemaining(){return Math.max(0,this.nextJumpAt-this.game.time);}
+    tryJump(target,blocked){if(this.airborne||this.game.time<this.nextJumpAt||!this.grounded||Math.abs(target.x-this.x)>this.jumpTriggerDistance||(!blocked&&target.y<=this.y+.35))return false;this.verticalSpeed=Math.sqrt(2*Math.max(.01,this.jumpGravity)*1.6*this.jumpHeightInBodies);this.airborne=true;this.nextJumpAt=this.game.time+Math.max(.01,this.jumpCooldown);return true;}
+    simulateVertical(dt){if(!this.airborne||dt<=0)return;const amount=this.verticalSpeed*dt-.5*this.jumpGravity*dt*dt;this.verticalSpeed-=this.jumpGravity*dt;this.y+=amount;for(const b of this.game.blocks)if(this.x-.33<b.x+b.w&&this.x+.33>b.x&&this.y-.8<b.y+b.h&&this.y+.8>b.y){if(amount<=0){this.y=b.y+b.h+.8;this.airborne=false;}else this.y=b.y-.8;this.verticalSpeed=0;}}
+    toward(x){return Math.abs(x-this.x)<.2?0:Math.sign(x-this.x);}
+    lookAt(x){if(Math.abs(x-this.x)>.01)this.facing=Math.sign(x-this.x);}
+    move(direction,distance,turnOnBlock){
+      if(!direction||distance<=0)return false;
+      this.facing=direction;const x=this.x+direction*distance;
+      const blocked=this.game.blocks.some(b=>x-.33<b.x+b.w&&x+.33>b.x&&this.y-.8<b.y+b.h&&this.y+.8>b.y);
+      if(blocked){if(turnOnBlock)this.facing*=-1;return false;}this.x=x;return true;
+    }
+  }
+  root.RampagerMovement=RampagerMovement;if(typeof module!=='undefined')module.exports=RampagerMovement;
+})(globalThis);
+
+</script><script>
+(function(root){
+  'use strict';
+  class RampagerPerception {
+    constructor(game,owner){this.game=game;this.owner=owner;this.idealRange=32/3;this.fov=100;this.minimumExposure=.34;this.reset();}
+    reset(){this.observedShot=this.observedInteraction=this.observedFall=this.entrySide=this.lastOutsideSide=0;this.crossing=false;this.previousPlayer={...this.game.pos};}
+    get sightRange(){return this.idealRange*this.game.illumination*(this.owner.state==='attack'?1.5:1);}
+    canSee(){
+      // An attacking monster cannot lose a touching target to its eye-cone blind spot.
+      if(this.owner.state==='attack'&&this.canTouch(this.owner.attack.contactRadius))return true;
+      const e=this.owner,g=this.game,eye={x:e.x,y:e.y+.45},dx=g.pos.x-eye.x,dy=g.pos.y-eye.y,n=Math.hypot(dx,dy);
+      if(n>this.sightRange||dx*e.facing/Math.max(.001,n)<Math.cos(this.fov*.5*Math.PI/180))return false;
+      let exposed=0;const half=g.crouched?.35:.65;for(let i=-1;i<=1;i++)if(g.clear(eye,{x:g.pos.x,y:g.pos.y+half*i}))exposed++;
+      return exposed/3>=this.minimumExposure;
+    }
+    canLocate(){const e=this.owner,eye={x:e.x,y:e.y+.45};return Math.hypot(this.game.pos.x-eye.x,this.game.pos.y-eye.y)<=this.sightRange&&this.game.clear(eye,this.game.pos);}
+    hearNoise(p,radius){if(Math.hypot(this.owner.x-p.x,this.owner.y-p.y)<=radius&&this.onNoise)this.onNoise(p);}
+    canTouch(radius){const e=this.owner,g=this.game;return Math.hypot(g.pos.x-e.x,g.pos.y-e.y)<radius&&g.clear(e,g.pos);}
+    sense(){
+      const e=this.owner,g=this.game,sees=this.canSee(),v=g.movementVelocity||{x:0,y:0};
+      const result={sees,playerMoving:Math.hypot(v.x,v.y)>.1,shot:sees&&g.time-g.shotAt<.18&&g.shotSequence!==this.observedShot,
+        interaction:sees&&g.time<g.forbiddenUntil&&g.interactionSequence!==this.observedInteraction,highFall:sees&&g.highFall&&g.fallSequence!==this.observedFall,crossedThrough:false};
+      if(result.shot)this.observedShot=g.shotSequence;if(result.interaction)this.observedInteraction=g.interactionSequence;if(result.highFall)this.observedFall=g.fallSequence;
+      const delta=g.pos.x-e.x,vertical=Math.abs(g.pos.y-e.y)<.8+(g.crouched?.425:.825),overlaps=vertical&&Math.abs(delta)<.65,outside=Math.abs(delta)>=.65?Math.sign(delta):0;
+      if(overlaps&&!this.crossing&&this.lastOutsideSide){this.crossing=true;this.entrySide=this.lastOutsideSide;}
+      if(this.crossing&&!overlaps){result.crossedThrough=vertical&&outside&&outside!==this.entrySide&&Math.abs(g.pos.x-this.previousPlayer.x)>.001&&g.clear(e,g.pos);this.crossing=false;}
+      if(outside)this.lastOutsideSide=outside;this.previousPlayer={...g.pos};if(this.onObserved)this.onObserved(result);return result;
+    }
+  }
+  root.RampagerPerception=RampagerPerception;if(typeof module!=='undefined')module.exports=RampagerPerception;
+})(globalThis);
+
+</script><script>
+(function(root){
+  'use strict';
+  class RampagerAttack {
+    constructor(game,owner){this.game=game;this.owner=owner;this.attackInterval=1.5;this.contactRadius=.78;this.reset();}
+    reset(){this.nextAttackAt=0;}
+    get cooldownRemaining(){return Math.max(0,this.nextAttackAt-this.game.time);}
+    tryAttack(allowed){const g=this.game;if(!allowed||g.dead||g.won||g.health<=0||g.time<this.nextAttackAt||!this.owner.perception.canTouch(this.contactRadius))return false;this.nextAttackAt=g.time+Math.max(.01,this.attackInterval);return g.takeMonsterHit();}
+  }
+  root.RampagerAttack=RampagerAttack;if(typeof module!=='undefined')module.exports=RampagerAttack;
+})(globalThis);
+
+</script><script>
+(function(root){
+  'use strict';
+  const Attack=typeof module!=='undefined'?require('./rampager-attack.js'):root.RampagerAttack;
+  const Motor=typeof module!=='undefined'?require('./rampager-movement.js'):root.RampagerMovement;
+  const Senses=typeof module!=='undefined'?require('./rampager-perception.js'):root.RampagerPerception;
+  let sequence=0;
+  class RampagerAI {
+    constructor(game,x,left,right){
+      this.game=game;this.home={x,y:.8};this.movement=new Motor(game,this.home,left,right);this.perception=new Senses(game,this);this.attack=new Attack(game,this);
+      this.perception.onNoise=p=>this.onNoiseHeard(p);this.searchTime=6;this.stoppedTolerance=this.reverseTolerance=.5;
+      this.nearFlightDistance=1.5;this.farFlightDistance=8;this.nearFlightAngerTime=1;this.farFlightAngerTime=3;this.flightAngerDecayTime=2;
+      this.noiseWatchDuration=3.5;this.stationaryAngerTime=this.angerDecayTime=2;this.passingAnger=.5;this.attackInterval=1.5;this.reset();
+    }
+    get attackInterval(){return this.attack.attackInterval;}set attackInterval(value){this.attack.attackInterval=value;}
+    get x(){return this.movement.x;}set x(v){this.movement.x=v;}
+    get y(){return this.movement.y;}set y(v){this.movement.y=v;}
+    get facing(){return this.movement.facing;}set facing(v){this.movement.facing=v;}
+    get left(){return this.movement.left;}get right(){return this.movement.right;}
+    get idealRange(){return this.perception.idealRange;}set idealRange(v){this.perception.idealRange=v;}
+    get fov(){return this.perception.fov;}set fov(v){this.perception.fov=v;}
+    get minimumExposure(){return this.perception.minimumExposure;}set minimumExposure(v){this.perception.minimumExposure=v;}
+    get watchingPlayer(){return this.watching&&this.state==='roaming';}
+    reset(){this.flightAnger=0;this.swarmAttackBoost=this.swarmAttackRedEyes=false;this.attack.reset();this.movement.reset();this.perception.reset();this.watching=false;this.watchRemaining=this.noiseAnger=0;this.graceSession=0;this.interactionSeenAt=-100;this.x=this.home.x;this.y=this.home.y;this.target={...this.home};this.state='roaming';this.facing=-1;this.stun=this.suspicion=this.confirmation=this.searchRemaining=this.noiseRemaining=this.stopped=this.reverse=this.recovery=this.escapeSweep=0;this.lastSight=this.lastReport=-100;this.identified=this.fromAid=this.returning=false;this.reports=new Set();this.waveDelay=this.waveHold=this.waveMove=this.waveIndex=this.lastWaveId=0;this.movingEntered=false;this.waitingEntered=true;this.waveDirection=-1;this.lastWave=false;if(this.patrol)this.patrol.reset();}
+    get redEyes(){return this.state==='swarm'||(this.state==='attack'&&this.swarmAttackRedEyes);}
+    get alert(){return this.state==='attack'?1:this.state==='irritated'?.65:Math.max(Math.min(1,this.suspicion/.75)*.5,this.noiseAnger*.65);}
+    get investigate(){return Math.max(this.searchRemaining,this.noiseRemaining);}
+    get sightRange(){return this.perception.sightRange;}
+    canSee(){return this.perception.canSee();}
+    hearNoise(p,radius){this.perception.hearNoise(p,radius);}
+    onNoiseHeard(p){
+      if(this.state==='roaming'){this.watching=true;this.watchRemaining=this.noiseWatchDuration;this.target={x:p.x,y:p.y};this.movement.lookAt(p.x);if(this.patrol)this.patrol.suspend();return;}
+      if(this.state==='attack'||this.state==='swarm'||(this.identified&&!this.returning))return;
+      this.target={x:p.x,y:p.y};this.noiseRemaining=3.5;this.searchRemaining=this.searchTime;this.returning=false;
+    }
+    directHit(p){this.stun=.65;this.identified=true;this.target={...p};this.lastSight=this.game.time;this.enterViolationAttack();}
+    receive(r){
+      const g=this.game;if(!r.attack||r.source===this||!g.enemies.includes(r.source)||r.target!==g||r.sightTime>g.time||g.time-r.sightTime>3||this.reports.has(r.id))return false;
+      this.reports.add(r.id);if(r.sightTime<this.lastSight)return false;
+      this.target={...r.position};this.lastSight=r.sightTime;this.identified=true;this.returning=false;this.searchRemaining=this.searchTime;
+      this.setState('attack');return true;
+    }
+    report(sees){if(this.state!=='attack'||!sees||!this.identified||this.game.time-this.lastReport<.5)return;this.lastReport=this.game.time;this.game.publishReport({source:this,target:this.game,position:{...this.target},sightTime:this.lastSight,attack:this.state==='attack',id:++sequence,eventType:this.game.flying?'flying':this.game.time-this.game.shotAt<.18?'shooting':this.game.violating?'forbiddenInteraction':'confirmedTarget'});}
+    setState(state){if(this.state===state)return;if(this.state==='roaming'&&this.patrol)this.patrol.suspend();this.swarmAttackRedEyes=state==='attack'&&this.broadcastActive;if(state==='irritated')this.flightAnger=0;this.state=state;if(state!=='attack')this.swarmAttackBoost=false;if(state!=='irritated'&&state!=='attack')this.flightAnger=0;this.watching=false;this.watchRemaining=0;if(state==='roaming'||state==='swarm')this.noiseAnger=0;this.confirmation=this.stopped=this.reverse=0;if(state==='irritated')this.searchRemaining=this.searchTime;if(state==='roaming')this.noiseRemaining=0;}
+    get broadcastActive(){return this.game.soundWaves.redAlert||(this.state==='swarm'&&this.recovery<=0);}
+    enterViolationAttack(){const boosted=this.state!=='attack'&&this.broadcastActive;this.setState('attack');this.swarmAttackBoost=this.swarmAttackBoost||boosted;}
+    updateFlightAnger(sees,dt){
+      if(this.state!=='irritated')return;
+      if(sees&&this.game.flying){const distance=Math.hypot(this.x-this.game.pos.x,this.y+.45-this.game.pos.y),t=Math.max(0,Math.min(1,(distance-this.nearFlightDistance)/Math.max(.1,this.farFlightDistance-this.nearFlightDistance))),duration=this.nearFlightAngerTime+(this.farFlightAngerTime-this.nearFlightAngerTime)*t;this.flightAnger=Math.min(1,this.flightAnger+dt/Math.max(.1,duration));if(this.flightAnger>=1-1e-6){this.identified=true;this.target={...this.game.pos};this.lastSight=this.game.time;this.enterViolationAttack();}}
+      else this.flightAnger=Math.max(0,this.flightAnger-dt/Math.max(.1,this.flightAngerDecayTime));
+    }
+    joinSwarm(){if(this.state!=='roaming'&&this.state!=='irritated')return;this.setState('swarm');this.noiseRemaining=this.searchRemaining=this.suspicion=this.recovery=0;this.graceSession=0;this.interactionSeenAt=-100;this.identified=this.fromAid=this.returning=false;}
+    get disobedienceProgress(){return Math.min(1,(!this.waveMoving)?this.reverse/this.reverseTolerance:Math.max(this.stopped/this.stoppedTolerance,this.reverse/this.reverseTolerance));}
+    get waveMoving(){return this.waveDelay<=0&&this.waveMove>0;}
+    receiveWarning(duration){if(this.state==='attack')return false;this.joinSwarm();this.waveIndex=0;this.lastWave=false;this.waveDelay=this.waveMove=0;this.waveHold=duration;this.movingEntered=false;this.waitingEntered=true;this.stopped=this.reverse=this.recovery=0;return true;}
+    receiveWave(id,index,total,direction){
+      if(this.state==='attack'||id<=this.lastWaveId)return false;
+      this.joinSwarm();this.lastWaveId=id;this.waveIndex=index;this.lastWave=index===total;this.waveDirection=direction;
+      this.waveDelay=this.game.soundWaves.moveDelay;this.waveHold=this.game.soundWaves.holdDuration;this.waveMove=this.game.soundWaves.commandDuration;this.movingEntered=this.waitingEntered=false;this.recovery=this.stopped=this.reverse=0;this.facing=direction;return true;
+    }
+    endSwarm(duration){if(this.state!=='swarm')return;this.recovery=Math.max(.01,duration);this.stopped=this.reverse=0;}
+    toward(x){return this.movement.toward(x);}
+    checkSwarmIntent(intent,dt,moving){
+      if(dt<=0||this.state!=='swarm')return;
+      this.stopped=moving&&Math.abs(intent)<.1?this.stopped+dt:0;
+      this.reverse=(moving?intent*this.waveDirection<0:Math.abs(intent)>.1)?this.reverse+dt:0;
+      if(this.stopped>=this.stoppedTolerance-1e-6||this.reverse>=this.reverseTolerance-1e-6){this.identified=true;this.target={...this.game.pos};this.lastSight=this.game.time;this.enterViolationAttack();}
+    }
+    tick(dt){
+      const g=this.game,sw=g.soundWaves;let delayDt=0,waveDt=0,holdDt=0;
+      if(this.state==='swarm'&&this.recovery<=0){delayDt=Math.min(dt,this.waveDelay);this.waveDelay-=delayDt;waveDt=Math.min(dt-delayDt,this.waveMove);this.waveMove-=waveDt;holdDt=Math.min(dt-delayDt-waveDt,this.waveHold);this.waveHold-=holdDt;}
+      if(this.watchingPlayer&&this.perception.canLocate())this.movement.lookAt(g.pos.x);
+      const observation=this.perception.sense(),{sees,shot,interaction,highFall}=observation,item=g.activeItem;
+      if(this.watchingPlayer){
+        this.watchRemaining-=dt;if(sees){this.target={...g.pos};this.movement.lookAt(g.pos.x);}
+        this.noiseAnger=Math.max(0,Math.min(1,this.noiseAnger+(sees&&!observation.playerMoving?dt/Math.max(.1,this.stationaryAngerTime):-dt/Math.max(.1,this.angerDecayTime))));
+        if(observation.crossedThrough)this.noiseAnger=Math.min(1,this.noiseAnger+this.passingAnger);
+        if(this.watchRemaining<=0&&this.noiseAnger<1-1e-6){this.watching=false;this.noiseAnger=0;}
+      }
+      this.stun=Math.max(0,this.stun-dt);
+      if(sees&&this.identified){this.target={...g.pos};this.lastSight=g.time;this.returning=false;this.escapeSweep=0;}
+      if(shot){this.identified=true;this.target={...g.pos};this.lastSight=g.time;this.enterViolationAttack();}
+      else if(this.state==='roaming'||(this.state==='swarm'&&this.recovery>0)){
+        this.suspicion=0;
+        if(shot||interaction||highFall||(sees&&item)||this.noiseAnger>=1-1e-6||(sees&&g.flying)){this.identified=true;this.target={...g.pos};this.lastSight=g.time;if(sees&&item){this.graceSession=item.session;this.interactionSeenAt=g.time;}this.setState('irritated');}
+      }else if(this.state==='swarm'&&this.recovery<=0){
+        if(shot||interaction||highFall||(sees&&item)){this.identified=true;this.target={...g.pos};this.lastSight=g.time;if(item){this.graceSession=item.session;this.interactionSeenAt=g.time;}this.setState('irritated');}
+        else if(sees&&g.flying){this.identified=true;this.target={...g.pos};this.lastSight=g.time;this.setState('irritated');}
+        else if(sees&&!g.movementBlocked){
+          const intent=g.horizontalIntent;
+          this.checkSwarmIntent(intent,delayDt,false);
+          if(this.state==='swarm'&&waveDt>0){if(!this.movingEntered){this.stopped=this.reverse=0;this.movingEntered=true;}this.checkSwarmIntent(intent,waveDt,true);}
+          if(this.state==='swarm'&&holdDt>0){if(!this.waitingEntered){this.stopped=this.reverse=0;this.waitingEntered=true;}this.checkSwarmIntent(intent,holdDt,false);}
+        }else this.stopped=this.reverse=0;
+      }else if(this.state==='irritated'){
+        if(!item)this.graceSession=0;
+        const heldViolation=sees&&item&&(item.session!==this.graceSession||g.time-this.interactionSeenAt>.5);
+        if(sees){this.facing=Math.sign(this.target.x-this.x)||this.facing;this.searchRemaining=this.searchTime;}
+        else{this.searchRemaining-=dt;if(this.searchRemaining<=0){this.identified=false;this.suspicion=0;this.setState('roaming');}}
+        if(interaction||highFall||heldViolation){this.identified=true;this.target={...g.pos};this.lastSight=g.time;this.enterViolationAttack();}
+      }
+      this.updateFlightAnger(sees,dt);
+      if(this.state==='attack'){this.report(sees);if(g.time-this.lastSight>=20){this.setState('irritated');this.searchRemaining=this.searchTime;}}
+      if(this.recovery>0){this.recovery=Math.max(0,this.recovery-dt);if(this.recovery===0&&this.state==='swarm')this.setState('roaming');}
+      let dir=0,speed=this.movement.patrolSpeed,routeStep=null;
+      if(this.patrol&&(this.state!=='roaming'||this.watchingPlayer||this.suspicion>0||this.stun>0||this.noiseRemaining>0))this.patrol.suspend();
+      if(this.state==='attack'){dir=this.toward(this.target.x);speed=this.movement.chaseSpeed;if(!sees&&(dir===0||this.escapeSweep>0)){this.escapeSweep+=dt;dir=this.toward(this.target.x+Math.sin(this.escapeSweep*1.5)*1.5);speed=this.movement.investigateSpeed;}}
+      else if(this.state==='irritated'){ /* Stationary. */
+      }else if(this.state==='swarm'){if(this.recovery<=0&&waveDt>0)dir=this.waveDirection;}
+      else if(!this.watchingPlayer&&this.suspicion<=0){this.noiseRemaining=Math.max(0,this.noiseRemaining-dt);if(this.noiseRemaining>0){dir=this.toward(this.target.x);speed=this.movement.investigateSpeed;}else{if(this.patrol&&this.stun<=0)routeStep=this.patrol.evaluate(this.x,dt,this.facing,speed);if(routeStep){dir=routeStep.direction;this.facing=routeStep.facing;}else{dir=this.facing;if(this.x<=this.left)dir=1;else if(this.x>=this.right)dir=-1;}}}
+      if(this.state==='attack'&&this.swarmAttackBoost)speed*=this.movement.swarmAttackSpeedMultiplier;
+      if(dir)this.facing=dir;let blocked=false;
+      if(this.stun<=0&&dir)blocked=!this.movement.move(dir,routeStep?routeStep.distance:speed*(this.state==='swarm'?waveDt:dt),!routeStep&&this.state==='roaming'&&this.noiseRemaining<=0);
+      if(this.state==='attack'&&this.swarmAttackBoost&&this.stun<=0)this.movement.tryJump(this.target,blocked);
+      this.movement.simulateVertical(dt);
+      this.attack.tryAttack(this.state==='attack'&&this.stun<=0);
+      if(this.state==='swarm'&&this.recovery<=0&&this.lastWave&&this.waveDelay<=0&&this.waveHold<=0&&this.waveMove<=0)this.endSwarm(sw.recoveryDuration);
+    }
+  }
+  root.RampagerAI=RampagerAI;if(typeof module!=='undefined')module.exports=RampagerAI;
+})(globalThis);
+
+</script><script>
+(function(root){
+  'use strict';
+  class ContinuousInteractionItem {
+    constructor({id,name,description='',duration=1.5,resultId,resultMessage,x,y,range=1.5}){Object.assign(this,{id,name,description,duration,resultId,resultMessage,x,y,range});this.reset();}
+    reset(){this.progress=0;this.completed=false;this.session=0;}
+    inRange(g){return !this.completed&&Math.hypot(g.pos.x-this.x,g.pos.y-this.y)<=this.range&&g.clear(g.pos,this);}
+    begin(session){this.session=session;this.progress=0;}
+    cancel(){this.progress=0;this.session=0;}
+    advance(g,dt){this.progress+=dt;if(this.progress<this.duration)return false;this.progress=this.duration;this.completed=true;g.inventory.add(this.resultId);g.say(this.resultMessage);return true;}
+  }
+  class Backpack extends ContinuousInteractionItem {
+    constructor(x=28.8,y=.55){super({id:'backpack',name:'员工背包',description:'持续搜索，获取员工门禁卡',duration:1.5,resultId:'employee_access_card',resultMessage:'获得员工门禁卡。',x,y});}
+  }
+  root.ContinuousItems={ContinuousInteractionItem,Backpack};if(typeof module!=='undefined')module.exports=root.ContinuousItems;
+})(globalThis);
+
+</script><script>
+(function(root){
+  'use strict';
+  class StreetLamp {
+    constructor({x=22,y=4.8,coneLength=4.8,coneHalfWidth=2,interactionRange=1.2,initiallyOn=true}={}){Object.assign(this,{x,y,coneLength,coneHalfWidth,interactionRange,initiallyOn});this.reset();}
+    reset(){this.isOn=this.initiallyOn;}
+    contains(p){const depth=this.y-p.y;return this.isOn&&depth>=0&&depth<=this.coneLength&&Math.abs(p.x-this.x)<=this.coneHalfWidth*depth/Math.max(.1,this.coneLength);}
+    inRange(g){return this.isOn&&Math.hypot(g.pos.x-this.x,g.pos.y-this.y)<=this.interactionRange&&g.clear(g.pos,this);}
+    interact(g){if(!this.inRange(g))return false;if(g.activeItem)g.activeItem.cancel();g.activeItem=null;g.interactionHeld=true;g.notifyInteraction();this.isOn=false;g.lighting.sampleKey=null;g.say('路灯已关闭。');return true;}
+  }
+  root.StreetLamp=StreetLamp;if(typeof module!=='undefined')module.exports=StreetLamp;
+})(globalThis);
+
+</script><script>
+(function(root){
+  'use strict';
+  class Door {
+    constructor({x=37.5,y=1.25,interactionRange=1.7,interactionOffset={x:0,y:-.25},requiresClue=true,requiredItemId='',completesLevel=true,interactionPrompt='E · 离开工厂',lockedMessage='我是来找人的。先找到线索。',openedMessage='继续前往线索中的地址。',onOpened=null}={}){Object.assign(this,{x,y,interactionRange,interactionOffset,requiresClue,requiredItemId,completesLevel,interactionPrompt,lockedMessage,openedMessage,onOpened});this.reset();}
+    reset(){this.isOpen=false;}
+    get interactionPosition(){return {x:this.x+this.interactionOffset.x,y:this.y+this.interactionOffset.y};}
+    inRange(g){const p=this.interactionPosition;return !this.isOpen&&Math.hypot(g.pos.x-p.x,g.pos.y-p.y)<this.interactionRange&&g.clear(g.pos,p);}
+    tryInteract(g){if(!this.inRange(g))return false;g.notifyInteraction();if((this.requiresClue&&!g.hasClue)||(this.requiredItemId&&!g.inventory.has(this.requiredItemId))){g.say(this.lockedMessage);return true;}this.isOpen=true;if(this.completesLevel)g.won=true;g.say(this.openedMessage);if(this.onOpened)this.onOpened(g,this);return true;}
+  }
+  root.RecoilDoor=Door;if(typeof module!=='undefined')module.exports=Door;
+})(globalThis);
+
+</script><script>
+(function (root) {
+  'use strict';
+  const SoundManager=typeof module!=='undefined'?require('./sound-wave-manager.js'):root.SoundWaveManager;
+  const Rampager=typeof module!=='undefined'?require('./rampager-ai.js'):root.RampagerAI;
+  const Patrol=typeof module!=='undefined'?require('./rampager-patrol.js'):root.RampagerPatrolRoute;
+  const Items=typeof module!=='undefined'?require('./continuous-items.js'):root.ContinuousItems;
+  const Door=typeof module!=='undefined'?require('./door.js'):root.RecoilDoor;
+  const StreetLamp=typeof module!=='undefined'?require('./street-lamp.js'):root.StreetLamp;
+  const Lighting=typeof module!=='undefined'?require('./lighting.js'):root.SceneLighting;
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+  const overlap = (a, b) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+  function rayRect(p, d, r, range) {
+    let near = 0, far = range;
+    for (const [axis, size] of [['x', 'w'], ['y', 'h']]) {
+      if (Math.abs(d[axis]) < 0.00001) {
+        if (p[axis] < r[axis] || p[axis] > r[axis] + r[size]) return range;
+      } else {
+        let a = (r[axis] - p[axis]) / d[axis], b = (r[axis] + r[size] - p[axis]) / d[axis];
+        if (a > b) [a, b] = [b, a];
+        near = Math.max(near, a); far = Math.min(far, b);
+        if (near > far) return range;
+      }
+    }
+    return far >= 0 && near <= range ? Math.max(0, near) : range;
+  }
+  class Game {
+    constructor() {
+      this.blocks = [
+        { x: -2, y: -1, w: 42, h: 1 }, { x: -2, y: 0, w: .5, h: 14 }, { x: 39, y: 0, w: .5, h: 14 },
+        { x: 16, y: 6, w: 23, h: .6 }, { x: 24.5, y: 3.35, w: 6, h: .35, platform: true }
+      ];
+      this.time = 0;this.lighting=new Lighting(this); this.reset(true);
+    }
+    reset(full = false) {
+      this.lighting.reset();
+      if (full) { this.checkpoint = false; this.elapsed = 0; this.attempts = 1; }
+      this.pos = { x: this.checkpoint ? 18.6 : 2, y: 1.1 };
+      this.velocity = { x: 0, y: 0 }; this.pool = { x: 0, y: 0 }; this.aim = { x: 1, y: 0 };
+      this.poolAt = this.shotAt = this.upwardAt = this.noiseAt = -10;
+      this.nextShot = 0; this.footstepAt = 0;
+      this.ammoCapacity=3;this.ammo=3;this.refillElapsed=0;this.fallDistance=0;this.fallSequence=0;this.fallActive=this.highFall=false;
+      this.flying = this.grounded = this.crouched = this.dead = this.won = this.hasClue = false;
+      this.sprays = []; this.noises = [];
+      this.streetLamps=this.lighting.streetLamps.map(definition=>new StreetLamp(definition));this.doors=[new Door()];
+      this.items=[new Items.Backpack()];this.inventory=new Set();this.activeItem=null;this.interactionHeld=false;this.interactionSession=this.shotSequence=this.interactionSequence=0;
+      this.horizontalIntent=0;this.movementBlocked=false;this.forbiddenUntil=-100;
+      this.movementVelocity={x:0,y:0};this.passageSpeedMultiplier=1;
+      this.maxHealth=3;this.health=3;this.damageSpeedMultiplier=1;this.damageSlowDuration=1;this.damageSlowExpiries=[];this.healthRecoveryInterval=1;this.healthRecoveryElapsed=0;this.lastHitAt=-100;
+      this.enemies = [[12,9.8,15.4],[25,22.5,28.5],[32.8,30.3,36.3]].map(([x,left,right])=>new Rampager(this,x,left,right));
+      for(const enemy of this.enemies)enemy.patrol=Patrol.example(enemy.home.x,enemy.left,enemy.right);
+      if(!this.soundWaves)this.soundWaves=new SoundManager(this);else this.soundWaves.reset();
+      this.camera = clamp(this.pos.x + 3, 12, 28);
+      this.say(this.checkpoint ? '又回到门口。这次，慢一点。' : '一把塑料水枪。我好像记得，它能让我飞起来。');
+    }
+    get height() { return this.crouched ? .85 : 1.65; }
+    body() { return { x: this.pos.x - .32, y: this.pos.y - this.height / 2, w: .64, h: this.height }; }
+    passageMultiplier(p){return this.enemies.some(e=>Math.abs(p.x-e.x)<.65&&Math.abs(p.y-e.y)<this.height/2+.8)?.7:1;}
+    say(text) { this.monologue = text; this.monologueUntil = this.time + 5; }
+    clear(a, b) {
+      const n = distance(a, b); if (n < .001) return true;
+      const d = { x: (b.x - a.x) / n, y: (b.y - a.y) / n };
+      return !this.blocks.some(r => rayRect(a, d, r, n) < n - .03);
+    }
+    get violating(){return this.flying || this.time-this.shotAt<.18 || this.time<this.forbiddenUntil || !!this.activeItem;}
+    get nearbyDoor(){return this.doors.filter(door=>door.inRange(this)).sort((a,b)=>distance(this.pos,a.interactionPosition)-distance(this.pos,b.interactionPosition))[0];}
+    get nearbyStreetLamp(){return this.streetLamps.find(lamp=>lamp.inRange(this));}
+    get nearbyItem(){return this.items.find(item=>item.inRange(this));}
+    updateInteraction(held,dt){
+      if(!held){if(this.activeItem)this.activeItem.cancel();this.activeItem=null;this.interactionHeld=false;return;}
+      if(this.activeItem&&!this.activeItem.inRange(this)){this.activeItem.cancel();this.activeItem=null;}
+      if(!this.interactionHeld&&!this.activeItem){this.activeItem=this.nearbyItem||null;if(this.activeItem)this.activeItem.begin(++this.interactionSession);}
+      this.interactionHeld=true;
+      if(this.activeItem&&this.activeItem.advance(this,dt))this.activeItem=null;
+    }
+    refreshDamageSpeed(){this.damageSlowExpiries=this.damageSlowExpiries.filter(expiry=>this.time<expiry-1e-8);this.damageSpeedMultiplier=.25**this.damageSlowExpiries.length;}
+    recoverHealth(dt){
+      this.refreshDamageSpeed();
+      if(this.dead||this.won||this.health>=this.maxHealth||this.enemies.some(e=>e.canSee())||this.time<=this.lastHitAt){this.healthRecoveryElapsed=0;return;}
+      this.healthRecoveryElapsed+=dt;
+      while(this.healthRecoveryElapsed>=this.healthRecoveryInterval-1e-8&&this.health<this.maxHealth){this.healthRecoveryElapsed=Math.max(0,this.healthRecoveryElapsed-this.healthRecoveryInterval);this.health++;}
+      if(this.health>=this.maxHealth)this.healthRecoveryElapsed=0;
+    }
+    takeMonsterHit(){
+      if(this.dead||this.won||this.health<=0)return false;
+      this.health--;this.lastHitAt=this.time;this.healthRecoveryElapsed=0;
+      this.damageSlowExpiries.push(this.time+this.damageSlowDuration);this.refreshDamageSpeed();
+      this.flying=false;this.pool={x:0,y:0};this.upwardAt=this.poolAt=-10;this.velocity.y=Math.min(0,this.velocity.y);
+      if(this.activeItem)this.activeItem.cancel();this.activeItem=null;this.interactionHeld=true;
+      this.dead=this.health<=0;this.say(`受到攻击！生命 ${this.health}/${this.maxHealth} · 移动速度 ${(this.damageSpeedMultiplier*100).toFixed(2)}%`);return true;
+    }
+    notifyInteraction(){this.forbiddenUntil=this.time+.2;this.interactionSequence++;}
+    environmentBrightness(p){return this.lighting.environmentBrightness(p);}
+    get illumination(){return this.lighting.illumination;}
+    publishReport(report){for(const e of this.enemies)if(e!==report.source&&distance(e,report.source)<=10)e.receive(report);this.soundWaves.emitAid(report.source,10);}
+    noise(source,radius){this.noiseAt=this.time;this.soundWaves.emitNoise(source,radius);}
+    shoot() {
+      if(this.ammo<=0||this.time<this.nextShot)return false;
+      this.ammo--;
+      this.shotSequence++;this.nextShot = this.time + .28; this.shotAt = this.poolAt = this.time;
+      this.pool = this.aim.y > .999 ? { x: 0, y: 0 } : { x: -this.aim.x * 7, y: Math.max(0, -this.aim.y) * 8 };
+      if (this.aim.y < -.08) this.upwardAt = this.time;
+      if(!this.grounded&&!this.flying&&this.velocity.y<0&&this.pool.y>0){this.flying=true;this.velocity.y=0;}
+      const start = { x: this.pos.x + this.aim.x * .55, y: this.pos.y + this.aim.y * .55 };
+      let range = 6;
+      for (const r of this.blocks) range = Math.min(range, rayRect(start, this.aim, r, range));
+      this.sprays.push({ start, end: { x: start.x + this.aim.x * range, y: start.y + this.aim.y * range }, at: this.time });
+      this.noise(this.pos, 7);
+      for (const e of this.enemies) {
+        const along = (e.x - start.x) * this.aim.x + (e.y - start.y) * this.aim.y;
+        if (along > 0 && along < range + .2 && distance(e, { x: start.x + this.aim.x * along, y: start.y + this.aim.y * along }) < .75) {
+          e.directHit(this.pos);
+        }
+      }
+      return true;
+    }
+    move(dx, dy) {
+      const epsilon=.0001,half=this.height/2;
+      // Initial penetration is resolved to its nearest face, never automatically to the top.
+      for(let pass=0;pass<8;pass++){
+        let best=Infinity,correction=null;
+        for(const b of this.blocks){
+          if(this.pos.x+.32<=b.x+epsilon||this.pos.x-.32>=b.x+b.w-epsilon||this.pos.y+half<=b.y+epsilon||this.pos.y-half>=b.y+b.h-epsilon)continue;
+          for(const [x,y] of [[b.x-this.pos.x-.32,0],[b.x+b.w-this.pos.x+.32,0],[0,b.y-this.pos.y-half],[0,b.y+b.h-this.pos.y+half]]){const depth=Math.abs(x||y);if(depth<best){best=depth;correction={x,y};}}
+        }
+        if(!correction)break;this.pos.x+=correction.x;this.pos.y+=correction.y;if(correction.x)this.velocity.x=0;if(correction.y)this.velocity.y=0;
+      }
+      const oldX=this.pos.x;let nextX=oldX+dx;
+      for(const b of this.blocks){
+        if(this.pos.y+half<=b.y+epsilon||this.pos.y-half>=b.y+b.h-epsilon)continue;
+        if(dx>0&&oldX+.32<=b.x+epsilon&&nextX+.32>=b.x)nextX=Math.min(nextX,b.x-.32);
+        else if(dx<0&&oldX-.32>=b.x+b.w-epsilon&&nextX-.32<=b.x+b.w)nextX=Math.max(nextX,b.x+b.w+.32);
+      }
+      this.pos.x=nextX;if(Math.abs(nextX-oldX-dx)>epsilon)this.velocity.x=0;
+      const oldY=this.pos.y;let nextY=oldY+dy,verticalHit=false;this.grounded=false;
+      for(const b of this.blocks){
+        if(this.pos.x+.32<=b.x+epsilon||this.pos.x-.32>=b.x+b.w-epsilon)continue;
+        if(dy<0&&oldY-half>=b.y+b.h-epsilon&&nextY-half<=b.y+b.h){nextY=Math.max(nextY,b.y+b.h+half);this.grounded=true;verticalHit=true;}
+        else if(dy>0&&oldY+half<=b.y+epsilon&&nextY+half>=b.y){nextY=Math.min(nextY,b.y-half);verticalHit=true;}
+      }
+      this.pos.y=nextY;if(verticalHit)this.velocity.y=0;
+      if(dy<=0)for(const b of this.blocks)if(this.pos.x+.3>b.x&&this.pos.x-.3<b.x+b.w&&Math.abs(this.pos.y-half-b.y-b.h)<.015){this.grounded=true;break;}
+      if(this.grounded)this.flying=false;
+    }
+    updateEnemy(e,dt){e.tick(dt);}
+    tick(input, dt) {
+      if (this.dead || this.won) return;
+      dt = Math.min(dt, .033); this.time += dt; this.elapsed += dt;this.refreshDamageSpeed();
+      const x = input.x || 0, y = input.y || 0;this.horizontalIntent=x;
+      const wasGrounded=this.grounded;
+      if(input.broadcast)this.soundWaves.start();
+      if (input.aim && Math.hypot(input.aim.x, input.aim.y) > .01) {
+        const n = Math.hypot(input.aim.x, input.aim.y); this.aim = { x: input.aim.x / n, y: input.aim.y / n };
+      }
+      const previous = this.crouched;
+      this.crouched = this.grounded && !!input.sneak;
+      if (previous !== this.crouched) this.pos.y += this.crouched ? -.4 : .4;
+      if (input.fire && this.time >= this.nextShot) this.shoot();
+      if (input.jump || input.launch || (!this.flying && y > 0)) {
+        if (this.time - this.upwardAt < 1 && !this.crouched) { this.flying = true; this.velocity.y = 0; }
+        else if (input.jump && this.grounded && !this.crouched) this.velocity.y = 5;
+      }
+      if (this.flying && this.time - this.shotAt > 1) { this.flying = false; this.say('停止射击，它就不再托住我。'); }
+      const decay = clamp(1 - (this.time - this.poolAt) / .5, 0, 1);
+      const speed = this.flying ? 2.2 : this.crouched ? 1.65 : 3.6;
+      this.velocity.x += clamp(x * speed - this.velocity.x, -22 * dt, 22 * dt);
+      let mx = this.velocity.x, my;
+      if (this.flying) {
+        this.velocity.y = 0; my = y * 1.5;
+        if (x * this.pool.x > 0) mx += this.pool.x * decay;
+        if (y * this.pool.y > 0) my += this.pool.y * decay;
+      } else { this.velocity.y -= 14 * dt; my = this.velocity.y; }
+      this.passageSpeedMultiplier=Math.min(this.passageMultiplier(this.pos),this.passageMultiplier({x:this.pos.x+mx*dt,y:this.pos.y+my*dt}));
+      mx*=this.passageSpeedMultiplier;if(this.flying)my*=this.passageSpeedMultiplier;
+      mx*=this.damageSpeedMultiplier;my*=this.damageSpeedMultiplier;
+      let falling=!this.flying&&!this.grounded&&this.velocity.y<0;
+      const oldX=this.pos.x,oldY=this.pos.y;this.move(mx * dt, my * dt);
+      this.movementVelocity=dt>0?{x:(this.pos.x-oldX)/dt,y:(this.pos.y-oldY)/dt}:{x:0,y:0};
+      falling=falling||(!this.grounded&&!this.flying&&my<0);this.highFall=false;
+      if(falling){if(!this.fallActive){this.fallActive=true;this.fallDistance=0;this.fallSequence++;}this.fallDistance+=Math.max(0,oldY-this.pos.y);this.highFall=this.fallDistance>1.65;}
+      else{this.fallActive=false;this.fallDistance=0;}
+      if(!this.grounded||this.ammo>=this.ammoCapacity)this.refillElapsed=0;
+      else if(wasGrounded){this.refillElapsed+=dt;while(this.refillElapsed>=1-1e-8&&this.ammo<this.ammoCapacity){this.refillElapsed=Math.max(0,this.refillElapsed-1);this.ammo++;}if(this.ammo>=this.ammoCapacity)this.refillElapsed=0;}
+      this.movementBlocked=Math.abs(x)>.1&&Math.abs(this.pos.x-oldX)<Math.abs(mx*dt)*.2;
+      if (this.grounded && Math.abs(x) > .1 && !this.crouched && this.time > this.footstepAt) {
+        this.noise(this.pos, 3.2); this.footstepAt = this.time + .45;
+      }
+      if (this.pos.x > 18 && !this.checkpoint) { this.checkpoint = true; this.say('普通行走可以混入其中。被目击射击或互动会立即激怒。搜索背包时，被看见后要及时松开 E。'); }
+      this.updateInteraction(!!input.interactHeld,dt);
+      const lamp=input.interact?this.nearbyStreetLamp:null;
+      if(lamp)lamp.interact(this);
+      if (input.interact && !lamp && !this.nearbyItem && !this.activeItem) {
+        if (!this.hasClue && distance(this.pos, { x: 31.5, y: .8 }) < 1.5) { this.notifyInteraction();this.hasClue = true; this.say('一个孩子的名字，一个地址。这字迹为什么这么熟悉？'); }
+        const door=this.nearbyDoor;if(door)door.tryInteract(this);
+      }
+      this.soundWaves.tick(dt);
+      for (const e of this.enemies) this.updateEnemy(e, dt);
+      this.recoverHealth(dt);
+      this.camera += (clamp(this.pos.x + 3, 12, 28) - this.camera) * (1 - Math.exp(-4 * dt));
+      this.sprays = this.sprays.filter(s => this.time - s.at < .16);
+      this.noises = this.noises.filter(s => this.time - s.at < .6);
+    }
+  }
+  root.Recoil = { Game, rayRect, clamp, distance };
+  if (typeof module !== 'undefined') module.exports = root.Recoil;
+})(globalThis);
+
+</script><script>
+/* Rendering and controls are separate from the deterministic gameplay model. */
+'use strict';
+const game = new Recoil.Game(), canvas = document.querySelector('#game'), ctx = canvas.getContext('2d');
+const overlay = document.querySelector('#overlay'), content = document.querySelector('#content');
+const keys = new Set(), pressed = new Set();
+let started = false, paused = false, firing = false, mouse = { x: 180, y: 600 }, previous = 0, screen = '';
+const sx = x => (x - game.camera) * 48 + 640, sy = y => 590 - y * 48;
+const rect = (x, y, w, h, color) => { ctx.fillStyle = color; ctx.fillRect(sx(x), sy(y + h), w * 48, h * 48); };
+function menu(kind) {
+  if (screen === kind) return; screen = kind; overlay.hidden = false;
+  const views = {
+    start: ['RECOIL', '<p class="intro">一名侦探，一把塑料水枪，一座失序的小镇。</p><p>按住 <kbd>W</kbd> 并朝下射击，就能直接起飞（Space 也可以）。<br>水枪最多三发，落地后每秒补一发；下落时朝下射击会自动悬停。<br>进入工厂，找到黄色纸条，再抵达绿色出口。</p><div class="controls"><span><kbd>A</kbd> <kbd>D</kbd> 左右移动</span><span><kbd>W</kbd> <kbd>S</kbd> 飞行升降</span><span>鼠标瞄准 / 按住左键射击</span><span><kbd>C</kbd> 安静蹲行</span><span><kbd>Space</kbd> 跳跃 / 起飞</span><span><kbd>E</kbd> 按住搜索 / 调查 / 离开</span></div><p class="hint">漫游怪物听到玩家声音会停下注视；被注视时静止 2 秒会激怒，移动会降怒，完整穿过一次加 50% 怒气，穿过期间减速 30%。<br>被看见下落超过一个身高也会激怒怪物；目击未命中的射击或互动会立刻激怒；射中怪物直接攻击。<br>按住 E 搜索背包 1.5 秒获得门禁卡；被看见后，0.5 秒内松开 E。<br>广播：红色预警后 3 秒发出第一波；扩张圈向右、收缩圈向左，每波随机。收到后 0.1 秒开始移动 1 秒，再静止等待下一波；每轮 3 或 4 波。B 测试。</p>', '进入小镇'],
+    dead: ['被发现了', '<p class="intro">它比我想的更近。</p><p>普通行走不会引发攻击。射击、飞行被目击会先引起怀疑。<br>水枪会引敌，也能短暂打停敌人，为撤离争取时间。</p><p class="hint">R 从最近检查点重试 · Shift + R 从头开始</p>', '重新尝试'],
+    won: ['一个地址，一段记忆。', `<p class="intro">“我知道这个地方。但愿我不知道。”</p><p>线索已找到 · ${Math.floor(game.elapsed)} 秒 · ${game.attempts} 次尝试</p><p class="hint">第一版短关卡完成。可以再试一条更安静的路线。<br>试试广播的转向提示，以及怪物激怒、持续互动和攻击的行为。</p>`, '再玩一次'],
+    paused: ['暂停', '<p>回到游戏后，点击画面即可继续用鼠标瞄准。</p>', '继续']
+  };
+  const [heading, body, action] = views[kind];
+  content.innerHTML = `<h1>${heading}</h1>${body}<button id="begin">${action}</button>`;
+  document.querySelector('#begin').onclick = () => {
+    if (kind === 'dead') { game.attempts++; game.reset(false); }
+    if (kind === 'won') game.reset(true);
+    started = true; paused = false; screen = ''; overlay.hidden = true;
+    keys.clear(); pressed.clear(); firing = false; previous = performance.now(); canvas.focus();
+  };
+}
+document.addEventListener('keydown', e => {
+  if (['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)) e.preventDefault();
+  if (!keys.has(e.code)) pressed.add(e.code); keys.add(e.code);
+  if (e.code === 'KeyR' && !e.repeat && started) {
+    game.attempts++; game.reset(e.shiftKey); paused = false; screen = ''; overlay.hidden = true; firing = false;
+  }
+  if (e.code === 'Escape' && !e.repeat && started && !game.dead && !game.won) {
+    paused = !paused; if (!paused) { screen = ''; overlay.hidden = true; } else menu('paused');
+  }
+});
+document.addEventListener('keyup', e => keys.delete(e.code));
+canvas.addEventListener('pointermove', e => { const r = canvas.getBoundingClientRect(); mouse = { x: (e.clientX-r.left)*1280/r.width, y: (e.clientY-r.top)*720/r.height }; });
+canvas.addEventListener('pointerdown', e => { if (e.button === 0) { firing = true; canvas.focus(); canvas.setPointerCapture(e.pointerId); } });
+document.addEventListener('pointerup', () => { firing = false; });
+window.addEventListener('blur', () => { keys.clear(); pressed.clear(); firing = false; if (started && !game.dead && !game.won) { paused = true; menu('paused'); } });
+document.addEventListener('visibilitychange', () => { if (document.hidden) { keys.clear(); firing = false; paused = true; } });
+function person(p, player = false) {
+  const crouch = player && game.crouched, color = player ? '#acbab3' : p.stun > 0 ? '#76cddd' : p.state==='swarm'?'#74a9cf':p.alert > .5 ? '#d47466' : '#a16b66';
+  const h = crouch ? .85 : 1.65;
+  ctx.save(); ctx.translate(sx(p.x), sy(p.y));
+  ctx.fillStyle = '#080f13'; ctx.fillRect(-13, h*24-8, 10, 9); ctx.fillRect(3,h*24-8,10,9);
+  ctx.fillStyle = color; ctx.fillRect(-14,-h*24+17,28,h*48-25);
+  ctx.fillStyle = player ? '#d4c8ad' : '#ad8b7b'; ctx.fillRect(-10,-h*24,20,19);
+  if(player) { ctx.fillStyle='#567477';ctx.fillRect(-16,-h*24-3,32,6);ctx.fillRect(-10,-h*24-12,20,11);ctx.strokeStyle='#728b8b';ctx.beginPath();ctx.moveTo(0,-h*24+20);ctx.lineTo(0,h*24-10);ctx.stroke(); }
+  else { ctx.fillStyle=p.redEyes?'#ff3434':'#f0d098';ctx.fillRect(p.facing>0?6:-9,-h*24+8,4,3); }
+  ctx.restore();
+}
+const lightCanvas=document.createElement('canvas');lightCanvas.width=1280;lightCanvas.height=720;
+const lightCtx=lightCanvas.getContext('2d');
+function renderLighting(){
+  const alarm=game.soundWaves.redAlert;
+  const ambient=Math.round(255*game.lighting.outdoorAmbient),area=game.lighting.factoryArea;
+  lightCtx.globalCompositeOperation='source-over';lightCtx.fillStyle=`rgb(${ambient},${alarm?Math.round(ambient*.18):ambient},${alarm?Math.round(ambient*.12):ambient})`;lightCtx.fillRect(0,0,1280,720);
+  const flash=Math.round(255*game.lighting.swarmAmbient);
+  lightCtx.fillStyle=`rgb(${flash},${Math.round(flash*.45)},${Math.round(flash*.3)})`;if(area.enabled)lightCtx.fillRect(sx(area.minX),sy(area.maxY),(area.maxX-area.minX)*48,(area.maxY-area.minY)*48);
+  lightCtx.globalCompositeOperation='lighten';
+  const lights=[{x:game.pos.x,y:game.pos.y,radius:game.lighting.playerLightRadius,intensity:game.lighting.playerLightIntensity},
+    ...game.lighting.fixedLights.filter(light=>light.enabled!==false).slice(0,7)];
+  for(const light of lights){
+    const x=sx(light.x),y=sy(light.y),r=light.radius*48;
+    const gradient=lightCtx.createRadialGradient(x,y,0,x,y,r);
+    for(const t of [0,.25,.5,.75,1]){const value=Math.round(255*light.intensity*(1-t*t*(3-2*t)));gradient.addColorStop(t,`rgb(${value},${alarm?Math.round(value*.18):value},${alarm?Math.round(value*.12):value})`);}
+    lightCtx.fillStyle=gradient;lightCtx.beginPath();lightCtx.arc(x,y,r,0,Math.PI*2);lightCtx.fill();
+  }
+  for(const lamp of game.streetLamps)if(lamp.isOn){
+    lightCtx.fillStyle=alarm?'rgb(255,46,31)':'rgb(255,255,255)';lightCtx.beginPath();lightCtx.moveTo(sx(lamp.x),sy(lamp.y));lightCtx.lineTo(sx(lamp.x-lamp.coneHalfWidth),sy(lamp.y-lamp.coneLength));lightCtx.lineTo(sx(lamp.x+lamp.coneHalfWidth),sy(lamp.y-lamp.coneLength));lightCtx.closePath();lightCtx.fill();
+  }
+  ctx.save();ctx.globalCompositeOperation='multiply';ctx.drawImage(lightCanvas,0,0);ctx.restore();
+}
+function renderSoundWaves(){
+  const sw=game.soundWaves;
+  for(const w of sw.waves){
+    const t=Math.min(1,w.age/w.duration);
+    if(w.kind==='broadcast'||w.kind==='warning'){
+      // A distant source, with an immediately visible advancing / receding front.
+      const radius=760+(w.shrinking?1-t:t)*1040,color=w.kind==='warning'?'255,52,52':w.direction>0?'255,199,125':'119,215,255';
+      ctx.save();ctx.shadowColor=`rgb(${color})`;ctx.shadowBlur=12;
+      for(let n=0;n<3;n++){ctx.strokeStyle=`rgba(${color},${[.95,.55,.3][n]})`;ctx.lineWidth=n===0?4:2;ctx.beginPath();ctx.arc(-720,360,Math.max(1,radius-n*34),0,Math.PI*2);ctx.stroke();}
+      ctx.restore();continue;
+    }
+    const radius=Math.max(.03,w.radius*(w.shrinking?1-t:t))*48;
+    ctx.save();ctx.strokeStyle=w.kind==='noise'?`rgba(138,229,255,${.3*(1-t)})`:w.kind==='aid'?`rgba(212,156,255,${.65*(1-t)})`:w.direction>0?`rgba(255,199,125,${.8*(1-t)})`:`rgba(119,215,255,${.8*(1-t)})`;
+    ctx.lineWidth=w.kind==='noise'?1.2:2.2;if(w.kind==='aid')ctx.setLineDash([7,5]);ctx.beginPath();ctx.arc(sx(w.x),sy(w.y),radius,0,Math.PI*2);ctx.stroke();ctx.restore();
+    if(w.kind==='aid'){ctx.font='12px "PingFang SC", "Microsoft YaHei", sans-serif';ctx.fillStyle='#d49cff';ctx.fillText('攻击报告 / 最后目击位置',sx(w.x)-55,sy(w.y)-48);}
+  }
+  if(!started||game.dead||game.won||!sw.contains(game.pos))return;
+  ctx.save();ctx.fillStyle=sw.phase==='warning'?'#400e16f2':'#0b202cf2';ctx.fillRect(280,106,720,87);ctx.textAlign='center';
+  const color=sw.phase==='warning'?'#ff6464':sw.direction>0?'#ffc77d':'#77d7ff',dir=sw.direction>0?'→ 向右 / 扩张圈':'← 向左 / 收缩圈';
+  ctx.fillStyle=sw.phase==='idle'||sw.phase==='recovery'?'#b4cbd3':color;ctx.font='bold 22px "PingFang SC", "Microsoft YaHei", sans-serif';
+  const phase=sw.cueDelay>0?`收到指令 · ${sw.cueDelay.toFixed(1)} 秒后移动`:sw.active?`移动 ${sw.cueMove.toFixed(1)} 秒`:`静止等待下一波 · ${Math.max(0,sw.remaining).toFixed(1)} 秒`;
+  const main=sw.phase==='idle'?`远处声波 · ${Math.max(0,sw.remaining).toFixed(1)} 秒后预警 · B 测试`:sw.phase==='warning'?`红色预警！保持静止 · ${Math.max(0,sw.remaining).toFixed(1)} 秒后第一波`:sw.phase==='recovery'?'本轮结束 · 红色灯光即将恢复':`第 ${sw.cueIndex}/${sw.totalWaves} 波 · ${phase} · ${dir}`;
+  ctx.fillText(main,640,136);ctx.font='14px "PingFang SC", "Microsoft YaHei", sans-serif';ctx.fillStyle='#c2d2d7';
+  ctx.fillText('扩张 → 右 ｜ 收缩 ← 左 ｜ 每波随机 ｜ 收到后 0.1 秒移动 1 秒，再静止等待',640,161);
+  const progress=sw.phase==='warning'?sw.remaining/sw.warningDuration:sw.cueDelay>0?sw.cueDelay/sw.moveDelay:sw.active?sw.cueMove/sw.commandDuration:sw.cueHold/sw.holdDuration;
+  if(sw.redAlert){ctx.fillStyle='#29424d';ctx.fillRect(302,177,676,4);ctx.fillStyle=color;ctx.fillRect(302,177,676*Math.max(0,Math.min(1,progress)),4);}
+  ctx.restore();
+}
+function render() {
+  const background=ctx.createLinearGradient(0,0,0,720);background.addColorStop(0,'#101b25');background.addColorStop(1,'#24343a');
+  ctx.fillStyle=background;ctx.fillRect(0,0,1280,720);
+  // Deterministic city silhouettes and windows; no art downloads or external dependencies.
+  for(let i=0;i<20;i++) {
+    const x=i*3-5, h=3+(i*7%6);rect(x,0,2.3,h,'#1b2a32');
+    for(let j=0;j<3;j++)rect(x+.4,1.8+j*1.4,.2,.38,'#35463f');
+  }
+  rect(16,0,23,6,'#1b272d');
+  for(let i=0;i<7;i++) {rect(17+i*3.5,0,.16,6,'#29383e');rect(17+i*3.5,5.35,.65,.1,'#405254');}
+  rect(1.1,.1,2.4,.65,'#344a54');rect(1.5,.75,1.3,.5,'#435d65');
+  rect(1.35,0,.45,.35,'#111b20');rect(2.85,0,.45,.35,'#111b20');
+  for(const door of game.doors){rect(door.x-.55,door.y-1.25,1.1,2.5,door.isOpen?'#457b65':'#294b45');rect(door.x-.3,door.y+1.55,.7,.12,game.soundWaves.redAlert?'#ff3434':'#87c5a2');}
+  rect(18.5,2.2,.2,.2,game.checkpoint?'#8de4be':'#485853');
+  ctx.font='12px "PingFang SC", "Microsoft YaHei", sans-serif';ctx.fillStyle='#789491';ctx.fillText('FACTORY / 工厂',sx(16.3),sy(6.85));
+  ctx.fillStyle='#85ae9a';ctx.fillText('EXIT',sx(37),sy(3.15));
+  if(!game.hasClue){rect(31.3,.53,.4,.55,'#e2c88d');rect(31.36,.83,.26,.035,'#8b7b5b');rect(31.36,.73,.2,.035,'#8b7b5b');}
+  for(const b of game.blocks){
+    rect(b.x,b.y,b.w,b.h,b.cover?'#526060':'#303f45');rect(b.x,b.y+b.h-.07,b.w,.07,'#778b89');
+    if(b.cover){rect(b.x+.15,b.y+.15,b.w-.3,.04,'#2e4245');rect(b.x+b.w/2-.04,b.y,.08,b.h,'#31464a');rect(b.x,b.y+b.h/2,b.w,.06,'#35494b');}
+  }
+  for(const bag of game.items){
+    rect(bag.x-.32,bag.y-.45,.64,.9,bag.completed?'#536361':'#b68b55');
+    rect(bag.x-.22,bag.y-.22,.44,.32,'#725739');rect(bag.x-.18,bag.y+.45,.36,.1,'#d8b47c');
+    rect(bag.x-.27,bag.y-.3,.055,.7,'#ddbb86');rect(bag.x+.21,bag.y-.3,.055,.7,'#ddbb86');
+  }
+  for(const e of game.enemies){
+    person(e);ctx.font='12px "PingFang SC", "Microsoft YaHei", sans-serif';ctx.fillStyle=e.state==='attack'?'#ff8f77':'#afc7d2';ctx.textAlign='center';ctx.fillText(e.state==='swarm'&&e.disobedienceProgress>.15?(!e.waveMoving?'保持静止！':'遵从方向！'):({roaming:e.watchingPlayer?`注视中 · 怒气 ${Math.round(e.noiseAnger*100)}%`:e.investigate>0?'调查声音':e.patrol&&e.patrol.arrived?({stay:'停留',lookAround:'左右张望',lookLeft:'向左看',lookRight:'向右看'})[e.patrol.current.action]:'巡逻',irritated:e.flightAnger>0?`激怒 · 飞行怒气 ${Math.round(e.flightAnger*100)}%`:'激怒 / 停止违规',attack:e.swarmAttackBoost?'攻击 / 声波强化':'攻击 / 追踪',swarm:e.recovery>0?'恢复漫游':e.waveDelay>0?`准备移动 ${e.waveDelay.toFixed(1)}s`:e.waveMoving?`${e.waveDirection<0?'← 向左':'向右 →'} ${e.waveMove.toFixed(1)}s`:e.waveHold>0?`静止等待 ${e.waveHold.toFixed(1)}s`:'等待下一波'})[e.state],sx(e.x),sy(e.y+1.7));ctx.textAlign='left';if(e.alert>.02){ctx.fillStyle='#443b37';ctx.fillRect(sx(e.x)-23,sy(e.y+1.35),46,4);ctx.fillStyle='#ee997d';ctx.fillRect(sx(e.x)-23,sy(e.y+1.35),46*(e.watchingPlayer?e.noiseAnger:e.state==='irritated'&&e.flightAnger>0?e.flightAnger:e.alert),4);}
+    if(e.investigate>0 && e.alert<.2){ctx.fillStyle='#c9b996';ctx.font='18px "PingFang SC", "Microsoft YaHei", sans-serif';ctx.fillText('?',sx(e.x)-4,sy(e.y+1.55));}
+  }
+  person(game.pos,true);
+  ctx.save();ctx.translate(sx(game.pos.x),sy(game.pos.y));ctx.rotate(-Math.atan2(game.aim.y,game.aim.x));ctx.fillStyle='#50ceef';ctx.fillRect(12,-5,28,9);ctx.fillStyle='#2d94ad';ctx.fillRect(18,4,7,9);ctx.fillStyle='#9be9ff';ctx.fillRect(34,-4,8,7);ctx.restore();
+  for(const s of game.sprays){ctx.strokeStyle=`rgba(136,231,255,${1-(game.time-s.at)/.16})`;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(sx(s.start.x),sy(s.start.y));ctx.lineTo(sx(s.end.x),sy(s.end.y));ctx.stroke();}
+  for(const lamp of game.streetLamps){rect(lamp.x+.44,lamp.y-lamp.coneLength,.12,lamp.coneLength,'#525c64');rect(lamp.x-.4,lamp.y-.08,.8,.16,lamp.isOn?'#ffe4a0':'#384047');}
+  renderLighting();
+  for(const lamp of game.streetLamps)if(lamp.isOn){ctx.save();ctx.fillStyle='#ffe4a0';ctx.shadowColor='#ffe4a0';ctx.shadowBlur=12;ctx.fillRect(sx(lamp.x)-19,sy(lamp.y)-4,38,8);ctx.restore();}
+  // Gameplay warnings stay readable over the darkness within the player's visual light.
+  for(const e of game.enemies)if((e.watchingPlayer||(e.state==='irritated'&&e.flightAnger>0))&&Math.hypot(e.x-game.pos.x,e.y-game.pos.y)<game.lighting.playerLightRadius){
+    ctx.save();ctx.font='12px "PingFang SC", "Microsoft YaHei", sans-serif';ctx.textAlign='center';ctx.fillStyle='#ffd59a';
+    ctx.fillText(e.watchingPlayer?`注视中 · 怒气 ${Math.round(e.noiseAnger*100)}%`:`激怒 · 飞行怒气 ${Math.round(e.flightAnger*100)}%`,sx(e.x),sy(e.y+1.7));
+    ctx.fillStyle='#443b37';ctx.fillRect(sx(e.x)-23,sy(e.y+1.35),46,4);ctx.fillStyle='#efa574';ctx.fillRect(sx(e.x)-23,sy(e.y+1.35),46*(e.watchingPlayer?e.noiseAnger:e.flightAnger),4);ctx.restore();
+  }
+  // Red eyes remain readable in the dark without illuminating the player's surroundings.
+  for(const e of game.enemies)if(e.redEyes){
+    ctx.save();ctx.fillStyle='#ff3434';ctx.shadowColor='#ff2020';ctx.shadowBlur=12;
+    ctx.fillRect(sx(e.x)+(e.facing>0?6:-9),sy(e.y)-1.65*24+8,5,4);ctx.restore();
+  }
+  renderSoundWaves();
+  if(started && !game.dead && !game.won && !paused){
+    ctx.strokeStyle='#8dd2dd99';ctx.lineWidth=1;ctx.beginPath();ctx.arc(mouse.x,mouse.y,6,0,Math.PI*2);ctx.stroke();
+    ctx.font='16px "PingFang SC", "Microsoft YaHei", sans-serif';ctx.fillStyle='#dfdbc6';ctx.textAlign='center';
+    if(game.nearbyStreetLamp)ctx.fillText('E · 关闭路灯（瞬间互动）',sx(game.nearbyStreetLamp.x),sy(game.nearbyStreetLamp.y+.5));
+    const bag=game.nearbyItem;
+    if(bag){
+      ctx.fillText('按住 E · 搜索员工背包（1.5 秒）',sx(bag.x),sy(1.9));
+      if(game.activeItem){
+        ctx.fillStyle='#101a20';ctx.fillRect(350,488,580,76);
+        ctx.fillStyle='#43504e';ctx.fillRect(390,505,500,8);ctx.fillStyle='#e2c88d';ctx.fillRect(390,505,500*bag.progress/bag.duration,8);
+        const witnesses=game.enemies.filter(e=>e.state==='irritated'&&e.graceSession===bag.session&&e.canSee());
+        const remaining=witnesses.length?Math.max(0,.5-Math.max(...witnesses.map(e=>game.time-e.interactionSeenAt))):null;
+        ctx.fillStyle=remaining===null?'#dfdbc6':'#ff987e';
+        ctx.fillText(remaining===null?'搜索中 · 松开 E 取消':`被目击！${remaining.toFixed(2)} 秒内松开 E，继续将触发攻击`,640,546);
+      }
+    }
+    if(!game.hasClue && Recoil.distance(game.pos,{x:31.5,y:.8})<1.5)ctx.fillText('E · 查看纸条',sx(31.5),sy(1.9));
+    if(game.nearbyDoor)ctx.fillText(game.nearbyDoor.interactionPrompt,sx(game.nearbyDoor.x),sy(game.nearbyDoor.y+2.25));ctx.textAlign='left';
+  }
+  document.querySelector('#objective').textContent=game.hasClue?'线索已找到。前往绿色出口，按 E 离开。':'进入工厂，寻找失踪者的线索。';
+  document.querySelector('#status').textContent=(game.checkpoint?'工厂 / 已设检查点':'室外院子')+(game.inventory.has('employee_access_card')?' · 背包：员工门禁卡':'')+' · '+(game.flying?'悬浮中':game.crouched?'安静蹲行':game.grounded?'地面':'下落中')+` · 生命 ${game.health}/3 · 速度 ${(game.damageSpeedMultiplier*100).toFixed(2)}% · 水枪 ${game.ammo}/3 · 受光 ${Math.round(game.illumination*100)}%`+(game.grounded&&game.ammo<3?' · 补充中':'')+(game.passageSpeedMultiplier<1?' · 穿越减速':'');
+  document.querySelector('#bar').hidden=!game.flying;document.querySelector('#fuel').style.width=Recoil.clamp(1-(game.time-game.shotAt),0,1)*100+'%';
+  const speech=document.querySelector('#speech');speech.hidden=!started || paused || game.dead || game.won || game.time>game.monologueUntil;speech.textContent='DUN / “'+game.monologue+'”';
+}
+function frame(now){
+  const dt=previous?Math.min((now-previous)/1000,.033):.016;previous=now;
+  if(started && !paused){
+    const has=k=>keys.has(k);
+    game.tick({x:Number(has('KeyD')||has('ArrowRight'))-Number(has('KeyA')||has('ArrowLeft')),
+      y:Number(has('KeyW')||has('ArrowUp')||has('Space'))-Number(has('KeyS')||has('ArrowDown')),
+      sneak:has('KeyC')||has('ControlLeft'),fire:firing,jump:pressed.has('Space'),launch:pressed.has('KeyW')||pressed.has('ArrowUp'),interact:pressed.has('KeyE'),interactHeld:has('KeyE'),broadcast:pressed.has('KeyB'),
+      aim:{x:(mouse.x-640)/48+game.camera-game.pos.x,y:(590-mouse.y)/48-game.pos.y}},dt);
+    if(game.dead)menu('dead');else if(game.won)menu('won');
+  }
+  pressed.clear();render();requestAnimationFrame(frame);
+}
+menu('start');requestAnimationFrame(frame);
+
+</script>
+</html>

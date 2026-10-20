@@ -1,0 +1,17 @@
+Kitchen death memory — shared game architecture
+
+Scene: Assets/Scenes/RecoilKitchenMemory.unity
+
+The scene uses the existing RecoilPrototype context, RecoilPlayerController (movement/input/gravity/collision/quiet walking), PlayerNoiseEmitter, RecoilCameraController, RecoilLighting2D and standard HUD. Camera parameters are copied from the warehouse scene during this refit. The boy is the shared player with a changed geometric appearance. No custom keyboard processing, movement loop, camera framing or OnGUI remains in KitchenMemoryController.
+
+KitchenMotherConversation extends ContinuousInteractionItem with instant interactionDuration=0. Existing E interaction and dialogue HUD call its Advance method. KitchenMemoryController only controls mother departure, bedroom door visuals/occlusion and exit permission. The mother enters the bedroom and the door closes once the player is outside; this prevents trapping the player in the concealed room. The closed door has a standard hard collider, and the open bedroom can be explored normally.
+
+Middle exit is a normal RecoilDoor. It requires kitchen_memory_exit_ready and uses returnToDeathMemoryCheckpoint for the existing recorded return ticket. First three deaths require the mother's bedroom departure; fourth onward starts with permission granted. RecoilPrototype.DeathMemory.cs records retry position/inventory and restores the original scene, with the usual camera snap. First entry into RecoilWarehouseStoreroom disables this interlude for the remainder of the run. New Play or Shift+R full restart resets the count. Standard debug K bypasses door item requirements, as elsewhere in the game.
+
+Art: prototype square sprite only, assembled editable rectangles and silhouettes. Bedroom expanded to 10 units, total room width 24; large window shows factory/warehouse/chimney/warning tower. Earlier photographic assets remain unused and are not referenced by the current scene.
+
+Editor helpers: KitchenMemoryGraphicRefit creates the modular layout; KitchenMemorySharedSystems attaches the shared systems. KitchenMemorySceneBuilder only creates the scene and captures optional layout previews. They are editor-only; the saved scene is not reconstructed in Play.
+
+Validation: Unity Play confirmed automatic death entry, shared player movement and landing, common E interaction triggering mother's departure, blocked then unlocked common door and checkpoint return. Compile/console checks clear. Existing warehouse unsaved edits preserved.
+
+Child avatar revision: memory player uses RecoilPlayerBodyProfile (height 1.12, crouching height .66, half width .22), a short sweater, larger head, hair rather than detective hat, separate trouser legs and shoes. Shared RecoilPlayerController reads optional body proportions for collision/crouching/fall height and visual synchronization. Players without this component retain original adult dimensions and appearance. Spawn centre is adjusted to the child's half height above the same floor. No separate child input or movement script.

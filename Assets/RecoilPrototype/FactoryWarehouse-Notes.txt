@@ -1,0 +1,40 @@
+Factory warehouse / yard / drain extension
+
+Scenes:
+- RecoilPrototype: four-storey factory, right service exit, warehouse exterior, perimeter wall and two drain hatches.
+- RecoilFactoryInterior: ground-floor right service exit. First E unlocks it, second E leaves. Outside remains locked until the inside interaction; the shared factory_shortcut_ground_right progress flag persists through travel/retry.
+- RecoilFactoryWarehouse: tall steel racks, wooden freight crates, drums, roof steelwork and pallet truck. The right background-wall door leads to the independent RecoilWarehouseStoreroom scene. warehouse_locked_room_key is reserved for later, with no key placed yet. The corridor in front of that door is unobstructed.
+- RecoilWarehouseStoreroom: independent locked spare-parts room, with a return door to the warehouse.
+- RecoilFactorySewer: low concrete tunnel connecting the hatch just right of the main factory entrance to the hatch beyond the east perimeter wall. E uses the access ladders.
+
+Hierarchy for editing:
+Outdoor RECOIL
+  Factory Building - four storeys
+    Factory right service door
+    Factory Right Return Spawn
+  Factory warehouse yard and sewer - editable
+    Factory Warehouse - exterior (fixtures and lights are children)
+    Factory right perimeter wall
+    Drain access (each includes its return spawn)
+Indoor RECOIL
+  Ground floor right service exit
+  Factory Right Entrance Spawn
+Warehouse / drain RECOIL
+  Architecture - editable
+  Warehouse freight - editable / Drain tunnel fittings - editable
+
+Hard surface view shadows:
+- RecoilSightOcclusion lives with RecoilLighting2D in every playable scene.
+- Enabled, non-trigger BoxCollider2D hard terrain casts opaque sight shadows behind itself, relative to the player. The same blocker predicate is used by world.Clear monster sight tests. RecoilSurfaceVisibility can override blocking without changing collision.
+- Hard roofs/ceilings carry RecoilSurfaceVisibility with blocksSight=false: they remain physically solid and still block water shots, while monster/player sight can pass through. Vertical walls still block sight.
+- SoftRoofPlatform and ClimbableLadder colliders are excluded, matching world.Clear. Passable background machines and shelves cast no sight shadows.
+- Door barriers stop casting when disabled/opened. Moving hard objects update their shadow geometry; new objects are picked up by the cached blocker scan every 0.5 seconds.
+- One reusable dynamic mesh renderer per scene, not one per lamp or obstacle. Lists are reused; no per-pixel physics raycasts.
+- shadowsEnabled and shadowOpacity can be edited on the component. A lamp beyond a wall does not reveal that area to the player. Existing radial lighting is still responsible for brightness on visible surfaces.
+
+Warehouse references, interpreted as editable prototype geometry (no downloaded artwork):
+https://historicengland.org.uk/images-books/publications/manchester-warehouse-legacy/
+https://historicengland.org.uk/images-books/publications/railway-goods-shed-and-warehouse-in-england/
+
+Existing scenes backed up in Backups/FactoryWarehouse before modification.
+Browser export includes the new scenes and matching hard-surface visual shadows.

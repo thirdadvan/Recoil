@@ -1,0 +1,31 @@
+Warehouse distribution box / power routing puzzle
+
+Source: user IMG_3479.HEIC drawing, and distribution-board structure references:
+https://www.education.gov.za/LinkClick.aspx?fileticket=tWZlPjCKl2U%3D&mid=12062&portalid=0&tabid=4347
+https://www.se.com/ca/en/download/document/80043-741-03/
+The UI represents incoming supply, branch breakers, outgoing cables, neutral and earth bars. Routing Freight through Lighting is a simplified game puzzle.
+
+Outside: Warehouse distribution box - interactive, child of Factory Warehouse - exterior, near the entrance. E opens the new ElectricalPanelInteraction page; E/Esc or Close closes it. The scene context pauses gameplay while this modal page is active, including enemies and player firing.
+
+Initial: Lighting cable connected and powered. Freight source burned and not supplying power. AC/Gate/Ventilation damaged.
+No ON/OFF switch, trip animation, or separate energize step. Cable insertion supplies power immediately; unplugging cuts it.
+Both coloured cables: first click unplugs at the terminal underside, next click picks up into a fixed suspended pose. Click a compatible free terminal to reinsert; any other click, E/Esc or Close puts it back at its disconnected position.
+Lighting cable can be restored to the free Lighting terminal. Freight can be restored to its original burned terminal, but gets no power there.
+Freight inserted into free Lighting terminal: bypass supplies Freight, leaving warehouse lighting disconnected. Only the Lighting supply indicator on the panel glows green; the burned Freight indicator stays dark. The machine operation light shows actual Freight power separately.
+Lighting terminal accepts one cable at a time. To restore warehouse lighting after bypass, unplug Freight and reinsert Lighting.
+Disconnected Lighting cable is offset beside the bypass so both remain visible and clickable.
+Power loss pauses the crane; reconnecting Freight to Lighting resumes it.
+
+Scripts:
+ElectricalPanelInteraction -> outside distribution box: page rendering and click routing.
+WarehousePowerState -> independent puzzle model and progress flags.
+RecoilPrototype -> modal ownership, paused simulation, input routing and travel/retry persistence.
+WarehouseLightingPower -> warehouse world root: disables the normal warehouse lights when Lighting is disconnected.
+KBKStackerCrane -> existing crane root: requiredPowerItem=warehouse_power_freight_on; unavailable before rewiring. Powered idle operation indicator is green.
+KBKCraneSwitch -> fixed ground control: reports missing power until the circuit works.
+
+All progress uses warehouse_power_ flags carried by existing scene travel. Retry preserves these flags; a fresh game starts with the original wiring.
+Reusable prefab: Assets/RecoilPrototype/Prefabs/WarehouseDistributionBox.prefab
+This feature is implemented in Unity. The JavaScript prototype has not been extended with this puzzle yet.
+
+Checks: Lighting restoration, two-stage unplug/pickup, instant bypass power and Lighting supply indication, burned-terminal reinsertion, cancel and power-off interlock; actual Play modal pause, travel to warehouse, green crane indicator, warehouse lights off, powered activation and retry persistence all passed. No Console errors after testing.

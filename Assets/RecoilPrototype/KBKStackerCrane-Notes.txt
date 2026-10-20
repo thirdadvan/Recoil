@@ -1,0 +1,24 @@
+KBK Stacker Crane gameplay device
+
+Reference: user IMG_3477.HEIC sketch; Demag KBK stacker cranes:
+https://www.demagcranes.com/en/products/cranes-and-cranes-sets/kbk-light-crane-system/kbk-stacker-cranes
+KBK double-girder suspension rail, trolley, guided mast and lifting forks. Official systems commonly use manual crane/trolley travel and powered lifting; this gameplay version uses an automatic switch-driven sequence.
+
+Warehouse hierarchy: Demag KBK Stacker Crane - editable
+01 Start - floor level: right side, x22.5
+02 Drop point - floor level: leftmost rack, x5
+03 Travelling trolley and mast
+04 Lift carriage and fork platform: SoftRoofPlatform, flush with floor when lowered
+05 Fixed ground control - E: x9.6 in front of the second rack, on a floor pedestal; does not travel with the carriage: KBKCraneSwitch (instant interaction)
+06 Scattered freight at drop point
+
+KBKStackerCrane is on the device root. Adjustable lift height (3.4m), lift time (2s), travel time (5s), lowering time (2s), and return enabled. Start/destination are child markers that can be moved in Scene view.
+E on the fixed floor switch: raise -> travel -> lower. Busy presses do not restart the sequence. E at the destination returns to the start using the same order. Reset/retry returns the device to the start.
+The deck supports a player standing on its top, carries that player using the existing controller's collision handling, allows upward passage and water shots, and supports S+Jump drop-through. Flying/climbing/jumping riders are not forcibly attached.
+Moving animation is procedural, with smooth acceleration/deceleration. No Rigidbody rewrite or Animator is required.
+
+Prefab: Assets/RecoilPrototype/Prefabs/KBKStackerCrane.prefab
+Validated in a temporary project copy: ordered motion, rider carrying, return, ground-level deck, soft-platform upward pass, landing and down+jump. Movement GIF is in output/level-previews/kbk-stacker-crane-motion.gif.
+This update targets the Unity scene; the JavaScript prototype does not yet simulate this device.
+
+2026-10-15 Freight visual refit: brighter safety-yellow rails/trolley/fork carriage, pale steel guides, bolt plates, chain links, motor vents, service panel, fork corner plates and black/yellow hazard markings. Kept prototype rectangle style. Added .24-high decorative front face rendered in front of the floor, with a bright top lip: parked fork is legible without raising its physical surface. Fork collider remains a soft platform with yMax=0 at rest; lift/travel/lower durations and power requirements unchanged. Shared prefab and editor builder updated. Validation on prefab: 2/10/2-second cycle completed; decorative fork offset stayed attached throughout; finished top y=0. Material/layout preview (darkness temporarily hidden): output/level-previews/freight-visual-refit.png.

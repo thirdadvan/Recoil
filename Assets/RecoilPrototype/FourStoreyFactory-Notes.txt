@@ -1,0 +1,32 @@
+FOUR STOREY FACTORY
+
+Outdoor RecoilPrototype: Factory Building - four storeys
+The employee-card ground entrance moved 6 world units right. The facade, entrance,
+third-floor door, exterior stairs and shortcut arrival marker belong to this group.
+Fire escape flight 1 and 2 each carry WalkableStairway.
+
+Indoor RecoilFactoryInterior: Four-storey interior additions
+Ground floor layout and five existing Rampagers preserved. Upper floors now have public corridors, 2 independent room scenes per floor,
+and one open circulation alcove. See FactoryNestedRooms-Notes.txt. Storey foot heights: 0, 7.6, 11.6, 15.6. Ground floor remains 7.6m; upper floors are 4m.
+Right Stairwell - continuous switchbacks has 3 WalkableStairway components.
+
+WalkableStairway routePoints are ordered FOOT positions, lower to upper, including
+halfway return landing. W moves towards the upper endpoint, S towards the lower.
+A/D passes entrances without automatically taking stairs. Entry approaches smoothly.
+Release W/S to pause. Space or a successful shot leaves stairs. Monster hits detach.
+Speed, entry radius and entry height tolerance are editable per component.
+Shift/crouch slow movement and suppress footsteps. Supported stair travel refills ammo.
+Stair path owns position during traversal; no Rigidbody2D or Physics2D solver change.
+
+Third floor side fire exit
+Exterior: requiredItemId=factory_shortcut_floor3, lockedMessage=The door is locked
+from the other side. Interior: first interaction opens the shared progress flag.
+Next E travels outside. Both directions preserve inventory and use dedicated third
+floor spawn markers. Progress survives scene travel and death retry, resets on full reset.
+
+Camera vertical maximum: outdoor 30, indoor 17.6. Existing lens and mouse settings kept.
+Backups/FourStoreyFactory contains copies saved before the scene change.
+
+Research: Historic England Britannia Mill 1434087 and Waterloo Mill 1266636.
+Controls adapted from Julian Colbus, Moving on Stairs in a 2D Side-Scroller,
+Game Developer, 8 June 2020. Here W/S always indicates storey direction across turns.
