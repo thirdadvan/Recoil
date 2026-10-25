@@ -69,7 +69,7 @@ public static class WarehouseCrawlerValidation
             for(int i=0;i<60 && player.Health==3;i++)crawler.Simulate(.02f);
             Check(player.Health==2 && !player.Flying && player.RecoilPool==Vector2.zero,"Pounce did not damage/cancel flight.");
             Check(crawler.State==SurfaceCrawlerController.Behaviour.Recovering,"Attack did not enter recovery.");
-            Vector2 playerBefore=player.Position;player.Simulate(0,0,false,false,false,.02f);Check(player.Position.x>playerBefore.x,"Pounce knockback missing.");
+            Vector2 playerBefore=player.Position;player.Simulate(0,0,false,false,.02f);Check(player.Position.x>playerBefore.x,"Pounce knockback missing.");
             for(int i=0;i<25;i++)crawler.Simulate(.02f);Check(player.Health==2,"One pounce dealt multiple hits.");
             for(int i=0;i<30 && crawler.State==SurfaceCrawlerController.Behaviour.Recovering;i++)crawler.Simulate(.02f);
             Vector2 landing=crawler.Motor.Position;for(int i=0;i<20;i++)crawler.Simulate(.02f);

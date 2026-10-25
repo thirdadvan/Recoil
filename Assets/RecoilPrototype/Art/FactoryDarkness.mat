@@ -31,10 +31,10 @@ Material:
     m_Floats:
     - _AlarmAmbient: 0
     - _AlarmRed: 0
-    - _FactoryEnabled: 1
-    - _OutdoorAmbient: 0.185
+    - _FactoryEnabled: 0
+    - _OutdoorAmbient: 0.12
     - _UnlitAmbientScale: 0.15
     m_Colors:
-    - _FactoryMax: {r: 52.199997, g: 7.2, b: 0, a: 0}
+    - _FactoryMax: {r: 0, g: 0, b: 0, a: 0}
     - _FactoryMin: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []

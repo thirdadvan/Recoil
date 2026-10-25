@@ -4,6 +4,7 @@ using UnityEngine;
 [DefaultExecutionOrder(-250),DisallowMultipleComponent,AddComponentMenu("Recoil/Player Noise Emitter")]
 public sealed class PlayerNoiseEmitter : MonoBehaviour
 {
+    public event System.Action<Vector3,float> FootstepEmitted;
     [Header("Player sounds")]
     [Min(.01f)] public float footstepRadius=4.16f,footstepInterval=.45f;
     [Header("Sound propagation and visuals")]
@@ -21,7 +22,9 @@ public sealed class PlayerNoiseEmitter : MonoBehaviour
     public void UpdateFootsteps(Vector2 position,bool grounded,bool quietWalking,float horizontalIntent)
     {
         if(!isActiveAndEnabled || !world || !grounded || quietWalking || Mathf.Abs(horizontalIntent)<=.1f || world.Clock<=nextFootstep)return;
-        Emit(position,footstepRadius);nextFootstep=world.Clock+Mathf.Max(.01f,footstepInterval);
+        Emit(position,footstepRadius);
+        if(FootstepEmitted!=null)FootstepEmitted(new Vector3(position.x,position.y,transform.position.z),footstepRadius);
+        nextFootstep=world.Clock+Mathf.Max(.01f,footstepInterval);
     }
     public void EmitLanding(Vector2 position)
     {

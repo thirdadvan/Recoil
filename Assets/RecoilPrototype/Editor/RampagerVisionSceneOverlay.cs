@@ -28,8 +28,16 @@ public static class RampagerVisionSceneOverlay
             if (!perception.isActiveAndEnabled) continue;
             var movement = perception.GetComponent<RampagerMovement>();
             var controller = perception.GetComponent<RampagerController>();
-            float facing = Application.isPlaying ? (movement && movement.Facing > 0 ? 1 : -1) : (controller ? controller.SpawnFacingSign : -1);
-            Vector3 eye = perception.transform.position + Vector3.up * .45f;
+            if(controller && (!Application.isPlaying || !controller.WaveActive))
+            {
+                using(new Handles.DrawingScope(new Color(.65f,.4f,.9f,.7f)))
+                    Handles.DrawWireDisc(controller.transform.position,Vector3.up,controller.CloseSenseRadius);
+                continue;
+            }
+            float facing = Application.isPlaying ? (movement && movement.Facing > 0 ? 1 : -1) : (movement ? movement.InitialFacingSign : -1);
+            var motor = perception.GetComponent<RampagerMovement>();
+            float eyeOffset = motor ? 1.25f * motor.bodyScale - .8f : .45f;
+            Vector3 eye = perception.transform.position + Vector3.up * eyeOffset;
             float radius = perception.SightRange;
             float halfAngle = perception.fieldOfView * .5f;
             float pitch = controller ? controller.SightPitch : -25;

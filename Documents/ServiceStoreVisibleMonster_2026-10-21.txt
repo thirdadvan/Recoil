@@ -1,0 +1,24 @@
+Service Store encounter revision
+
+Scene: Assets/Scenes/RecoilServiceStore.unity
+Component: Store Clerk Encounter - editable / ServiceStoreEncounter
+
+Monster starts visible beside the left edge of the counter, standing on the floor.
+No hidden-monster spawn or attack teleport remains.
+Entry conversation and the existing running-under-gaze attack threshold are retained.
+Reassurance starts when the player is within five player standing heights horizontally
+of Counter front - reassurance distance origin, and the monster is inside the gameplay camera.
+The trigger is spatial; it no longer requires reaching the counter while holding Shift.
+
+On "Be nice... Go to sleep!", the monster enters Sleeping and stops its AI.
+Private heartbeat clears. Sleep remains visible for 2 seconds, then every monster sprite
+smoothly fades over 1.25 seconds, including its eye. Fade uses unscaled time so dialogue
+pause does not freeze it. Completed encounters stay absent on ordinary retry/re-entry;
+retry before completing the dialogue restores the visible monster.
+
+Inspector adjustments: Reassurance Distance In Bodies, Sleep Before Fade, Fade Duration.
+FormerlySerializedAs preserves the old monster reference when loading existing scenes.
+Backup: Backups/ServiceStoreVisibleMonster/20261021/
+Verified on disposable copies of the saved scene: initial visibility, actual ground pursuit,
+viewport and five-body trigger, sleeping, gradual alpha, resistance to colour refresh,
+completion and retry restoration. No scene geometry was regenerated.

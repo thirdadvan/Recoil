@@ -19,7 +19,7 @@ public sealed partial class RecoilPrototype
     static void ResetDeathMemorySession(){memoryReturn=null;returningFromMemory=false;KitchenMemoryVisits=DeathsThisSession=0;}
     void RegisterMemorySceneEntry()
     {
-        if(gameObject.scene.path==KitchenMemoryScene)started=true;
+        if(RecoilSceneLoader.SameScene(gameObject.scene.path,KitchenMemoryScene))started=true;
         if(!returningFromMemory || memoryReturn==null || memoryReturn.scene!=gameObject.scene.path)return;
         var saved=memoryReturn;returningFromMemory=false;memoryReturn=null;
         checkpoint=saved.checkpoint;attempts=saved.attempts;elapsed=saved.elapsed;
@@ -29,7 +29,7 @@ public sealed partial class RecoilPrototype
     }
     bool ShouldPlayDeathMemory()
     {
-        if(!dead || gameObject.scene.path==KitchenMemoryScene)return false;
+        if(!dead || RecoilSceneLoader.SameScene(gameObject.scene.path,KitchenMemoryScene))return false;
         // Update runs on every game-over frame. Count this death only once until retry.
         if(!deathCountedForMemory){deathCountedForMemory=true;DeathsThisSession++;}
         return DeathsThisSession==2 && KitchenMemoryVisits==0 && memoryReturn==null;
@@ -44,7 +44,9 @@ public sealed partial class RecoilPrototype
         RecoilSceneLoader.Load(KitchenMemoryScene);return true;
     }
     static bool RetainedOnRetry(string id)
-    {return id=="water_gun" || id==UniversalKey || id==EscortChild.EscortFlag || id.StartsWith("station_") || id.StartsWith("factory_shortcut_") || id.StartsWith("warehouse_power_");}
+    {
+        if(id==ServiceStoreEncounter.CompletedFlag)return true;
+        return id=="water_gun" || id==UniversalKey || id==EscortChild.EscortFlag || id.StartsWith("station_") || id.StartsWith("factory_shortcut_") || id.StartsWith("warehouse_power_");}
     public static bool ReturnFromKitchenMemory()
     {
         if(memoryReturn==null || returningFromMemory)return false;

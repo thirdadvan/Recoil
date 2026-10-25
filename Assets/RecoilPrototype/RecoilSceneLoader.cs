@@ -25,9 +25,12 @@ public static class RecoilSceneLoader
         return path.StartsWith("Assets/",StringComparison.OrdinalIgnoreCase) && UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEditor.SceneAsset>(path)?path:null;
     }
 #endif
+    public static string Resolve(string scene){return Recoil3DScene.Is3D?Recoil3DScene.ConvertPath(scene):scene;}
+    public static bool SameScene(string a,string b){return string.Equals(LoadName(a),LoadName(b),StringComparison.OrdinalIgnoreCase) || string.Equals(LoadName(a),LoadName(Recoil3DScene.ConvertPath(b)),StringComparison.OrdinalIgnoreCase);}
     public static bool CanLoad(string scene)
     {
         if(string.IsNullOrWhiteSpace(scene))return false;
+        scene=Resolve(scene);
 #if UNITY_EDITOR
         if(UnityEditor.EditorApplication.isPlaying && EditorAssetPath(scene)!=null)return true;
 #endif
@@ -35,6 +38,7 @@ public static class RecoilSceneLoader
     }
     public static void Load(string scene)
     {
+        scene=Resolve(scene);
 #if UNITY_EDITOR
         string assetPath=EditorAssetPath(scene);
         if(UnityEditor.EditorApplication.isPlaying && assetPath!=null)

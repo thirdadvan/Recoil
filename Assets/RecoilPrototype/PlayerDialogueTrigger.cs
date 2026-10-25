@@ -4,7 +4,7 @@ using UnityEngine;
 [DisallowMultipleComponent, RequireComponent(typeof(BoxCollider2D))]
 public sealed class PlayerDialogueTrigger : MonoBehaviour
 {
-    [TextArea] public string message="Press Shift to stealth walk";
+    [TextArea] public string message="Use A/D to stealth walk. Hold SHIFT to run.";
     [Min(.1f)] public float displayDuration=5;
     public bool triggerOnce=true;
     BoxCollider2D area;

@@ -5,6 +5,7 @@ public sealed class RampagerVisualEffects : MonoBehaviour
 {
     Transform visualRoot;
     SpriteRenderer visualBody;
+    public SpriteRenderer VisualBody {get{return visualBody;}}
 
     public SpriteRenderer Initialize(SpriteRenderer source,Transform eye)
     {

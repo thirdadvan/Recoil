@@ -48,21 +48,21 @@ public sealed class BroadcastRefractionEffect : MonoBehaviour
         if(!broadcast)return;
         var phase=broadcast.Phase;
         if(phase==SoundWaveManager.BroadcastPhase.Warning && observedPhase!=phase)
-            EmitPulse(1,true,broadcast.warningDuration);
+            EmitPulse(1,true,broadcast.warningDuration,broadcast.WarningStartedAt);
         if(phase==SoundWaveManager.BroadcastPhase.Commands && (observedPhase!=phase || observedCue!=broadcast.CueIndex))
-        {EmitPulse(broadcast.Direction,false,broadcast.WaveInterval);observedCue=broadcast.CueIndex;}
+        {EmitPulse(broadcast.Direction,true,broadcast.DirectionVisualDuration,broadcast.CueStartedAt);observedCue=broadcast.CueIndex;}
         if(phase==SoundWaveManager.BroadcastPhase.Idle && observedPhase!=phase){ClearPulses();observedCue=0;}
         observedPhase=phase;
     }
     public void ClearPulses(){pulses.Clear();}
-    public void EmitPulse(int direction,bool warning=false,float duration=2.6f)
+    public void EmitPulse(int direction,bool warning=false,float duration=2.6f,float startedAt=-1)
     {
         if(!lens)lens=GetComponent<Camera>();
         if(!context && broadcast)context=broadcast.GetComponentInParent<RecoilPrototype>();
         Vector2 span=ViewSpan(lens.aspect);
         float depth=lens.orthographic?Mathf.Max(.1f,Mathf.Abs(lens.transform.position.z)):Mathf.Max(.1f,perspectiveReferenceDistance);
         // Keep a world anchor, so panning and FOV changes do not glue the ripple to the screen.
-        Vector3 originWorld=emitter?emitter.position:lens.ViewportToWorldPoint(new Vector3(-.7f/lens.aspect,.5f,depth));
+        Vector3 originWorld=emitter?emitter.position:broadcast && broadcast.HasLocalizedSource?(Vector3)broadcast.BroadcastSource:lens.ViewportToWorldPoint(new Vector3(-.7f/lens.aspect,.5f,depth));
         Vector3 viewport=lens.WorldToViewportPoint(originWorld);
         Vector2 origin=new Vector2(viewport.x*span.x,viewport.y*span.y);
         var rect=new Rect(Vector2.zero,span);
@@ -70,7 +70,7 @@ public sealed class BroadcastRefractionEffect : MonoBehaviour
         float furthest=0;
         for(int x=0;x<2;x++)for(int y=0;y<2;y++)furthest=Mathf.Max(furthest,Vector2.Distance(origin,new Vector2(x==0?rect.xMin:rect.xMax,y==0?rect.yMin:rect.yMax)));
         if(pulses.Count>=Capacity)pulses.RemoveAt(0);
-        pulses.Add(new Pulse{origin=originWorld,start=Mathf.Max(0,nearest-packetWidth*1.5f),end=furthest+packetWidth*1.5f,started=Clock,duration=Mathf.Max(.1f,duration),direction=direction<0?-1:1,warning=warning});
+        pulses.Add(new Pulse{origin=originWorld,start=Mathf.Max(0,nearest-packetWidth*1.5f),end=furthest+packetWidth*1.5f,started=startedAt>=0?startedAt:Clock,duration=Mathf.Max(.1f,duration),direction=direction<0?-1:1,warning=warning});
     }
     Vector2 ViewSpan(float aspect)
     {

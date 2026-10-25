@@ -19,12 +19,12 @@ public sealed class EscortChild : MonoBehaviour
  public void SetStoryConditionSatisfied(bool satisfied){storyConditionSatisfied=satisfied;}
  bool eTracking,eReleaseRequired;float eHeldTime;
  public float WaitHoldProgress {get{return eTracking?Mathf.Clamp01(eHeldTime/waitHoldDuration):0;}}
- static string waitingScene;static Vector2 waitingPosition;
+ static string waitingScene;static Vector2 waitingPosition;static float waitingDepth;
  public static bool WaitingElsewhere(string scene){return !string.IsNullOrEmpty(waitingScene)&&waitingScene!=scene;}
  public static bool TryWaitingPosition(string scene,out Vector2 position){position=waitingPosition;return waitingScene==scene;}
  [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
- public static void ClearWaiting(){waitingScene=null;}
- public void RestoreWaiting(Vector2 position){Position=position;Following=false;awaitingSeparation=true;SyncVisuals();}
+ public static void ClearWaiting(){waitingScene=null;waitingDepth=0;}
+ public void RestoreWaiting(Vector2 position){Position=position;transform.position=new Vector3(position.x,position.y,waitingDepth);Following=false;awaitingSeparation=true;SyncVisuals();}
  // Short press interactions are dispatched on release, allowing a hold to take priority.
  public bool RouteE(bool held,bool pressed,bool released,float dt,out bool tap)
  {
@@ -44,39 +44,40 @@ public sealed class EscortChild : MonoBehaviour
  public void AskToWait()
  {
   if(!Following||!Alive||world.InObjectInteractionRange)return;
-  Following=false;awaitingSeparation=true;SilentWalking=false;waitingScene=gameObject.scene.path;waitingPosition=Position;
+  Following=false;awaitingSeparation=true;SilentWalking=false;waitingScene=gameObject.scene.path;waitingPosition=Position;waitingDepth=transform.position.z;
   world.SetProgressFlag(EscortFlag,false);world.InterruptInteraction();noise.ResetNoise();SyncVisuals();world.ShowInteractionMessage("Stay here. I'll come back for you.");
  }
  public bool Following {get;private set;}
  public bool Alive {get;private set;}=true;
  public bool SilentWalking {get;private set;}
  public bool Grounded {get;private set;}
- public Vector2 Position {get{return transform.position;}private set{transform.position=new Vector3(value.x,value.y,0);}}
+ public Vector2 Position {get{return transform.position;}private set{transform.position=new Vector3(value.x,value.y,transform.position.z);}}
  public float Illumination {get{bool cone;float b=world.EnvironmentBrightness(Position,out cone);return cone?1:Mathf.Lerp(.4f,1,Mathf.Clamp01(b/.45f));}}
- RecoilPrototype world;PlayerNoiseEmitter noise;Vector2 home;float verticalSpeed,followSide=-1,fallDistance;
+ RecoilPrototype world;PlayerNoiseEmitter noise;Vector2 home;float homeDepth;float verticalSpeed,followSide=-1,fallDistance;
  WalkableStairway lastFollowedStair;
  LineRenderer hand;Transform body,head;
- public void Initialize(RecoilPrototype context){world=context;home=Position;noise=GetComponent<PlayerNoiseEmitter>();noise.Initialize(world);body=transform.Find("Body");head=transform.Find("Head");hand=GetComponent<LineRenderer>();}
+ public void Initialize(RecoilPrototype context){world=context;home=Position;homeDepth=transform.position.z;noise=GetComponent<PlayerNoiseEmitter>();noise.Initialize(world);body=transform.Find("Body");head=transform.Find("Head");hand=GetComponent<LineRenderer>();}
  public void ResetChild(bool following)
  {
   awaitingSeparation=!following && waitingScene==gameObject.scene.path;
   eTracking=eReleaseRequired=false;eHeldTime=0;Following=following;Alive=true;SilentWalking=false;Grounded=false;verticalSpeed=fallDistance=0;followSide=-1;lastFollowedStair=null;noise.ResetNoise();
   Position=following?world.Player.Position+new Vector2(-handDistance,(bodyHeight-world.Player.BodyHeight)*.5f):home;
+  transform.position=new Vector3(Position.x,Position.y,following?world.Player.GameplayZ:homeDepth);
   if(hand)hand.enabled=false;
  }
- public bool InRange(){return Alive&&!Following&&isActiveAndEnabled&&world&&Vector2.Distance(Position,world.Player.Position)<=interactionRange&&world.Clear(Position,world.Player.Position);}
+ public bool InRange(){return Alive&&!Following&&isActiveAndEnabled&&world&&Vector3.Distance(transform.position,world.Player.WorldPosition)<=interactionRange&&world.Clear(Position,world.Player.Position);}
  public bool TryAutoTakeHand()
  {
   if(!Alive || !world || !world.Player)return false;
   if(awaitingSeparation)
   {
-   if(Vector2.Distance(Position,world.Player.Position)<=autoHandRange+.25f)return false;
+   if(Vector3.Distance(transform.position,world.Player.WorldPosition)<=autoHandRange+.25f)return false;
    awaitingSeparation=false;
   }
   if(!autoTakeHandOnApproach || !storyConditionSatisfied || !InRange())return false;
   if(!string.IsNullOrEmpty(requiredStoryFlag) && !world.HasItem(requiredStoryFlag))return false;
   var p=world.Player;
-  if(!p.Grounded || Vector2.Distance(Position,p.Position)>autoHandRange || Mathf.Abs((p.Position.y-p.BodyHeight*.5f)-(Position.y-bodyHeight*.5f))>.35f)return false;
+  if(!p.Grounded || Vector3.Distance(transform.position,p.WorldPosition)>autoHandRange || Mathf.Abs((p.Position.y-p.BodyHeight*.5f)-(Position.y-bodyHeight*.5f))>.35f)return false;
   TakeHand();return true;
  }
  void TakeHand()
@@ -106,8 +107,9 @@ public sealed class EscortChild : MonoBehaviour
  {
   if(!Alive||!world||dt<=0)return;
   TryAutoTakeHand();
+  if(Following)transform.position=new Vector3(Position.x,Position.y,world.Player.GameplayZ);
   var p=world.Player;Vector2 move=Vector2.zero,old=Position;bool wasGrounded=Grounded;
-  SilentWalking=Following&&(p.SilentWalking||p.Crouched);
+  SilentWalking=Following&&p.SilentWalking;
   bool stairLandingSupport=false;
   if(!Following)lastFollowedStair=null;
   if(Following)
@@ -132,7 +134,7 @@ public sealed class EscortChild : MonoBehaviour
   if(Following)noise.UpdateFootsteps(Position,Grounded,SilentWalking,(Position.x-old.x)/Mathf.Max(dt,.0001f));
   if(!wasGrounded)fallDistance+=Mathf.Max(0,old.y-Position.y);
   if(Grounded){if(!wasGrounded&&fallDistance>p.StandingHeight)noise.EmitLanding(Position);fallDistance=0;}else if(Position.y>old.y)fallDistance=0;
-  if(!Following&&waitingScene==gameObject.scene.path)waitingPosition=Position;
+  if(!Following&&waitingScene==gameObject.scene.path){waitingPosition=Position;waitingDepth=transform.position.z;}
   SyncVisuals();
  }
  bool TryStairLanding(out Rect landing)
@@ -172,9 +174,10 @@ public sealed class EscortChild : MonoBehaviour
  }
  void SyncVisuals()
  {
+  if(Following && world && world.Player)transform.position=new Vector3(Position.x,Position.y,world.Player.GameplayZ);
   if(body){body.localPosition=new Vector3(0,SilentWalking?-.12f:-.06f,0);body.localScale=new Vector3(.38f,SilentWalking?.48f:.68f,1);}
   if(head)head.localPosition=new Vector3(0,SilentWalking?.21f:.37f,0);
-  if(hand){hand.enabled=Following&&Alive;hand.SetPosition(0,Position+Vector2.up*.1f);hand.SetPosition(1,world.Player.Position-Vector2.up*.1f);}
+  if(hand){hand.enabled=Following&&Alive;hand.SetPosition(0,transform.position+Vector3.up*.1f);hand.SetPosition(1,world.Player.WorldPosition-Vector3.up*.1f);}
  }
  void OnDrawGizmosSelected(){Gizmos.color=Color.cyan;Gizmos.DrawWireSphere(transform.position,interactionRange);}
 }

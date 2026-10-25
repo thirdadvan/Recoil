@@ -1,0 +1,21 @@
+Eastern industrial exterior art pass
+
+Reference research:
+https://lodz.travel/en/tourism/what-to-see/industrial-heritage/
+https://www.dolnivitkovice.cz/en/about-dolni-vitkovice/
+
+Art direction (interpretation, not a claim that all Eastern European buildings look alike): old Polish/Czech industrial district; soot-stained brick, peeling warm grey plaster, dull oxidized blue-grey steel, smoky blue-green glazing. Industrial exits use faded petrol-teal steel and a recessed frame. Shop keeps a glazed entrance and plaster facade. Factory and warehouse share brickwork; door hardware gives readable material contrast.
+
+Scope: saved Unity outdoor scene RecoilPrototype.unity, factory, warehouse, shop, fire escapes and perimeter wall. No changes to gameplay, collisions, route points, door lock requirements or scene destinations. Warehouse scene's existing unsaved changes preserved. Screenshots are layout/material previews with gameplay darkness temporarily hidden, not final game exposure.
+
+Editable art lives as children under the original scene objects: Surface - unified industrial material; Unified steel exit - art only. Shared material atlas imported as four sprites. No runtime updater or registration script added. Editor-only utility: Recoil/Art/Unify Eastern Industrial Exteriors.
+
+Assets:
+Assets/RecoilPrototype/Art/EasternIndustrial/MaterialAtlas.png
+Assets/RecoilPrototype/Art/EasternIndustrial/SteelDoor.png
+
+Generation used built-in imagegen. Prompt set:
+
+Use case: stylized-concept. Asset type: seamless architectural material atlas for a realistic atmospheric side-scrolling industrial horror game. Generate a square atlas divided EXACTLY into four equal square quadrants, no gutters no borders no labels. Top left: weathered soot-darkened muted reddish brown small industrial brick masonry with pale mortar and scattered chipped grey plaster, brick courses horizontal, orthographic flat surface. Top right: aged dirty warm grey lime plaster and concrete, hairline cracks, damp vertical streaks, irregular peeling surface, no brick. Bottom left: worn oxidized dark desaturated blue-grey painted steel sheet, scratches and tiny rust speckles, no big shapes no seams. Bottom right: dirty smoky blue-green industrial window glass, subtle diffuse mottling and vertical streaks, no frame, no bright reflections, no objects. Cohesive restrained Eastern European old factory material palette. Physically plausible material detail with soft flat neutral lighting, midtone readable textures, no dramatic highlights, no perspective, no scene, no letters. All quadrants fill to edges. Output high resolution 2048x2048.
+
+Use case: stylized-concept. Asset type: reusable sprite of a complete old industrial fire exit door with surrounding steel frame, straight-on orthographic, isolated on genuinely transparent background. A single narrow tall closed solid steel door, muted faded petrol teal paint, moderately worn and rust along edges, rivets and bottom vent, obvious brass/silver horizontal panic pushbar and latch, narrow small wired-glass inspection window near top. Deep dark recessed frame surrounding door with bevel/shadow, no surrounding wall, no EXIT sign, no lettering, no extra objects. Old Eastern European factory, realistic detailed 2.5D horror game art, consistent scale, softly lit neutral overcast light so teal door remains distinguishable from warm grey brick walls. Entire frame intact, no cut edges, transparent background.

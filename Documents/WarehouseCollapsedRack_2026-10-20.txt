@@ -1,0 +1,23 @@
+Warehouse central collapsed rack
+
+Scene: Assets/Scenes/RecoilFactoryWarehouse.unity
+Object: Steel rack - collapsed toward camera - editable (third rack from the left, x=21.3)
+
+- Original standing rack artwork is retained but disabled.
+- Fallen steel frame uses foreground perspective and bent braces; the existing ladder is rotated down.
+- Both the ladder component and its trigger collider are disabled.
+- Thirteen solid cargo boxes form a pile with a maximum collision height of 3.7m (player standing height 1.65m).
+- Each solid cargo box has RecoilSurfaceVisibility.blocksSight=false: actors cannot walk through, but AI sight and player sight-shadow rays pass through.
+- Cargo and frame details remain grouped under the collapsed rack for editing.
+- This warehouse crane lift height is 4.1m so its passengers clear the pile. The reusable crane prefab defaults were not changed.
+
+Verified in a disposable copy of the scene:
+- Player movement is blocked from both sides.
+- Sight ray crosses the cargo pile and all cargo colliders are excluded from sight shadows.
+- Fallen ladder is unavailable.
+- Freight successfully carries the player over the pile and reaches its destination.
+
+Backup before the change: Backups/WarehouseCollapsedRack/20261020_183040/Warehouse.unity
+Preview: Captures/WarehouseCollapsedRack/layout-preview.png (darkness disabled only for this layout screenshot)
+Preview: Captures/WarehouseCollapsedRack/darkness-preview.png
+Editor construction helper: Assets/RecoilPrototype/Editor/WarehouseCollapsedRackBuilder.cs

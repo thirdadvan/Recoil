@@ -44,7 +44,7 @@ public static class WarehouseEscortBuilder
     var sr=t.gameObject.AddComponent<SpriteRenderer>();var art=ww.GetComponentInChildren<RecoilPlayerController>().GetComponentInChildren<SpriteRenderer>();sr.sprite=art.sprite;sr.sharedMaterial=art.sharedMaterial;sr.color=RecoilPrototype.Hex(0xb87570);sr.sortingOrder=9;
     // Sized renderer keeps the gameplay actor transform unscaled.
     sr.drawMode=SpriteDrawMode.Sliced;sr.size=new Vector2(.66f,1.6f);
-    var c=t.gameObject.AddComponent<RampagerController>();c.initialState=i<2?RampagerController.Behaviour.Sleeping:RampagerController.Behaviour.Roaming;c.spawnFacing=RampagerController.SpawnDirection.Left;c.Configure(ww,-.55f,.55f);
+    var c=t.gameObject.AddComponent<RampagerController>();c.initialState=i<2?RampagerController.Behaviour.Sleeping:RampagerController.Behaviour.Roaming;c.Configure(ww,-.55f,.55f);
     FactoryWarehouseBuilder.B("Eye",t,pos+new Vector2(-.15f,.4f),new Vector2(.12f,.08f),0xf5ca97,10);
    }
   }

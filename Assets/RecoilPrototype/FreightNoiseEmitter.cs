@@ -4,8 +4,9 @@ using UnityEngine;
 [AddComponentMenu("Recoil/Freight Noise Emitter")]
 public sealed class FreightNoiseEmitter : MonoBehaviour
 {
- [Tooltip("留空使用移动桅杆底部。声源随机器横向移动。")]
  public Transform soundOrigin;
+ [Min(.1f)] public float soundRadiusMultiplier=1.6f;
+ public Transform ActiveOrigin {get{Bind();return soundOrigin?soundOrigin:crane&&crane.travelRig?crane.travelRig:transform;}}
  KBKStackerCrane crane;RecoilPrototype world;LocalSoundWaveEmitter waves;
  float nextPulse;bool wasOperating;
  public int EmittedPulseCount {get;private set;}
@@ -17,8 +18,8 @@ public sealed class FreightNoiseEmitter : MonoBehaviour
   var steps=world.Player.Noise;
   if(operating&&steps&&(!wasOperating||world.Clock>=nextPulse))
   {
-   Vector2 source=soundOrigin?(Vector2)soundOrigin.position:crane.travelRig?(Vector2)crane.travelRig.position:(Vector2)transform.position;
-   waves.Emit(source,steps.footstepRadius,steps.propagationSpeed,steps.rippleWidth,steps.rippleColor,world.SprayMaterial);
+   Vector3 source=ActiveOrigin.position;
+   waves.Emit(source,steps.footstepRadius*soundRadiusMultiplier,steps.propagationSpeed,steps.rippleWidth,steps.rippleColor,world.SprayMaterial);
    nextPulse=world.Clock+Mathf.Max(.01f,steps.footstepInterval);EmittedPulseCount++;
   }
   wasOperating=operating;waves.Simulate(dt);

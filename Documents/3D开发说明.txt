@@ -1,0 +1,190 @@
+RECOIL — 3D 迁移与后续编辑
+2026-10-21
+
+入口：Assets/Scenes/3D/RecoilPrototype.unity
+工厂：Assets/Scenes/3D/RecoilFactoryInterior.unity
+仓库：Assets/Scenes/3D/RecoilFactoryWarehouse.unity
+其余场景：Assets/Scenes/3D/，办公室位于其下 FactoryRooms/。
+原有 2D 场景继续保存在 Assets/Scenes/ 原路径；本次比对 17 个旧场景文件，内容未改变。
+Build Settings 已改为首先使用完整的 13 个 3D 玩法场景。原 2D 场景保留但未启用打包。
+旧 Windows 压缩包是此前版本，本次没有重新打包。
+
+这版架构
+真实 Mesh、3D 透视镜头、3D 灯光/阴影和前后景纵深。
+玩法保持 INSIDE 式横版运动平面：X/Y 移动，Z 用于场景纵深。
+为了保留已有交互、攀爬、软平台、视线与路径规则，运动和碰撞仍复用现有 2D 逻辑。
+BoxCollider2D 是当前的玩法碰撞；不要在场景中混入由 Rigidbody3D 驱动的角色。
+现有玩法脚本继续挂在原物体根节点上，3D 模型作为其子物体。
+部分道具由旧尺寸和图案生成了有厚度的模型，后续可逐个换成美术模型；角色使用简易三维模型和程序步态。
+
+编辑物体
+- 移动原有根节点：玩法碰撞、交互点和模型会一起移动。
+- 3D mesh 子物体可以直接编辑位置、旋转和缩放；已检查进入状态同步/重新启用组件后不会重置这些编辑。
+- Recoil3DSpriteVisual 的 Depth / Depth Offset 控制厚度和纵深，Tint 控制颜色。
+- Follow Sprite Geometry 默认关闭，保证三维形状编辑不被旧精灵尺寸覆盖。
+- 旧 SpriteRenderer 暂时作为状态信号（显隐、交互颜色、休眠渐隐等），渲染已关闭。请保留绑定关系，避免直接删除该组件。
+- 独立背景设备和环境模型可直接在 3D depth set、3D factory yard 等节点下编辑。
+- 每盏新灯仍位于对应灯具下；Recoil3DLight 把原灯具开关、闪烁和供电状态传给 Unity Light。
+- 修改原灯具强度或适配器 Intensity Multiplier；玩家自己的视觉补光不参与怪物的受光检测。
+
+角色与怪物
+Recoil3DActorVisual：三维身体、简易步态、眼睛、渐隐呈现。
+RampagerMovement / Turn Speed：怪物转身速度，单位度/秒，默认 180。
+三维状态下，感知方向随转身过程变化；转身中不会瞬间看见背面。
+原巡逻、声音反应、注视、攻击、休眠、广播规则保留。
+小孩在跨场景生成时使用 Recoil3DEscortChild 资源预制体。
+
+常用组件预制体
+Assets/Recoil3D/Prefabs/KBKStackerCrane.prefab
+Assets/Recoil3D/Prefabs/WalkableSwitchbackStairway.prefab
+Assets/Recoil3D/Prefabs/SwingingChain.prefab
+Assets/Recoil3D/Prefabs/SurfaceCrawler.prefab
+原 2D 预制体保留。
+
+场景结构
+RECOIL 场景根节点
+  原玩法物体（脚本、碰撞、互动点）
+    3D mesh / 3D character 模型
+  3D lighting - source fixtures own lights
+  3D depth set - foreground midground distant
+    近景暗色梁柱、桶、结构边缘
+    中后景设备、管线、工作灯
+    远景墙面、窗、梁柱与深度雾
+  3D factory yard - editable perimeter truck and gate（室外）
+
+室外调整
+卡车位于两扇一楼工厂门之间，车身阻挡地面行走。
+两侧装卸托盘形成可跳跃路线，软性车顶继续可站立。
+左侧围墙贯穿前后纵深，后墙与前景墙体残段形成包围关系。
+最右侧为粗铁栏大门、混凝土门柱、厚铁链和挂锁；保留原边界碰撞。
+原排水道出口仍位于大门外侧。
+
+工厂气氛
+冷灰/旧绿机器、锈蚀构件、管线、漏水污迹、低照度工作灯。
+背景设置仍在转动的驱动件、工作指示灯，表达破败但仍运转。
+灰蓝深度雾区分前景、行动路线和远处设备；广播时接入红光与空气折射。
+高塔广播折射跟随塔顶实际声源，室内广播仍保留远方传来的效果。
+视觉参考：用户提供的 INSIDE 图片，以及 Playdead 官方截图：
+https://www.playdead.com/games/inside/
+https://www.playdead.com/press/
+参考仅用于构图和氛围；没有导入 INSIDE 游戏资源。
+
+验证
+13 个场景、34 个场景门连接、脚本引用和透视瞄准检查通过。
+所有新场景的 Unity 对象标识均唯一。
+实际 Play：工厂、仓库、超市切换，孩子跨场景三维模型保留。
+货运设备：解锁供电后，完成 14 秒升起/移动/落下流程，原功能与三维货叉随动正常。
+卡车：地面不能直接穿过，普通跳跃可以从两侧翻过车顶。
+转身：180 度/秒时，转身前和中途不能看见背面目标，转到位后可以看见。
+塔顶声波原点和折射脉冲、灯光绑定正常。Unity 编译和 Play 检查无错误。
+美术仍为首轮三维化，未做最终角色动画、完整 PBR 资产或逐关长时间通关验证。
+
+截图：Captures/3D-Migration/ 下 *-play.png。
+备份：Backups/Migration3D/20261021/
+场景清单：Documents/3D-Migration-Manifest.txt
+
+2026-10-21 纵深、镜头与局部照明修订
+--------------------------------
+所有12个室内3D场景：Camera Controller 开启 Frame On Gameplay Plane。它把跟随构图定位到Z=0玩法平面，补偿向下俯角造成的约2.1米画面中心下沉；室内构图中心另提高0.25米，脚底仍保留画幅。室外构图规则不变。
+原有2D场景没有开启这一项。
+
+空间规则：任何真正阻挡玩家的障碍，应在画面上也封住绕行路线。侧墙、院墙和大门延伸到Z=-46米以下（相机在Z=-24），后端接入后墙。仓库倒塌货堆横贯Z约-48至54；原13个物理箱子和视线穿透规则保留，纵深货物仅作三维美术，不增加碰撞或AI查询。货架连续延伸到Z=48。
+卡车按IMG_3756草图改成长封闭货厢、驾驶室朝前景。货厢后端与工厂正立面衔接；车头前的封闭装卸道隔离墩一直延伸到相机后，避免有绕过车头的视觉暗示。原两侧垫脚与可站车顶保留。所有新外观仍挂在Truck根下。
+室外超市、控制小屋、工厂、仓库补了完整侧墙、后墙、屋顶和通风构件。
+
+不再使用材质随Z距离自发亮的深度雾补光。3D材质_HazeDensity=0；降低整场补光及原有后景灯亮度。以局部亮窗、设备指示灯、检修灯和重复设备/立柱的尺度关系表现纵深。少量工厂前景灯保留较强窄域照明，便于辨认角色与落点。视觉照明参数没有改写玩家受光系数公式。
+背景扩建：工厂深处增加重复工艺设备与立柱；室外增加高炉、热风炉组、输送廊、大烟囱、动力厂房与煤气柜剪影。属于可编辑的首版工业美术搭建。
+
+广播声波：所有13个3D镜头折射Strength=0.95，Packet Width=3.8，Wavelength=1.65；有SoundWaveManager的场景Draw Broadcast Circles关闭。扩大/收缩方向、红色预警和原怪物声波规则不变。玩家脚步等局部声音提示保留原功能。
+
+新增可编辑内容位于各场景根下：
+Depth revision - continuous barriers and selective light
+仓库的纵深货物和货架则挂在对应原货架根下，整体移动时会一起移动。
+脚本 Assets/Recoil3D/Editor/Recoil3DDepthRevision.cs 是一次性编辑工具，已有修订标记时不覆盖手工修改。
+备份：Backups/DepthRevision/20261021_144044
+
+检查：13个3D场景门路径、组件引用、镜头补偿与折射Shader均通过；卡车阻挡直走、两侧无水枪跳跃翻越均通过；Play广播折射已渲染并与关闭效果的画面比较，圆圈线条数为0。原2D场景与迁移前备份逐个比对无变化。尚未进行整条流程长时间试玩或专项性能测量。
+
+参考：
+INSIDE官方截图 https://www.playdead.com/press/
+INSIDE工厂截图补充 https://www.gamepressure.com/inside/factory/zf9051
+高炉及热风炉等配套设施 https://www.jfe-21st-cf.or.jp/chapter_2/2d_1.html
+Redcar钢厂全景 https://historicengland.org.uk/images-books/photos/item/DP277855
+
+2026-10-21 镜头下移与封窗调整
+--------------------------------
+13个3D场景的Camera Controller新增并启用Use 3D Composition：Pitch 3D=-2.5度（向上仰视）；Pan Y 3D室内=-0.45米、室外=-0.55米（向下平移）。这些参数参与跟随计算，因此Play和切换场景时不会恢复旧构图。可在Main Camera的RecoilCameraController中继续调整。
+室外Camera Depth从-24改为-19.5，View Size从8.3改为6.7；角色显示约放大24%。高处1.4倍拉远、鼠标观察和场景抵达就位规则保留。折射声波参考距离同步改为19.5。
+
+超市使用的实际可见外墙表面位于Z=2.88，窗户和海报按这一表面定位。它们统一挂在Service Station - editable exterior/Wall-mounted windows and poster下。保留旧参考墙，不以隐藏旧墙的深度定位。海报脚本读取XY互动距离，贴墙移动Z轴后仍可按原距离按E阅读；已在Play中验证。
+12个室内场景共35扇有效窗户添加木条：每个场景仅留一扇窗的半幅无遮挡，其余均用旧木条封闭并留窄缝。每扇窗的木条、钉子、缝后发光面、带Cookie遮罩的投射灯均作为窗口子物体保存，可单独编辑。背景中的工厂远景窗及烤箱小窗不视为房间开口。
+备份：Backups/CameraWindowPass/20261021_150413
+截图：Captures/CameraWindowPass/store-interior.png、store-exterior.png
+
+修正：下水道不属于有外墙采光窗的室内类型。已移除RecoilFactorySewer的6扇通用窗、24个窗框分隔条以及所有封窗木条、缝光面和投射灯。保留混凝土、管道、检修照明。迁移工具和封窗工具均明确排除下水道，后续不应使用通用房间窗户布景覆盖地下空间。
+
+2026-10-21 室外建筑侧墙漏空修复
+--------------------------------
+侧墙原先按已禁用的旧Sprite立面定位（Z约7至9.66），但实际显示的替换贴图墙面在Z=3，二者间留下几米缺口。现在通过激活的Recoil3DSpriteVisual实际Mesh边界确定外壳前端；4栋建筑的左右侧墙和屋顶均延伸至Z=2.84，与当前正立面相接，后端接后墙。
+8面侧墙已检查与正面、后墙和屋顶相交接；外壳改为各自Facade物体的子物体，随建筑移动。原先另外生成的工厂旧侧墙和旧屋顶已停用，避免重复或移动时残留。迁移后补建工具同样改为读取有效立面并挂在建筑下。
+备份：Backups/ExteriorShellRepair/20261021_155918
+
+2026-10-21 小灯厚度与全场浓雾
+--------------------------------
+此前迁移规则误将名字带Ceiling的小灯也按天花板挤出14米。现在小型灯具、指示灯、灯罩按实际尺寸限制厚度至0.035至0.12米；异常长的天花灯移回自己的灯具根深度。67处场景小灯和3处3D预制体小灯已同步，设备通电、闪烁和颜色状态逻辑保留。
+13个3D场景统一启用较浓的线性距离雾。室内从相机距离19米开始，48米完全隐入雾；室外15至44米。它使用Unity内置场景雾，不增加粒子、体积采样或新的全屏渲染。角色所在运动平面仍保持可读，深处迅速衰减。没有抬高环境照明，也没有改玩家受光或怪物感知公式。
+可在场景根的Recoil3DWorld组件中调整Fog Colour、Fog Mode、Fog Start Distance、Fog End Distance；Fog Density仅在切换到指数雾时使用。编辑参数和进入场景都会应用，场景切换不会恢复旧值。
+备份：Backups/FogLampRepair/20261021_161426
+截图：Captures/CameraWindowPass/factory-dense-fog.png、outdoor-dense-fog.png
+
+2026-10-21 建筑尺度、收口与材质整理
+--------------------------------
+13个3D场景共287处建筑表面统一使用真实单位的材质坐标：砖长0.26m，砖皮高度0.085m，灰缝0.006m；墙变长时增加砖块，不把砖纹拉大。外墙结合低反差旧抹灰；室内区分混凝土、旧抹灰和下墙裙漆。下水道维持混凝土及管道，厨房回忆保留住宅抹灰/木作。
+4栋室外建筑正面、侧墙、后墙按0.38m墙厚整理；正面位置保持不动，厚度向后增加，所以贴墙海报和窗户仍位于墙外。侧窗调整为沿侧墙展开、窗框贴合墙面。
+31处竖向门增加有厚度的门框、内侧暗缝、门槛和固定螺栓；叶片保留既有纹理，只整理厚度与金属粗糙度。原来的整块假门框/阴影图层在3D视觉上停用，门组件和碰撞保留。小型五金已有84处按约55mm以内的尺寸整理，门框锚固件35mm。
+墙脚潮痕、金属窗下锈水、管道接头下渗漏为少量独立透明表面，无碰撞；原有大雾、灯光位置与曝光系数公式保持。
+材质：Assets/Recoil3D/Materials/Architecture - *.mat、Wear - *.mat、Door finish - *.mat。
+编辑：门框挂在对应RecoilDoor物体下面；墙脚/窗下污渍挂在对应墙面或窗户下面。新增物体可以直接移位或删除。
+编辑工具：Assets/Recoil3D/Editor/Recoil3DArchitecturePolish.cs。已有完成标记时不重建，以免覆盖手工调整。
+备份：Backups/ArchitecturePolish/20261021_162927。
+验证：13个场景物体标识无重复；既有Box/Circle Collider2D、Rigidbody2D与备份一致；门组件状态及目标配置逐项与备份一致。材质Shader已在Play渲染；超市海报互动范围仍有效。
+截图：Captures/CameraWindowPass/store-material-polish.png、office-material-polish.png。
+
+2026-10-21 怪物体型与工装：3D 场景中所有 Rampager 模型放大至 1.3 倍，以脚底为锚点；橙黄色背带工装裤、侧袋、护膝和深色工作靴，保留深色上衣。RampagerMovement.bodyScale=1.3，碰撞宽高与视线起点同步，水弹命中范围同步。根节点、巡逻点、速度、攻击冷却和视距参数保留。Crawler 视觉比例 1.3，导航半径同步至 0.286；后侧成对肢体加入橙黄裤料，保持原有六肢轮廓。全部模型部件随原渐隐。原2D场景保留，默认 bodyScale/visualScale=1。备份 Backups/MonsterWorkwear/20261021。
+
+2026-10-21 陈设纵深摆放：只修改3D场景中的布景位置。仓库正常货架的27个陈列箱推至背景不同深度，箱体和绑带组成可一起编辑的组；2个原有低层装箱移至前景。储物间3个箱子前后错落；工厂等候椅、办公桌椅、更衣室柜子及会议室陈设移至背景。中央倒塌货堆、卡车、门口杂物等阻挡道路的障碍未移动。原碰撞、交互、AI和2D场景保留。备份：Backups/SceneDepthPlacement/20261021_182418。
+
+2026-10-21 纸上剩余修改：
+1. 玩家 Shift 改为按下切换潜行，左右 Shift 均可；松开不取消，再按一次关闭。重试默认关闭。牵手时仍沿用 SilentWalking 状态同步给孩子，潜行速度和声音规则不变。操作说明已同步。
+2. Service Store 的可站立屋顶视觉向后延展，连接原建筑屋顶，保留 Z=0 的可站立前沿；檐口和天窗落在连续屋面上。招牌、招牌文字和照明灯贴回外墙。原屋顶碰撞与天窗出口逻辑保留。
+3. 工厂楼梯间背墙、墙漆、管线、标牌前移至 Z 约 1.9～2.55，楼层数字缩到标牌内。没有移动楼梯路径或楼层碰撞。
+4. 室外新增前景、背景 Rampager 各一只；工厂一楼背景新增一只。复用原有模型、服装、转身速度及 Controller/Perception/Movement/Attack。进入前只接收声音和有效怪物求援，不隔 Z 检测、射击命中或攻击玩家。进入后恢复原注视/攻击/声波规则，不因被呼唤而直接攻击。
+5. 编辑入口：Hierarchy 的 Depth monster routes - editable walkable corridors，子点 RampagerDepthWaypoint 的 Connections 为双向连接、Available 可关闭通路、Gameplay Entrance 为 Z=0 的接入口。怪物上的 RampagerDepthArrival 设置 Navigation、Start Point、Approach Speed、Retry Interval。移动路径应沿真实可步行空间摆放；这是设计师配置的路径点网络，不是自动对全部美术几何烘焙 NavMesh。只在被吸引/通道失败重试时用 Dijkstra 寻路，不逐帧扫描场景；入口另检查现有碰撞和脚下地面。路径不通时等待重试，不穿过去或瞬移。
+6. 已验证：Shift 切换保持/取消；前后景声音传播的三维距离；有效怪物呼唤；路径关闭等待、重新开放重试；三个怪物均正常到达平面；进入前无远程检测/攻击，进入后恢复感知；重试恢复原 Z 和出生点。13 个场景对象标识无重复，既有碰撞组件不变，原2D场景文件保留。Unity 控制台无编译错误。
+备份：Backups/DepthMonsterAndSceneFixes/20261021_183424。
+补充验证：怪物在广播 Commands 中途进入玩家平面时，会同步剩余移动/等待时间与方向；实测剩余移动 0.75s 保持一致。进入时也保留转身速度过渡。
+
+2026-10-21 室内视野迷雾：12个3D室内场景的 Main Camera 新增 IndoorVisionFog，相机后处理逐像素暗化，不恢复原2D渲染和物件遮罩。原3D场景雾保持；室外未启用。利用已有深度纹理重建场景位置，玩家附近清晰，边缘柔和衰减，远处保留少量亮度。场景真实点光/聚光灯照亮区域可在视野外显露，灯开关和闪烁会实时生效；较亮的发光镜片/窗缝仍可辨认。没有探索过的永久地图记忆，这是一层实时视野暗化。
+Inspector：Indoor Vision Fog 的 Effect Enabled 总开关；Clear Radius=3.4m；Feather Width=2.2m；Distant Brightness=0.055（画面乘数，非玩家受光系数）；Depth Distance Weight=0.55；Light Reveal Strength=2；Show Mask Only 可临时查看遮罩；Preview In Edit Mode 控制Game预览。
+性能：复用3D相机已有深度纹理，一次全屏合成；环境灯候选缓存1秒、每0.25秒挑选最多12盏，使用固定数组，不读取GPU亮度回CPU。只在测试截图时读取像素。玩家视觉灯被排除，Directional Light不作为远处显露源。没有修改灯强、怪物视力、PlayerLightExposure或0.4～1受光系数。
+验证：工厂、仓库实际渲染；遮罩跟随角色与透视相机；真实环境灯在视野外能显露局部、关闭后回暗；玩家视觉灯排除、受光系数相同；12个室内相机引用齐全，室外场景文件未变化；既有Transform均未变化，场景对象ID无重复；控制台无错误。备份：Backups/IndoorVisionFog/20261021_190637。
+
+2026-10-21 仓库中央货堆剖面修正：以仓库地板前沿 Z=-3 作为移除前墙的剖切边界；删除伸到摄像机后方的12排生成箱子（552个装饰Mesh），前端箱排平移至边界处停止，保留中间道路的13个碰撞箱及背景货堆。没有移动独立前景装饰或改变道路玩法。Cargo 根组改名 Collapsed cargo - bounded at warehouse front wall，附 Cutaway front wall limit - reference 标记。原一次性生成工具也改为从剖切前沿生成，避免未来重新延伸至摄像机后方。备份 Backups/WarehouseCargoCutaway/20261021_192131。
+
+2026-10-21 高飞停止追击基准：高度差明确为玩家脚底 Y - 该怪物支撑平台顶部 Y。RampagerMovement 缓存 SupportPlatformHeight；怪物起跳期间沿用起跳平台高度，真正落地后更新。原逻辑本来没有查询玩家最近的平台，本次消除怪物自身起跳引起基准上移的问题。阈值仍为1.5个主角站立身高，原攻击/可见/飞行状态条件保留。已检查起跳基准不变、落地恢复、较高出生平台重置，控制台无错误。备份 Backups/MonsterPlatformChaseHeight/20261021_192554。
+
+2026-10-21 主角瞄准/移动朝向测试：13个3D场景的Player新增PlayerAimLocomotion。A/D决定朝向，鼠标只调枪角度；地面移动上下各105度，站定125度，空中与攀爬默认自由瞄准。BodyTurnSpeed=1440；AccelerationTime=.14；StopTime=.12；ReversalBrakeTime=.09。实际Aim同步用于射击/命中/后坐力/弹量环。取消勾选组件可回退旧操作。完整调研、来源、参数和验证见 Documents/玩家瞄准与转向测试.txt。备份 Backups/PlayerAimAndTurning/20261021_201103。
+
+2026-10-21 最终鼠标朝向与飞行姿态
+身体改为快速跟随鼠标，全方向自由瞄准；与移动相反时播放倒退步态。Player新增Recoil3DPlayerLegPose，提供后座力加速高低脚、悬浮/下落慢速蹬车、落地平滑过渡。新增膝关节，仅修改外观。详细可调参数见《玩家瞄准与转向测试.txt》。该方案覆盖之前的移动朝向/限位瞄准测试方案。
+
+2026-10-22 前后景原地注视与室内镜头
+前后景Rampager不再跳过感知/苏醒/注视/怒气逻辑；声音与呼唤仍触发原反应计时，发现目标后在当前纵深位置转身注视。注视暂停进入玩家操作面的路径移动；达到攻击条件后沿原有导航路径接近，抵达操作面保持攻击状态。离开视野仍按原规则脱离注视。只有操作面上的怪物可以近战命中；受光系数与视距仍生效，前后景额外计入Z轴距离和实际朝向。
+12个室内3D场景镜头实际抬高约1.65米，Pitch 3D改为+2.5度（轻微俯视），Pan Y 3D补偿俯角导致的机位偏移；保留脚底构图保护、室外镜头不变。
+验证：前景Z=-3.4与背景Z=3.4均能原地注视并给玩家注视反馈，休眠苏醒不产生额外寻路延迟；注视下跑动达到攻击阈值后开始纵深寻路，抵达操作面保持Attack；丢失目标按2秒脱离；近战不可跨平面。Unity Play控制台无错误。备份：Backups/DepthGazeAndIndoorCamera/20261022。
+
+2026-10-22 普通怪物统一导航（替代前一版纵深入场行为）
+前一版“注视暂停纵深路径”分支已移除。所有普通怪物统一由RampagerController决定注视接近、攻击、巡逻与返回；RampagerDepthArrival仅保留历史类名，实际作为通用导航移动适配器，不再包含单独的声音反应、状态判断或入场重置逻辑。19只现有普通怪物统一挂载，后续新怪物自动接入。导航从碰撞地形和现有楼梯生成，取消手工起点/入场节点依赖。详细架构、摆放与有效地面的边界见《普通怪物统一逻辑与自动寻路.txt》。之前关于“先进入操作面才能活动”及“注视时原地不动”的描述均已失效。
+
+2026-10-22 玩家双操作面
+13个3D场景统一加入PlayerDepthPlane。默认面Z=0，软平台/楼梯面Z=0.7；下落预测落点自动换面，起飞可中断；S+空格朝镜头小跳离开软平台或楼梯，暂时排除来源避免重新吸附。人物、武器、声音、反馈和怪物目标读取真实XYZ，相机Z保持固定。详情和可调参数见《玩家双操作面说明.txt》。未更新GDD或原2D场景资产。

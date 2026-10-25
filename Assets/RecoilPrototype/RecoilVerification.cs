@@ -31,11 +31,11 @@ public sealed partial class RecoilPrototype
         enemy.GetComponent<RampagerAttack>().enabled=false;enemies[1].GetComponent<RampagerAttack>().enabled=false;
         Require(Mathf.Abs(enemy.idealSightRange-11.946668f)<.001f,"base sight default increased by forty percent");
         Require(Mathf.Abs(player.Noise.footstepRadius-4.16f)<.001f,"shared footstep and flight noise radius increased by thirty percent");
-        enemy.spawnFacing=RampagerController.SpawnDirection.Right;enemy.idealSightRange=100;enemy.fieldOfView=180;
+        enemy.idealSightRange=100;enemy.fieldOfView=180;
         Require(enemy.roamingNoticeDelay==new Vector2(.75f,.75f) && enemy.sleepingNoticeDelay==new Vector2(1.75f,1.75f),"fixed .75 roaming and 1.75 waking delays");
         enemy.returnToSleepAfterSound=false;enemy.sightPitchOffset=0;
         Action<RampagerController.Behaviour> reset=state=>{
-            ActiveInteraction=null;enemy.initialState=state;enemy.ResetController();player.ResetController(new Vector2(2,100));
+            ActiveInteraction=null;enemy.initialState=state;enemy.ResetController();motor.Facing=1;motor.SetVisualYaw(-90);player.ResetController(new Vector2(2,100));
             motor.Position=new Vector2(0,100);simTime=100;
         };
         Action<float> intent=value=>VerifyField(player,"<HorizontalIntent>k__BackingField",value);
@@ -47,15 +47,15 @@ public sealed partial class RecoilPrototype
         EnemySteps(enemy,2);Require(enemy.WatchingPlayer && enemy.State==RampagerController.Behaviour.Roaming,"sound leads to watch, not attack");
         VerifyField(player,"flying",true);EnemySteps(enemy,30);Require(enemy.State==RampagerController.Behaviour.Roaming && enemy.DetectionProgress==0,"normal flight is legal");
         VerifyField(player,"flying",false);VerifyField(player,"grounded",true);intent(1);EnemySteps(enemy,30);
-        Require(enemy.DetectionProgress>.58f && enemy.DetectionProgress<.62f,"running anger at .5 seconds");
-        intent(0);EnemySteps(enemy,20);Require(enemy.DetectionProgress>.38f && enemy.DetectionProgress<.42f,"anger decays at one full bar per second");
+        Require(enemy.DetectionProgress>.18f && enemy.DetectionProgress<.22f,"running anger at 1.5 seconds");
+        intent(0);EnemySteps(enemy,20);Require(enemy.DetectionProgress<.02f,"anger decays at one full bar per second");
         VerifyField(player,"silentWalking",true);intent(1);EnemySteps(enemy,45);Require(enemy.DetectionProgress==0,"stealth remains safe");
-        VerifyField(player,"silentWalking",false);EnemySteps(enemy,49);Require(enemy.State==RampagerController.Behaviour.Roaming,"running threshold not premature");
+        VerifyField(player,"silentWalking",false);EnemySteps(enemy,149);Require(enemy.State==RampagerController.Behaviour.Roaming,"running threshold not premature");
         EnemySteps(enemy,2);Require(enemy.State==RampagerController.Behaviour.Attack,"running reaches attack threshold");
         Require(Mathf.Abs(enemy.CurrentMoveSpeed-enemy.chaseSpeed*1.5f)<.001f,"base chase unchanged");
         reset(RampagerController.Behaviour.Roaming);enemy.HearNoise(player.Position,10);EnemySteps(enemy,76);
         VerifyField(player,"shotAt",simTime);VerifyField(player,"<ShotSequence>k__BackingField",1);EnemySteps(enemy,1);
-        Require(enemy.State==RampagerController.Behaviour.Attack,"shooting while watched attacks immediately");
+        Require(enemy.WatchingPlayer && Mathf.Abs(enemy.DetectionProgress-.5f)<.001f,"watched miss adds half anger");
         reset(RampagerController.Behaviour.Sleeping);EnemySteps(enemy,30);Require(!enemy.Noticing,"sight cannot wake sleeping");
         enemy.HearNoise(player.Position,10);EnemySteps(enemy,174);Require(enemy.Waking && enemy.State==RampagerController.Behaviour.Sleeping,"sleep wake delay");
         EnemySteps(enemy,2);Require(enemy.WatchingPlayer && enemy.State==RampagerController.Behaviour.Roaming,"wake checks sight without immediate attack");
@@ -97,10 +97,10 @@ public sealed partial class RecoilPrototype
         reset(RampagerController.Behaviour.Sleeping);enemy.ReceiveBuildingWarning(3);VerifyField(player,"flying",true);EnemySteps(enemy,1);enemy.EndSwarm(.01f);EnemySteps(enemy,2);
         Require(enemy.WatchingPlayer,"wave-forced attack exit also returns to watching rather than sleeping");
         reset(RampagerController.Behaviour.Roaming);VerifyField(player,"shotAt",simTime);VerifyField(player,"<ShotSequence>k__BackingField",1);EnemySteps(enemy,1);
-        Require(enemy.State==RampagerController.Behaviour.Attack,"visible unwatched shooting immediately attacks");
+        Require(enemy.WatchingPlayer && Mathf.Abs(enemy.DetectionProgress-.5f)<.001f,"visible unwatched miss starts watching with half anger");
         reset(RampagerController.Behaviour.Roaming);enemy.HearNoise(player.Position,10);EnemySteps(enemy,20);
         VerifyField(player,"shotAt",simTime);VerifyField(player,"<ShotSequence>k__BackingField",1);EnemySteps(enemy,1);
-        Require(enemy.State==RampagerController.Behaviour.Attack,"notice delay does not block visible shooting detection");
+        Require(enemy.WatchingPlayer && Mathf.Abs(enemy.DetectionProgress-.5f)<.001f,"notice delay does not block visible half anger");
         reset(RampagerController.Behaviour.Roaming);player.NotifyForbiddenInteraction();EnemySteps(enemy,1);
         Require(enemy.Noticing && enemy.State==RampagerController.Behaviour.Roaming,"unwatched instant interaction initiates notice rather than attack");
         EnemySteps(enemy,74);Require(!enemy.WatchingPlayer,"interaction notice delay is not premature");EnemySteps(enemy,2);
@@ -151,15 +151,15 @@ public sealed partial class RecoilPrototype
         UpdateContinuousInteraction(false,.01f);interactionItems=previousItems;
         reset(RampagerController.Behaviour.Roaming);var ladderGO=new GameObject("Test visible ladder");ladderGO.transform.SetParent(transform);ladderGO.transform.position=new Vector2(2,101);
         var ladder=ladderGO.AddComponent<ClimbableLadder>();var ladderBox=ladder.GetComponent<BoxCollider2D>();ladderBox.isTrigger=true;ladderBox.size=new Vector2(1,6);
-        var previousLadders=ladders;ladders=new[]{ladder};Physics2D.SyncTransforms();player.Simulate(0,1,false,false,false,.01f);
+        var previousLadders=ladders;ladders=new[]{ladder};Physics2D.SyncTransforms();player.Simulate(0,1,false,false,.01f);
         Require(player.OnLadder,"player actually attaches using ladder controls");EnemySteps(enemy,1);
         Require(enemy.Noticing && enemy.State==RampagerController.Behaviour.Roaming,"visible ladder climbing initiates roaming attention");
         EnemySteps(enemy,74);Require(!enemy.WatchingPlayer,"ladder attention respects .75 reaction delay");EnemySteps(enemy,2);
         Require(enemy.WatchingPlayer,"visible ladder climbing leads to watching");EnemySteps(enemy,100);
         Require(enemy.State==RampagerController.Behaviour.Roaming && enemy.DetectionProgress==0,"ladder climbing alone is not an attack violation");
-        reset(RampagerController.Behaviour.Roaming);ladderGO.transform.position=new Vector2(1000,101);player.Position=new Vector2(1000,100);Physics2D.SyncTransforms();player.Simulate(0,1,false,false,false,.01f);EnemySteps(enemy,10);
+        reset(RampagerController.Behaviour.Roaming);ladderGO.transform.position=new Vector2(1000,101);player.Position=new Vector2(1000,100);Physics2D.SyncTransforms();player.Simulate(0,1,false,false,.01f);EnemySteps(enemy,10);
         Require(player.OnLadder && !enemy.Noticing && !enemy.WatchingPlayer,"out-of-sight ladder climbing does not attract attention");
-        reset(RampagerController.Behaviour.Sleeping);ladderGO.transform.position=new Vector2(2,101);Physics2D.SyncTransforms();player.Simulate(0,1,false,false,false,.01f);EnemySteps(enemy,100);
+        reset(RampagerController.Behaviour.Sleeping);ladderGO.transform.position=new Vector2(2,101);Physics2D.SyncTransforms();player.Simulate(0,1,false,false,.01f);EnemySteps(enemy,100);
         Require(enemy.State==RampagerController.Behaviour.Sleeping && !enemy.Waking,"visual ladder climbing does not wake a sleeping monster");ladders=previousLadders;
         reset(RampagerController.Behaviour.Roaming);enemy.ReceiveBuildingWarning(3);VerifyField(player,"flying",true);EnemySteps(enemy,1);
         Require(enemy.State==RampagerController.Behaviour.Attack,"broadcast flight violation preserved");
@@ -174,7 +174,7 @@ public sealed partial class RecoilPrototype
         for(int i=0;i<2001;i++){player.Position=new Vector2(motor.Position.x+5,100);EnemySteps(enemy,1);}
         Require(enemy.WatchingPlayer,"total chase ends into watch after twenty seconds");
         enemy.ResetController();Require(!enemy.Noticing && !enemy.WatchingPlayer && enemy.DetectionProgress==0,"reset clears attention");
-        Require(Mathf.Abs(player.walkSpeed-2.52f)<.001f && Mathf.Abs(player.sneakSpeed-.99f)<.001f,"updated player speed defaults");
+        Require(Mathf.Abs(player.walkSpeed-2.772f)<.001f && Mathf.Abs(player.sneakSpeed-1.188f)<.001f,"updated player speed defaults");
         reset(RampagerController.Behaviour.Roaming);enemy.HearNoise(player.Position,10);EnemySteps(enemy,76);
         bool wasStarted=started;started=true;
         var feedback=player.GetComponent<PlayerGazeFeedback>();if(!feedback)feedback=player.gameObject.AddComponent<PlayerGazeFeedback>();feedback.Initialize(this);
@@ -184,7 +184,7 @@ public sealed partial class RecoilPrototype
         player.Position=new Vector2(1000,100);EnemySteps(enemy,1);feedback.Simulate(1);
         Require(heart.enabled && feedback.Visibility>.49f && feedback.Visibility<.51f,"heart fades instead of disappearing immediately");
         feedback.Simulate(1.01f);Require(!heart.enabled,"heart fully fades after two seconds");
-        player.Position=new Vector2(2,100);EnemySteps(enemy,1);VerifyField(player,"shotAt",simTime);VerifyField(player,"<ShotSequence>k__BackingField",1);EnemySteps(enemy,1);
+        player.Position=new Vector2(2,100);EnemySteps(enemy,1);VerifyField(enemy,"detectionProgress",.6f);VerifyField(player,"shotAt",simTime);VerifyField(player,"<ShotSequence>k__BackingField",1);EnemySteps(enemy,1);
         feedback.Simulate(.01f);Require(feedback.AttackWatcherCount==1 && feedback.CurrentBeatRate==3 && heart.color.r>heart.color.b,"attack gaze uses fast red heart");
         VerifyField(player,"shotAt",-100f);player.Position=new Vector2(2,105);VerifyField(player,"flying",true);EnemySteps(enemy,1002);feedback.Simulate(.01f);
         Require(enemy.WatchingPlayer && feedback.AttackWatcherCount==0 && feedback.CurrentBeatRate==1 && heart.color.r>heart.color.b,"attack exit restores normal red watching feedback");

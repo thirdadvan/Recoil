@@ -5,13 +5,24 @@ using UnityEngine;
 [DisallowMultipleComponent,RequireComponent(typeof(PlayerNoiseEmitter))]
 public sealed class RecoilPlayerController : MonoBehaviour
 {
+    [Min(0),Tooltip("步行自动迈上的最大矮台阶高度，单位米。")]
+    public float automaticStepHeight=.28f;
+    float lowStepAt=-100,lowStepRise;
+    SoftRoofPlatform lowStepRoof;
+    public float LowStepProgress {get{return world?Mathf.Clamp01((world.Clock-lowStepAt)/.24f):1;}}
+    public float StepVisualOffset {get{return -lowStepRise*(1-Mathf.SmoothStep(0,1,LowStepProgress));}}
     [SerializeField] RecoilPrototype world;
     [SerializeField] Camera aimCamera;
     [SerializeField] Transform coat, head, hat, gun;
     SpriteRenderer gunRenderer;
+    PlayerGrabPressure grabPressure;
+    public PlayerGrabPressure GrabPressure {get{if(!grabPressure)grabPressure=GetComponent<PlayerGrabPressure>();return grabPressure;}}
     [Header("Movement")]
-    public float walkSpeed=2.52f, sneakSpeed=.99f, hoverSpeed=2.2f, verticalHoverSpeed=1.5f;
+    [InspectorName("Run Speed"),Tooltip("按住 Shift 时的跑步速度。") ] public float walkSpeed=2.772f;
+    [InspectorName("Stealth Speed"),Tooltip("不按 Shift 时的默认潜行速度。") ] public float sneakSpeed=1.188f;
+    public float hoverSpeed=2.2f, verticalHoverSpeed=1.5f;
     public float gravity=14, jumpSpeed=5;
+    public bool StealthHeld {get;private set;}
     [Header("Damage")]
     [Min(1)] public int maxHealth=3;
     public int Health {get;private set;}
@@ -56,13 +67,25 @@ public sealed class RecoilPlayerController : MonoBehaviour
     [Min(.1f)] public float groundRefillInterval=1;
     class Spray { public LineRenderer line; public float life; }
     readonly List<Spray> sprays=new List<Spray>();
-    Vector2 pos, velocity, pool, aim=Vector2.right;
+    Vector2 pos, velocity, pool, aim=Vector2.right,requestedAim=Vector2.right;
+    PlayerDepthPlane depthPlane;bool depthResolved;
+    public PlayerDepthPlane DepthPlane {get{if(!depthResolved){depthPlane=GetComponent<PlayerDepthPlane>();depthResolved=true;}return depthPlane&&depthPlane.isActiveAndEnabled?depthPlane:null;}}
+    public float GameplayZ {get{return DepthPlane?DepthPlane.CurrentZ:0;}}
+    public Vector3 WorldPosition {get{return new Vector3(pos.x,pos.y,GameplayZ);}}
+    void SyncRootPosition(){transform.position=WorldPosition;}
+    PlayerAimLocomotion aimLocomotion;bool aimLocomotionResolved;
+    public PlayerAimLocomotion AimLocomotion {get{if(!aimLocomotionResolved){aimLocomotion=GetComponent<PlayerAimLocomotion>();aimLocomotionResolved=true;}return aimLocomotion&&aimLocomotion.isActiveAndEnabled?aimLocomotion:null;}}
+    void ResolveAimForPose()
+    {aim=AimLocomotion?AimLocomotion.ResolveAim(requestedAim,grounded||WalkingStairs,flying||Climbing||holdingHandhold,Mathf.Abs(HorizontalIntent)>.1f||Mathf.Abs(velocity.x)>.15f):requestedAim;}
     float poolAt=-10, shotAt=-10, upwardAt=-10, nextShot;
     PlayerNoiseEmitter noise;
     public PlayerNoiseEmitter Noise {get{if(!noise)noise=GetComponent<PlayerNoiseEmitter>();return noise;}}
     public void InitializeNoise(RecoilPrototype context)
     {if(!noise)noise=GetComponent<PlayerNoiseEmitter>();if(!noise)noise=gameObject.AddComponent<PlayerNoiseEmitter>();noise.Initialize(context);}
-    bool grounded, flying, crouched, silentWalking;
+    bool grounded, flying, silentWalking;
+    // Collision-resolved horizontal speed, used by ordinary monster anger checks.
+    public float ActualHorizontalSpeed {get;private set;}
+    public bool MovingAboveStealthSpeed {get{return ActualHorizontalSpeed>Mathf.Max(0,sneakSpeed)+.001f;}}
     ClimbableLadder climbingLadder;
     SwingingChain climbingChain;
     WalkableStairway walkingStairway;
@@ -80,6 +103,7 @@ public sealed class RecoilPlayerController : MonoBehaviour
     float ladderReattachAt;
     public bool Climbing {get{return climbingLadder || climbingChain;}}
     public bool OnLadder {get{return climbingLadder;}}
+    public float LadderDepthZ {get{return climbingLadder?climbingLadder.transform.position.z:transform.position.z;}}
     public Vector2 CameraFollowPosition {get{return climbingChain?climbingChain.CameraPosition:pos;}}
     void ReleaseChain(){if(climbingChain){velocity=climbingChain.RiderVelocity;climbingChain.Release();climbingChain=null;}}
     PlayerLightExposure lightExposure;
@@ -91,18 +115,21 @@ public sealed class RecoilPlayerController : MonoBehaviour
     public int FallSequence {get;private set;}
     public bool HighFall {get;private set;}
     public float FallDistance {get{return fallDistance;}}
-    public Vector2 Position { get { return pos; } set { pos=value;transform.position=value; } }
-    public Vector2 Aim { get { return aim; } set { aim=value.normalized; } }
+    public Vector2 Position { get { return pos; } set { pos=value;SyncRootPosition(); } }
+    public Vector2 Aim { get { return aim; } set { if(value.sqrMagnitude>.00001f){requestedAim=value.normalized;ResolveAimForPose();} } }
     public Vector2 RecoilPool { get { return pool; } }
+    bool recoilApplied;
+    // Presentation reads actual applied recoil, not the pool that remains stored after its decay.
+    public bool RecoilAccelerating {get{return world && flying && !Climbing && !HoldingHandhold && !WalkingStairs && recoilApplied && world.Clock-poolAt<recoilDecayDuration;}}
     public bool Flying { get { return flying; } }
     public bool Grounded { get { return grounded; } }
-    public bool Crouched { get { return crouched; } }
     public int ShotSequence {get;private set;}
     public int InteractionSequence {get;private set;}
     public float LastShot { get { return shotAt; } }
     public float HorizontalIntent {get;private set;}
     public bool MovementBlocked {get;private set;}
     public bool SilentWalking {get{return silentWalking;}}
+    public bool Running {get{return grounded && !silentWalking && MovingAboveStealthSpeed;}}
     float forbiddenUntil=-100;
     public bool RecentInteraction {get{return world.Clock<forbiddenUntil;}}
     public bool Violating {get{return flying || world.Clock-shotAt<.18f || world.Clock<forbiddenUntil || world.ActiveInteraction!=null;}}
@@ -110,23 +137,32 @@ public sealed class RecoilPlayerController : MonoBehaviour
     RecoilPlayerBodyProfile bodyProfile;bool bodyProfileResolved;
     RecoilPlayerBodyProfile BodyProfile {get{if(!bodyProfileResolved){bodyProfile=GetComponent<RecoilPlayerBodyProfile>();bodyProfileResolved=true;}return bodyProfile;}}
     public float StandingHeight {get{return BodyProfile?BodyProfile.standingHeight:1.65f;}}
-    float CrouchingHeight {get{return BodyProfile?BodyProfile.crouchingHeight:.85f;}}
     float HalfWidth {get{return BodyProfile?BodyProfile.halfWidth:.32f;}}
     float SupportHalfWidth {get{return Mathf.Max(.01f,HalfWidth-.02f);}}
-    float CrouchCenterDelta {get{return (StandingHeight-CrouchingHeight)*.5f;}}
     public float BodyHeight {get{return Height;}}
     public bool HasWaterGun {get{return world && world.HasWaterGun;}}
-    float Height { get { return crouched ? CrouchingHeight : StandingHeight; } }
+    float Height { get { return StandingHeight; } }
     Rect Body { get { return new Rect(pos.x-HalfWidth,pos.y-Height/2,HalfWidth*2,Height); } }
     public void Configure(RecoilPrototype owner,Camera camera,Transform body,Transform face,Transform cap,Transform weapon)
-    { bodyProfileResolved=false;world=owner;aimCamera=camera;coat=body;head=face;hat=cap;gun=weapon; }
+    { bodyProfileResolved=false;world=owner;aimCamera=camera;coat=body;head=face;hat=cap;gun=weapon;
+        InitializeDepthPlane(owner);
+    }
+    public void InitializeDepthPlane(RecoilPrototype context)
+    {
+        if(context.gameObject.scene.path.StartsWith(Recoil3DScene.Folder) && !GetComponent<PlayerDepthPlane>())gameObject.AddComponent<PlayerDepthPlane>();
+        depthResolved=false;if(DepthPlane)DepthPlane.Initialize(context,this);
+    }
     public void ResetController(Vector2 position)
     {
-        Position=position;velocity=pool=Vector2.zero;aim=Vector2.right;
+        if(DepthPlane)DepthPlane.ResetPlane(position);
+        if(GrabPressure)GrabPressure.ResetPressure();
+        Position=position;velocity=pool=Vector2.zero;aim=requestedAim=Vector2.right;recoilApplied=false;
+        lowStepAt=-100;lowStepRise=0;lowStepRoof=null;
+        if(AimLocomotion)AimLocomotion.ResetTuning();
         monsterKnockback=Vector2.zero;monsterKnockbackRemaining=0;
-        HorizontalIntent=0;MovementBlocked=false;forbiddenUntil=-100;ShotSequence=InteractionSequence=0;
+        HorizontalIntent=0;ActualHorizontalSpeed=0;MovementBlocked=false;forbiddenUntil=-100;ShotSequence=InteractionSequence=0;
         Health=Mathf.Max(1,maxHealth);lastHitAt=-100;healthRecoveryElapsed=0;
-        grounded=flying=crouched=silentWalking=false;shotAt=upwardAt=poolAt=-10;nextShot=0;
+        StealthHeld=false;grounded=flying=silentWalking=false;shotAt=upwardAt=poolAt=-10;nextShot=0;
         ReleaseChain();ReleaseHandhold();ReleaseStairs();stairReattachAt=0;handholdReattachAt=0;velocity=Vector2.zero;climbingLadder=null;dropThroughRoof=null;ladderReattachAt=0;
         if(Noise)Noise.ResetNoise();
         Ammo=Mathf.Max(1,ammoCapacity);refillElapsed=fallDistance=0;fallActive=HighFall=false;FallSequence=0;
@@ -143,13 +179,15 @@ public sealed class RecoilPlayerController : MonoBehaviour
         if(!eConsumed && world.TryInteractReadable(ePressed))return;
         if(Input.GetKeyDown(KeyCode.K))world.EquipUniversalKey();
         if(Input.GetKeyDown(KeyCode.T))EquipTestWaterGun();
-        Vector2 mouse=aimCamera.ScreenToWorldPoint(Input.mousePosition);
-        if((mouse-pos).sqrMagnitude>.02f)aim=(mouse-pos).normalized;
+        var aimRay=aimCamera.ScreenPointToRay(Input.mousePosition);float aimDistance;
+        Vector2 mouse=new Plane(Vector3.forward,WorldPosition).Raycast(aimRay,out aimDistance)?(Vector2)aimRay.GetPoint(aimDistance):pos+aim;
+        if((mouse-pos).sqrMagnitude>.02f)Aim=(mouse-pos).normalized;
         float horizontal=(Input.GetKey(KeyCode.D)||Input.GetKey(KeyCode.RightArrow)?1:0)-(Input.GetKey(KeyCode.A)||Input.GetKey(KeyCode.LeftArrow)?1:0);
         float vertical=(Input.GetKey(KeyCode.W)||Input.GetKey(KeyCode.UpArrow)||Input.GetKey(KeyCode.Space)?1:0)-(Input.GetKey(KeyCode.S)||Input.GetKey(KeyCode.DownArrow)?1:0);
         if(Input.GetKey(KeyCode.S)||Input.GetKey(KeyCode.DownArrow))vertical=-1;
-        Simulate(horizontal,vertical,Input.GetKey(KeyCode.C)||Input.GetKey(KeyCode.LeftControl),Input.GetMouseButton(0),Input.GetKeyDown(KeyCode.Space),world.FrameDelta,
-            Input.GetKeyDown(KeyCode.W)||Input.GetKeyDown(KeyCode.UpArrow),Input.GetKey(KeyCode.LeftShift)||Input.GetKey(KeyCode.RightShift));
+        StealthHeld=!(Input.GetKey(KeyCode.LeftShift)||Input.GetKey(KeyCode.RightShift));
+        Simulate(horizontal,vertical,Input.GetMouseButton(0),Input.GetKeyDown(KeyCode.Space),world.FrameDelta,
+            Input.GetKeyDown(KeyCode.W)||Input.GetKeyDown(KeyCode.UpArrow),StealthHeld);
         if(!eConsumed){world.UpdateContinuousInteraction(eHeld||ePressed,world.FrameDelta);world.ObservePlayer(ePressed);}
     }
     public void EquipTestWaterGun()
@@ -157,20 +195,34 @@ public sealed class RecoilPlayerController : MonoBehaviour
         world.RememberProgress("water_gun");ammoCapacity=15;Ammo=15;
         refillElapsed=0;refillStarted=false;LastAmmoUITrigger=world.Clock;
     }
-    public void Simulate(float horizontal,float vertical,bool sneak,bool shoot,bool jump,float dt,bool launch=false,bool silentWalk=false)
+    public void Simulate(float horizontal,float vertical,bool shoot,bool jump,float dt,bool launch=false,bool silentWalk=false)
     {
+        if(GrabPressure)
+        {
+            GrabPressure.SetMovementMode(grounded && silentWalk?sneakSpeed:walkSpeed);
+            GrabPressure.Simulate(dt);
+        }
+        if(!world.Playing)return;
+        float grabSpeed=GrabPressure?GrabPressure.SpeedMultiplier:1;
         if(world.EscortingChild){flying=false;climbingLadder=null;}
         HorizontalIntent=horizontal;
+        if(AimLocomotion)AimLocomotion.UpdateFacing(horizontal,requestedAim);
+        ResolveAimForPose();
         bool wasGrounded=grounded,wasFlying=flying;
         bool wasSupported=grounded || Climbing;
-        bool wasCrouched=crouched;
-        crouched=grounded && sneak;
         silentWalking=grounded && silentWalk;
-        if(crouched!=wasCrouched) pos.y += (crouched ? -CrouchCenterDelta : CrouchCenterDelta);
         if(shoot && world.Clock>=nextShot) Shoot();
+        bool planeDeparture=false;SoftRoofPlatform departureRoof;
+        if(DepthPlane && jump && vertical<-.1f && !flying && DepthPlane.BeginDeparture(pos,walkingStairway,grounded,out departureRoof))
+        {
+            planeDeparture=true;dropThroughRoof=departureRoof;ReleaseStairs();ReleaseChain();ReleaseHandhold();climbingLadder=null;
+            grounded=flying=false;pool=Vector2.zero;upwardAt=poolAt=-10;
+            velocity.y=Mathf.Sqrt(2*gravity*DepthPlane.departureHopHeight);
+            stairReattachAt=ladderReattachAt=world.Clock+DepthPlane.departureDuration;
+        }
         if(walkingStairway && (!walkingStairway.Available || jump))ReleaseStairs();
         bool stairCaughtThisFrame=false;
-        if(!walkingStairway && !Climbing && !holdingHandhold && !crouched && !jump && !shoot && world.Clock>=stairReattachAt)
+        if(!walkingStairway && !Climbing && !holdingHandhold && !jump && !shoot && world.Clock>=stairReattachAt)
         {
             var feet=pos-Vector2.up*Height*.5f;
             if(grounded && !flying && Mathf.Abs(vertical)>.1f)
@@ -178,21 +230,23 @@ public sealed class RecoilPlayerController : MonoBehaviour
             if(!walkingStairway && (Mathf.Abs(vertical)>.1f || ((flying || (!grounded && Mathf.Abs(velocity.y)>.1f)) && Mathf.Abs(horizontal)>.1f)))
             {
                 walkingStairway=world.FindStairwayCatch(feet,out stairDistance);
+                if(walkingStairway && DepthPlane && !DepthPlane.CanAttachStair(walkingStairway))walkingStairway=null;
                 if(walkingStairway){stairApproaching=false;stairCaughtThisFrame=true;stairHeading=vertical<-.1f?-1:1;Position=walkingStairway.PositionAt(stairDistance)+Vector2.up*Height*.5f;}
             }
-            if(walkingStairway){flying=false;pool=velocity=Vector2.zero;upwardAt=shotAt=poolAt=-10;}
+            if(walkingStairway && DepthPlane && !DepthPlane.CanAttachStair(walkingStairway))walkingStairway=null;
+            if(walkingStairway){flying=false;pool=velocity=Vector2.zero;upwardAt=shotAt=poolAt=-10;if(DepthPlane && !stairCaughtThisFrame)DepthPlane.BeginStairEntry();}
         }
         if(holdingHandhold && (!holdingHandhold.isActiveAndEnabled || jump))
         {ReleaseHandhold();if(jump)velocity.y=jumpSpeed;}
-        if(!walkingStairway && !holdingHandhold && !Climbing && !jump && !shoot && world.Clock>=handholdReattachAt)
+        if(!walkingStairway && !holdingHandhold && !Climbing && !jump && !shoot && (!DepthPlane || !DepthPlane.Departing) && world.Clock>=handholdReattachAt)
         {
             holdingHandhold=world.FindHandhold(pos,Height);
-            if(holdingHandhold){flying=grounded=crouched=false;pool=velocity=Vector2.zero;upwardAt=shotAt=poolAt=-10;}
+            if(holdingHandhold){flying=grounded=false;pool=velocity=Vector2.zero;upwardAt=shotAt=poolAt=-10;}
         }
         if(climbingChain && (!climbingChain.isActiveAndEnabled || jump))
         {ReleaseChain();ladderReattachAt=world.Clock+.25f;if(jump)velocity.y+=jumpSpeed;}
-        bool dropping=false;
-        if(jump && vertical<-.1f && grounded)
+        bool dropping=planeDeparture;
+        if(jump && vertical<-.1f && grounded && !planeDeparture)
         {
             foreach(var roof in world.SoftRoofs)if(roof && roof.Available)
             {
@@ -203,39 +257,39 @@ public sealed class RecoilPlayerController : MonoBehaviour
         }
         if(climbingLadder && (!climbingLadder.Contains(pos,Height) || jump || (Mathf.Abs(horizontal)>.1f && GroundNearLadderFeet(horizontal))))
         {climbingLadder=null;ladderReattachAt=world.Clock+.25f;if(jump && !dropping)velocity.y=jumpSpeed;}
-        if(!walkingStairway && !holdingHandhold && !Climbing && !flying && !jump && world.Clock>=ladderReattachAt && Mathf.Abs(vertical)>.1f)
+        if(!walkingStairway && !holdingHandhold && !Climbing && !flying && !jump && (!DepthPlane || !DepthPlane.Departing) && world.Clock>=ladderReattachAt && Mathf.Abs(vertical)>.1f)
         {
             climbingChain=world.FindChain(pos,Height);
             if(climbingChain)climbingChain.Attach(this,pos);
             else if(!world.EscortingChild)climbingLadder=world.FindLadder(pos,Height);
         }
-        if(climbingLadder){if(crouched){crouched=false;pos.y+=CrouchCenterDelta;}flying=grounded=false;velocity=Vector2.zero;}
-        if(climbingChain){if(crouched){crouched=false;pos.y+=CrouchCenterDelta;}flying=grounded=false;velocity=Vector2.zero;}
+        if(climbingLadder){flying=grounded=false;velocity=Vector2.zero;}
+        if(climbingChain){flying=grounded=false;velocity=Vector2.zero;}
         if(!walkingStairway && !holdingHandhold && !Climbing && !dropping && (jump || launch || (!flying && vertical>0)))
         {
-            if(!world.EscortingChild && world.Clock-upwardAt<ActiveFlightDuration && !crouched) { flying=true; velocity.y=0; }
-            else if(jump && grounded && !crouched) velocity.y=world.EscortingChild?Mathf.Min(jumpSpeed,3.2f):jumpSpeed;
+            if(!world.EscortingChild && world.Clock-upwardAt<ActiveFlightDuration) { flying=true; velocity.y=0; }
+            else if(jump && grounded) velocity.y=world.EscortingChild?Mathf.Min(jumpSpeed,3.2f):jumpSpeed;
         }
         if(flying && world.Clock-shotAt>ActiveFlightDuration) { flying=false; world.Say("It stops holding me up when I stop firing."); }
         float decay=Mathf.Clamp01(1-(world.Clock-poolAt)/Mathf.Max(.01f,recoilDecayDuration));
         Vector2 stored=pool*decay;
-        float speed=flying ? hoverSpeed : (crouched || silentWalking) ? sneakSpeed : walkSpeed;
-        velocity.x=Mathf.MoveTowards(velocity.x,horizontal*speed,dt*22);
+        float speed=flying ? hoverSpeed : silentWalking ? sneakSpeed : walkSpeed;
+        velocity.x=AimLocomotion?AimLocomotion.AdvanceHorizontal(velocity.x,horizontal,speed,dt,grounded&&!flying&&!Climbing&&!holdingHandhold&&!WalkingStairs):Mathf.MoveTowards(velocity.x,horizontal*speed,dt*22);
         Vector2 move=new Vector2(velocity.x,0);
         bool usingRecoil=flying && !wasFlying && stored.sqrMagnitude>0;
         bool onStairs=walkingStairway;bool stairFinished=false;
-        if(walkingStairway){var feet=walkingStairway.Advance(pos-Vector2.up*Height*.5f,stairCaughtThisFrame?0:horizontal,stairCaughtThisFrame?0:vertical,(crouched || silentWalking)?sneakSpeed/Mathf.Max(.01f,walkSpeed):1,dt,ref stairDistance,ref stairApproaching,ref stairHeading,out stairFinished);move=(feet+Vector2.up*Height*.5f-pos)/Mathf.Max(.0001f,dt);velocity=Vector2.zero;flying=false;}
+        if(walkingStairway){if(DepthPlane && DepthPlane.StairEntering)move=Vector2.zero;else {var feet=walkingStairway.Advance(pos-Vector2.up*Height*.5f,stairCaughtThisFrame?0:horizontal,stairCaughtThisFrame?0:vertical,(silentWalking?sneakSpeed/Mathf.Max(.01f,walkSpeed):1)*grabSpeed,dt,ref stairDistance,ref stairApproaching,ref stairHeading,out stairFinished);move=(feet+Vector2.up*Height*.5f-pos)/Mathf.Max(.0001f,dt);}velocity=Vector2.zero;flying=false;}
         else if(holdingHandhold)move=(holdingHandhold.Position-pos)/Mathf.Max(.0001f,dt);
         else if(climbingChain)
         {
-            climbingChain.Drive(horizontal,vertical,dt,1);
+            climbingChain.Drive(horizontal,vertical,dt,grabSpeed);
             move=(climbingChain.RiderPosition-pos)/Mathf.Max(.0001f,dt);
         }
         else if(climbingLadder)
         {
             var area=climbingLadder.Area;
             move.x=Mathf.Clamp(area.center.x-pos.x,-climbingLadder.climbSpeed*dt,climbingLadder.climbSpeed*dt)/Mathf.Max(.0001f,dt);
-            move.y=(Mathf.Clamp(pos.y+vertical*climbingLadder.climbSpeed*dt,area.yMin+Height*.5f,area.yMax+Height*.5f)-pos.y)/Mathf.Max(.0001f,dt);
+            move.y=(Mathf.Clamp(pos.y+vertical*climbingLadder.climbSpeed*grabSpeed*dt,area.yMin+Height*.5f,area.yMax+Height*.5f)-pos.y)/Mathf.Max(.0001f,dt);
         }
         else if(flying)
         {
@@ -255,9 +309,11 @@ public sealed class RecoilPlayerController : MonoBehaviour
             move+=monsterKnockback*(monsterKnockbackRemaining/MonsterKnockbackDuration);
             monsterKnockbackRemaining=Mathf.Max(0,monsterKnockbackRemaining-dt);
         }
+        if(!onStairs && !climbingChain && !holdingHandhold){move.x*=grabSpeed;if(flying)move.y*=grabSpeed;}
         bool falling=!holdingHandhold && !flying && !Climbing && !grounded && velocity.y<0;
         // Walking off an edge starts a fall even though grounded was true at frame start.
-        float oldX=pos.x,oldY=pos.y;
+        float oldX=pos.x,oldY=pos.y,oldZ=GameplayZ;
+        if(DepthPlane)DepthPlane.Simulate(pos,move,grounded,flying,Climbing||holdingHandhold,onStairs,dt);
         if(onStairs){pos+=move*dt;grounded=true;if(stairFinished)ReleaseStairs();}
         else Move(world.EscortingChild?world.Child.LimitPlayerStep(pos,move*dt):move*dt);
         if(climbingChain && (pos-climbingChain.RiderPosition).sqrMagnitude>.0025f)climbingChain.StopAt(pos);
@@ -281,14 +337,17 @@ public sealed class RecoilPlayerController : MonoBehaviour
             }
             if(Ammo>=ammoCapacity)refillElapsed=0;
         }
+        ActualHorizontalSpeed=Mathf.Abs(pos.x-oldX)/Mathf.Max(.0001f,dt);
         MovementBlocked=Mathf.Abs(horizontal)>.1f && Mathf.Abs(pos.x-oldX)<Mathf.Abs(move.x*dt)*.2f;
-        transform.position=pos;
+        SyncRootPosition();
+        if(GrabPressure)GrabPressure.CompleteMovement(Vector3.Distance(WorldPosition,new Vector3(oldX,oldY,oldZ)));
+        recoilApplied=usingRecoil;
         if(Noise)
         {
             Noise.UpdateFlightNoise(pos,flying,usingRecoil);
             if(!wasGrounded && grounded && !Climbing && move.y<0)
             {if(landingFallDistance>StandingHeight)Noise.EmitLanding(pos);}
-            else Noise.UpdateFootsteps(pos,grounded,crouched || silentWalking,onStairs?(pos-new Vector2(oldX,oldY)).magnitude/Mathf.Max(.0001f,dt):horizontal);
+            else Noise.UpdateFootsteps(pos,grounded,silentWalking,onStairs?Vector3.Distance(WorldPosition,new Vector3(oldX,oldY,oldZ))/Mathf.Max(.0001f,dt):horizontal);
         }
     }
     const float CollisionEpsilon=.0001f;
@@ -338,9 +397,37 @@ public sealed class RecoilPlayerController : MonoBehaviour
         if(pos.x+SupportHalfWidth>next.xMin && pos.x-SupportHalfWidth<next.xMax && Mathf.Abs(pos.y-Height*.5f-next.yMax)<.035f){grounded=true;velocity.y=0;}
         SyncVisuals(0);
     }
+    bool TryLowStep(Vector2 amount,float halfHeight)
+    {
+        if(lowStepRoof&&(!lowStepRoof.Available||pos.x+HalfWidth<lowStepRoof.Area.xMin||pos.x-HalfWidth>lowStepRoof.Area.xMax||flying))lowStepRoof=null;
+        if(!grounded||flying||Climbing||WalkingStairs||HoldingHandhold||amount.y>0||Mathf.Abs(amount.x)<.000001f||automaticStepHeight<=0||dropThroughRoof||DepthPlane&&DepthPlane.Departing)return false;
+        float feet=pos.y-halfHeight,probe=pos.x+amount.x+Mathf.Sign(amount.x)*HalfWidth,best=feet;SoftRoofPlatform chosen=null;
+        foreach(var r in world.SolidRects)
+            if(probe>=r.xMin&&probe<=r.xMax&&r.yMax>best+.002f&&r.yMax-feet<=automaticStepHeight)best=r.yMax;
+        foreach(var roof in world.SoftRoofs)if(roof&&roof.Available&&roof!=dropThroughRoof)
+        {
+            var r=roof.Area;if(probe>=r.xMin&&probe<=r.xMax&&r.yMax>best+.002f&&r.yMax-feet<=automaticStepHeight){best=r.yMax;chosen=roof;}
+        }
+        if(best-feet<.002f)return false;
+        var proposed=new Rect(pos.x+amount.x-HalfWidth+.002f,best+.002f,HalfWidth*2-.004f,Height-.004f);
+        foreach(var r in world.SolidRects)if(proposed.Overlaps(r))return false;
+        lowStepRise=best-feet;lowStepAt=world.Clock;pos.y=best+halfHeight;lowStepRoof=chosen;
+        if(chosen&&DepthPlane)DepthPlane.BeginLowStep(chosen);
+        return true;
+    }
+    public bool TryGetFootSupport(Vector3 foot,out float height)
+    {
+        height=float.NegativeInfinity;if(!world)return false;float feet=pos.y-Height*.5f;
+        foreach(var r in world.SolidRects)
+            if(foot.x>=r.xMin&&foot.x<=r.xMax&&r.yMax<=feet+automaticStepHeight+.01f&&r.yMax>=feet-.4f)height=Mathf.Max(height,r.yMax);
+        foreach(var roof in world.SoftRoofs)if(roof&&roof.Available&&roof!=dropThroughRoof)
+        {var r=roof.Area;if(foot.x>=r.xMin&&foot.x<=r.xMax&&r.yMax<=feet+automaticStepHeight+.01f&&r.yMax>=feet-.4f)height=Mathf.Max(height,r.yMax);}
+        return !float.IsNegativeInfinity(height);
+    }
     void Move(Vector2 amount)
     {
         float halfHeight=Height/2;
+        bool stepped=TryLowStep(amount,halfHeight);
         ResolveInitialOverlap(halfHeight);
         float oldX=pos.x,nextX=oldX+amount.x;
         foreach(var r in world.SolidRects)
@@ -363,9 +450,11 @@ public sealed class RecoilPlayerController : MonoBehaviour
             {nextY=Mathf.Min(nextY,r.yMin-halfHeight);verticalHit=true;}
         }
         pos.y=nextY;
-        foreach(var roof in world.SoftRoofs)if(!Climbing && roof && roof.Available && roof!=dropThroughRoof)
+        foreach(var roof in world.SoftRoofs)if(!Climbing && roof && roof.Available && roof!=dropThroughRoof && (!DepthPlane || DepthPlane.CanLand(roof) || roof==lowStepRoof))
         {
             var r=roof.Area;
+            if(roof==lowStepRoof&&!flying&&amount.y<=0&&pos.x+HalfWidth>r.xMin&&pos.x-HalfWidth<r.xMax&&oldY-halfHeight>=r.yMax-.025f&&pos.y-halfHeight<=r.yMax)
+            {pos.y=r.yMax+halfHeight;grounded=true;verticalHit=true;continue;}
             if(pos.x+SupportHalfWidth<=r.xMin || pos.x-SupportHalfWidth>=r.xMax)continue;
             if(amount.y<0 && oldY-halfHeight>=r.yMax-CollisionEpsilon && pos.y-halfHeight<=r.yMax)
             {pos.y=Mathf.Max(pos.y,r.yMax+halfHeight);grounded=true;verticalHit=true;}
@@ -373,6 +462,7 @@ public sealed class RecoilPlayerController : MonoBehaviour
         }
         if(dropThroughRoof && (pos.y-halfHeight<dropThroughRoof.Area.yMax-.05f || !dropThroughRoof.Available))dropThroughRoof=null;
         if(verticalHit)velocity.y=0;
+        if(stepped){grounded=true;velocity.y=0;}
         if(!flying && !Climbing && amount.y<=0)foreach(var r in world.SolidRects)
             if(pos.x+SupportHalfWidth>r.xMin && pos.x-SupportHalfWidth<r.xMax && Mathf.Abs(pos.y-halfHeight-r.yMax)<.015f){grounded=true;break;}
         if(grounded && !(automaticRecoil && world.Clock-shotAt<=ActiveFlightDuration))flying=false;
@@ -381,7 +471,8 @@ public sealed class RecoilPlayerController : MonoBehaviour
     public void Shoot()
     {
         if(!HasWaterGun || Ammo<=0 || world.Clock<nextShot)return;
-        Ammo--;
+        ResolveAimForPose();
+        Ammo--;if(DepthPlane)dropThroughRoof=null;
         LastAmmoUITrigger=world.Clock;refillStarted=false;
         ShotSequence++;nextShot=world.Clock+shotInterval; shotAt=poolAt=world.Clock;
         ReleaseHandhold();ReleaseStairs();
@@ -400,19 +491,19 @@ public sealed class RecoilPlayerController : MonoBehaviour
         var go=new GameObject("Water spray"); var line=go.AddComponent<LineRenderer>();
         line.sharedMaterial=world.SprayMaterial; line.startColor=Hex(0x8ae5ff); line.endColor=Hex(0x8ae5ff,.15f);
         line.startWidth=.075f; line.endWidth=.025f; line.positionCount=2; line.sortingOrder=15;
-        line.SetPosition(0,new Vector3(start.x,start.y,-.1f)); line.SetPosition(1,new Vector3(end.x,end.y,-.1f));
+        line.SetPosition(0,new Vector3(start.x,start.y,GameplayZ-.1f)); line.SetPosition(1,new Vector3(end.x,end.y,GameplayZ-.1f));
         sprays.Add(new Spray {life=.15f,line=line});
         world.ApplyWaterHit(start,aim,range,pos);
     }
     public void SyncVisuals(float dt)
     {
-        transform.position=pos;
+        SyncRootPosition();
         coat.localPosition=new Vector2(0,-.1f);
-        coat.localScale=new Vector3(.6f,crouched?.62f:1.15f,1);
-        head.localPosition=new Vector2(0,crouched?.2f:.58f);
-        hat.localPosition=new Vector2(0,crouched?.44f:.82f);
-        if(BodyProfile)BodyProfile.Apply(coat,head,hat,crouched);
-        gun.gameObject.SetActive(HasWaterGun);gun.position=pos+aim*.5f;gun.rotation=Quaternion.Euler(0,0,Mathf.Atan2(aim.y,aim.x)*Mathf.Rad2Deg);
+        coat.localScale=new Vector3(.6f,1.15f,1);
+        head.localPosition=new Vector2(0,.58f);
+        hat.localPosition=new Vector2(0,.82f);
+        if(BodyProfile)BodyProfile.Apply(coat,head,hat);
+        gun.gameObject.SetActive(HasWaterGun);gun.position=WorldPosition+(Vector3)(aim*.5f);gun.rotation=Quaternion.Euler(0,0,Mathf.Atan2(aim.y,aim.x)*Mathf.Rad2Deg);
         if(!gunRenderer)gunRenderer=gun.GetComponent<SpriteRenderer>();
         if(gunRenderer)gunRenderer.color=automaticRecoil?Hex(0xf28a32):Hex(0x50ceef);
         for(int i=sprays.Count-1;i>=0;i--){sprays[i].life-=dt;if(sprays[i].life<=0){Destroy(sprays[i].line.gameObject);sprays.RemoveAt(i);}}

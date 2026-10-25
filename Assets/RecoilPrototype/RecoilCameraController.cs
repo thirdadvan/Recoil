@@ -7,6 +7,11 @@ public sealed class RecoilCameraController : MonoBehaviour
     public Transform target;
     [Min(.1f),Tooltip("正交镜头可见区域的半高度。数值越大，镜头越远，看到的范围越大。")]
     public float viewSize=6.7f;
+    [Header("3D perspective presentation")] public bool perspective3D;
+    [Tooltip("将跟随构图定位在角色所在 Z=0 平面，补偿透视镜头俯角。只影响3D镜头。 ")] public bool frameOnGameplayPlane;
+    [Tooltip("启用3D构图参数；只影响透视场景。俯仰和下移在跟随计算中持续保留。 ")] public bool use3DComposition;
+    [Range(-20,20),Tooltip("负值仰视（Pitch up），正值俯视。 ")] public float pitch3D;
+    [Tooltip("构图中心的垂直平移，负值为Pan down，单位米。 ")] public float panY3D;
     [Tooltip("镜头中心相对跟随目标的偏移，单位米。")]
     public Vector2 followOffset=new Vector2(2,2.8f);
     [Min(0),Tooltip("跟随速度；0 表示立即跟随。")]
@@ -29,7 +34,7 @@ public sealed class RecoilCameraController : MonoBehaviour
     [Range(0,.9f),Tooltip("鼠标与人物之间的世界距离乘以此系数，再限制到最大偏移。")]
     public float mouseLookSensitivity=.25f;
     public float cameraDepth=-10;
-    [Tooltip("开启后限制镜头中心的高度；不限制横向移动。")]
+    [Tooltip("开启后限制镜头中心的高度；横向限制使用下方的室内边墙设置。") ]
     public bool limitVertical=true;
     public float minimumY=4.8f,maximumY=7;
     [Header("Indoor foot framing")]
@@ -37,6 +42,11 @@ public sealed class RecoilCameraController : MonoBehaviour
     public bool preserveFootFraming;
     [Range(0,.35f),Tooltip("脚底以下至少保留的屏幕高度比例，例如 0.1 表示10%。")]
     public float minimumFootScreenMargin=.1f;
+    [Header("Indoor horizontal walls")]
+    [Tooltip("让完整画幅保持在左右墙内，包括鼠标偏移和跟随平滑。") ] public bool limitHorizontal;
+    public BoxCollider2D leftBoundary,rightBoundary;
+    [Tooltip("房间比当前画幅窄时自动收近镜头。") ] public bool fitNarrowRooms=true;
+    [Tooltip("限制画幅所在的最远操作面；当前平台和楼梯操作面为 Z=0.7。") ] public float horizontalBoundaryPlaneZ=.7f;
     Camera cameraComponent;
     RecoilPrototype world;
     Transform cachedTarget;
@@ -79,10 +89,13 @@ public sealed class RecoilCameraController : MonoBehaviour
     {
         if(!cameraComponent)cameraComponent=GetComponent<Camera>();
         if(!cameraComponent)return;
-        cameraComponent.orthographic=true;float size=Mathf.Max(.1f,viewSize);
+        if(perspective3D && use3DComposition){var angle=Quaternion.Euler(pitch3D,transform.eulerAngles.y,0);if(Quaternion.Angle(transform.rotation,angle)>.001f)transform.rotation=angle;}
+        cameraComponent.orthographic=!perspective3D;float size=Mathf.Max(.1f,viewSize);
         if(Application.isPlaying && target){float feetY=TargetFeetY();size=ViewSizeAtHeight(feetY);}
+        float wallSize=MaximumWallViewSize();size=Mathf.Min(size,wallSize);
         float blend=snap || heightZoomSpeed<=0?1:1-Mathf.Exp(-heightZoomSpeed*Mathf.Max(0,dt));
-        cameraComponent.orthographicSize=Mathf.Lerp(cameraComponent.orthographicSize,size,blend);
+        cameraComponent.orthographicSize=Mathf.Min(wallSize,Mathf.Lerp(cameraComponent.orthographicSize,size,blend));
+        if(perspective3D)cameraComponent.fieldOfView=2*Mathf.Atan(cameraComponent.orthographicSize/Mathf.Max(1,Mathf.Abs(cameraDepth)))*Mathf.Rad2Deg;
     }
     Vector2 MouseOffset(Vector3 pointer)
     {
@@ -96,18 +109,77 @@ public sealed class RecoilCameraController : MonoBehaviour
         if(limitDownwardMouseOffset)offset.y=Mathf.Max(offset.y,-Mathf.Max(0,maximumDownwardMouseOffset));
         return offset;
     }
+    Vector3 PerspectivePlaneShift
+    {get{if(!perspective3D || !frameOnGameplayPlane || Mathf.Abs(transform.forward.z)<.01f)return Vector3.zero;var shift=-transform.forward*(-cameraDepth/transform.forward.z);shift.z=0;return shift;}}
     Vector3 TargetPosition(bool mouseLook=false)
     {
         Vector3 follow=FollowPosition;
         Vector3 position=follow+(Vector3)followOffset;
         float halfHeight=cameraComponent?cameraComponent.orthographicSize:Mathf.Max(.1f,viewSize);
         position.y=HeightFramingY(follow.y,TargetFeetY(),halfHeight);
+        if(perspective3D && use3DComposition)position.y+=panY3D;
         if(mouseLook)position+=(Vector3)MouseOffset(Input.mousePosition);
         // Mouse look may reveal more above, but cannot push the player past the height framing cap.
         if(outdoorHeightZoomEnabled && HeightProgress(TargetFeetY())>0)
             position.y=Mathf.Max(position.y,follow.y+(1-2*maximumHeightPlayerViewportY)*halfHeight);
         position.y=ConstrainFootFraming(position.y,FramingFeetY,halfHeight);
-        position.z=cameraDepth;return position;
+        position.z=cameraDepth;return ConstrainHorizontal(position+PerspectivePlaneShift);
+    }
+    bool WallLimits(out float left,out float right)
+    {
+        left=right=0;if(!limitHorizontal||!leftBoundary||!rightBoundary)return false;
+        left=leftBoundary.bounds.max.x;right=rightBoundary.bounds.min.x;return right>left+.01f;
+    }
+    float cachedWallWidth=-1,cachedWallAspect,cachedWallDepth,cachedWallPlane,cachedWallUpper,cachedWallSize;
+    Quaternion cachedWallRotation;
+    bool cachedWallPerspective;
+    float ProjectedHorizontalSpan(float size,float aspect)
+    {
+        float min=float.PositiveInfinity,max=float.NegativeInfinity;
+        for(int i=0;i<8;i++)
+        {
+            float distance=(i<4?0:horizontalBoundaryPlaneZ)-cameraDepth;
+            float x=(i%2==0?-1:1)*size*aspect,y=((i%4)/2==0?-1:1)*size;
+            Vector3 origin=Vector3.zero,direction;
+            if(perspective3D)direction=transform.rotation*new Vector3(x/Mathf.Max(1,Mathf.Abs(cameraDepth)),y/Mathf.Max(1,Mathf.Abs(cameraDepth)),1);
+            else{origin=transform.rotation*new Vector3(x,y,0);direction=transform.forward;}
+            if(direction.z<=.00001f)return float.PositiveInfinity;
+            float projected=origin.x+(distance-origin.z)*direction.x/direction.z;
+            min=Mathf.Min(min,projected);max=Mathf.Max(max,projected);
+        }
+        return max-min;
+    }
+    float MaximumWallViewSize()
+    {
+        float left,right;if(!fitNarrowRooms||!WallLimits(out left,out right)||!cameraComponent)return float.PositiveInfinity;
+        float width=right-left,aspect=Mathf.Max(.1f,cameraComponent.aspect);
+        float upper=Mathf.Max(.1f,viewSize)*(outdoorHeightZoomEnabled?Mathf.Max(1,maximumHeightZoomMultiplier):1);
+        // Cache this calculation; only room width, projection, rotation or window size can change it.
+        if(cachedWallWidth==width&&cachedWallAspect==aspect&&cachedWallDepth==cameraDepth&&cachedWallPlane==horizontalBoundaryPlaneZ&&cachedWallUpper==upper&&cachedWallRotation==transform.rotation&&cachedWallPerspective==perspective3D)return cachedWallSize;
+        cachedWallWidth=width;cachedWallAspect=aspect;cachedWallDepth=cameraDepth;cachedWallPlane=horizontalBoundaryPlaneZ;cachedWallUpper=upper;cachedWallRotation=transform.rotation;cachedWallPerspective=perspective3D;
+        if(ProjectedHorizontalSpan(upper,aspect)<=width)return cachedWallSize=float.PositiveInfinity;
+        // Solve against all four projected corners, including the authored camera yaw and pitch.
+        float low=0,high=upper;
+        for(int i=0;i<20;i++){float mid=(low+high)*.5f;if(ProjectedHorizontalSpan(mid,aspect)<=width)low=mid;else high=mid;}
+        return cachedWallSize=Mathf.Max(.01f,low*.99995f);
+    }
+    public Vector3 ConstrainHorizontal(Vector3 position)
+    {
+        float left,right;if(!WallLimits(out left,out right)||!cameraComponent)return position;
+        float min=float.PositiveInfinity,max=float.NegativeInfinity;
+        for(int i=0;i<8;i++)
+        {
+            var ray=cameraComponent.ViewportPointToRay(new Vector3(i%2,(i%4)/2,0));
+            ray.origin+=position-transform.position;
+            if(Mathf.Abs(ray.direction.z)<.00001f)continue;
+            float distance=((i<4?0:horizontalBoundaryPlaneZ)-ray.origin.z)/ray.direction.z;
+            if(distance<0)continue;
+            float offset=ray.GetPoint(distance).x-position.x;min=Mathf.Min(min,offset);max=Mathf.Max(max,offset);
+        }
+        if(float.IsInfinity(min)||float.IsInfinity(max))return position;
+        float low=left-min,high=right-max;
+        position.x=low<=high?Mathf.Clamp(position.x,low,high):(left+right-min-max)*.5f;
+        return position;
     }
     public void SnapToTarget(){if(isActiveAndEnabled && target){ApplySize();transform.position=TargetPosition(true);}}
     // Start runs after scene Awake has restored the destination spawn and player state.
@@ -123,8 +195,9 @@ public sealed class RecoilCameraController : MonoBehaviour
         float blend=followSpeed<=0?1:1-Mathf.Exp(-followSpeed*dt);
         var next=Vector3.Lerp(transform.position,TargetPosition(true),blend);
         // Apply the safety margin after damping too, especially when landing or descending stairs.
-        next.y=ConstrainFootFraming(next.y,FramingFeetY,cameraComponent.orthographicSize);
-        transform.position=next;
+        float planeShiftY=PerspectivePlaneShift.y;
+        next.y=ConstrainFootFraming(next.y-planeShiftY,FramingFeetY,cameraComponent.orthographicSize)+planeShiftY;
+        transform.position=ConstrainHorizontal(next);
     }
     void OnValidate(){viewSize=Mathf.Max(.1f,viewSize);followSpeed=Mathf.Max(0,followSpeed);maximumHeightZoomMultiplier=Mathf.Max(1,maximumHeightZoomMultiplier);heightZoomMaximumY=Mathf.Max(heightZoomStartY+.01f,heightZoomMaximumY);heightZoomSpeed=Mathf.Max(0,heightZoomSpeed);maximumHeightPlayerViewportY=Mathf.Clamp(maximumHeightPlayerViewportY,.5f,.9f);minimumFootScreenMargin=Mathf.Clamp(minimumFootScreenMargin,0,.35f);maximumMouseOffset=Mathf.Max(0,maximumMouseOffset);maximumDownwardMouseOffset=Mathf.Max(0,maximumDownwardMouseOffset);mouseLookSensitivity=Mathf.Clamp(mouseLookSensitivity,0,.9f);ApplySize();}
 }

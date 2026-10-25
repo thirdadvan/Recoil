@@ -1,0 +1,13 @@
+Assets/Scenes/3D/RecoilPrototype.unity | meshes 1676 | actors 7 | doors 9
+Assets/Scenes/3D/RecoilFactoryInterior.unity | meshes 1232 | actors 5 | doors 11
+Assets/Scenes/3D/RecoilServiceStore.unity | meshes 169 | actors 1 | doors 2
+Assets/Scenes/3D/FactoryRooms/FactoryWashroomF2.unity | meshes 102 | actors 0 | doors 1
+Assets/Scenes/3D/FactoryRooms/FactoryChangingRoomF2.unity | meshes 136 | actors 0 | doors 1
+Assets/Scenes/3D/FactoryRooms/FactoryArchiveF3.unity | meshes 184 | actors 0 | doors 1
+Assets/Scenes/3D/FactoryRooms/FactoryShiftOfficeF3.unity | meshes 85 | actors 0 | doors 1
+Assets/Scenes/3D/FactoryRooms/FactoryManagerOfficeF4.unity | meshes 104 | actors 0 | doors 1
+Assets/Scenes/3D/FactoryRooms/FactoryMeetingRoomF4.unity | meshes 95 | actors 0 | doors 1
+Assets/Scenes/3D/RecoilFactoryWarehouse.unity | meshes 945 | actors 3 | doors 2
+Assets/Scenes/3D/RecoilFactorySewer.unity | meshes 165 | actors 0 | doors 2
+Assets/Scenes/3D/RecoilWarehouseStoreroom.unity | meshes 75 | actors 0 | doors 1
+Assets/Scenes/3D/RecoilKitchenMemory.unity | meshes 185 | actors 0 | doors 1

@@ -11608,12 +11608,15 @@ MonoBehaviour:
   destinationScene: Assets/Scenes/FactoryRooms/FactoryShiftOfficeF3.unity
   destinationSpawn: Room Entrance Spawn
   permanentlyBlocked: 0
+  blockedByThreat: 0
+  blockedPrompt: E / DAMAGED DOOR
   irreparableDamage: 0
   blockedByItemId: 
   blockedMessage: The door is damaged and will not open.
   rememberOnTravel: 
   openStateItemId: 
   requiresFlyingToOpen: 0
+  startsOpened: 0
   firstOpenMessage: 
   autoTravelAboveOpening: 0
   autoExitHalfWidth: 1
@@ -14769,12 +14772,15 @@ MonoBehaviour:
   destinationScene: Assets/Scenes/FactoryRooms/FactoryManagerOfficeF4.unity
   destinationSpawn: Room Entrance Spawn
   permanentlyBlocked: 0
+  blockedByThreat: 0
+  blockedPrompt: E / DAMAGED DOOR
   irreparableDamage: 0
   blockedByItemId: 
   blockedMessage: The door is damaged and will not open.
   rememberOnTravel: 
   openStateItemId: 
   requiresFlyingToOpen: 0
+  startsOpened: 0
   firstOpenMessage: 
   autoTravelAboveOpening: 0
   autoExitHalfWidth: 1
@@ -21467,12 +21473,15 @@ MonoBehaviour:
   destinationScene: Assets/Scenes/FactoryRooms/FactoryWashroomF2.unity
   destinationSpawn: Room Entrance Spawn
   permanentlyBlocked: 0
+  blockedByThreat: 0
+  blockedPrompt: E / DAMAGED DOOR
   irreparableDamage: 0
   blockedByItemId: 
   blockedMessage: The door is damaged and will not open.
   rememberOnTravel: 
   openStateItemId: 
   requiresFlyingToOpen: 0
+  startsOpened: 0
   firstOpenMessage: 
   autoTravelAboveOpening: 0
   autoExitHalfWidth: 1
@@ -26941,6 +26950,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &997632630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1679612084}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c27ce89c3e83e496da03394159c25d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  reach: 3.5
 --- !u!1 &1003609946
 GameObject:
   m_ObjectHideFlags: 0
@@ -27086,6 +27108,7 @@ MonoBehaviour:
   enableCheckpoint: 0
   legacyEvidenceEnabled: 0
   startWithWaterGun: 1
+  showMonsterStateUI: 0
 --- !u!4 &1005271865
 Transform:
   m_ObjectHideFlags: 0
@@ -30642,12 +30665,15 @@ MonoBehaviour:
   destinationScene: Assets/Scenes/RecoilPrototype.unity
   destinationSpawn: Left Fire Escape Floor 4 Outside Spawn
   permanentlyBlocked: 1
+  blockedByThreat: 0
+  blockedPrompt: E / DAMAGED DOOR
   irreparableDamage: 1
   blockedByItemId: 
   blockedMessage: The door is severely warped. It cannot be used.
   rememberOnTravel: 
   openStateItemId: 
   requiresFlyingToOpen: 0
+  startsOpened: 0
   firstOpenMessage: 
   autoTravelAboveOpening: 0
   autoExitHalfWidth: 1
@@ -31514,6 +31540,7 @@ GameObject:
   - component: {fileID: 2112000003}
   - component: {fileID: 2116000001}
   - component: {fileID: 2121000000}
+  - component: {fileID: 2121000005}
   m_Layer: 0
   m_Name: Rampager
   m_TagString: Untagged
@@ -31605,9 +31632,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 415ddb5aa46e4aa28c52cda17bbac007, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  soundEnergyNearFar: {x: 35, y: 15}
+  soundQuietDelay: 0.6
+  fullTentacleEnrageDuration: 0.5
+  growingTentacleEnrageDuration: 1
+  soundInvestigationInset: 0.5
+  soundSearchPause: 0.75
+  soundMemoryDuration: 7.5
   world: {fileID: 1005271864}
   initialState: 4
-  spawnFacing: 0
   sleepPoint: {fileID: 0}
   returnToSleepAfterSound: 1
   soundInspectionDuration: 1.5
@@ -31617,9 +31650,9 @@ MonoBehaviour:
   reportNoticeDelay: 0.3
   watchLostSightTime: 2
   watchSightMultiplier: 1.4
-  roamingSpeedMultiplier: 0.5
+  roamingSpeedMultiplier: 0.6
   watchStandOff: 1.2
-  runningAngerTime: 0.5
+  runningAngerTime: 1.5
   continuingInteractionAttackTime: 0.5
   angerDecayTime: 1
   reportedAngerMultiplier: 2
@@ -32968,6 +33001,7 @@ GameObject:
   - component: {fileID: 1212613603}
   - component: {fileID: 1212613602}
   - component: {fileID: 2121000001}
+  - component: {fileID: 2121000006}
   m_Layer: 0
   m_Name: Rampager (3)
   m_TagString: Untagged
@@ -33038,6 +33072,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96bbef7e410fb4f8eb682dc2581befad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  turnSpeed: 180
+  bodyScale: 1
   leftOffset: -2.1999998
   rightOffset: 3.3999996
   patrolSpeed: 0.9
@@ -33074,9 +33110,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 415ddb5aa46e4aa28c52cda17bbac007, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  soundEnergyNearFar: {x: 35, y: 15}
+  soundQuietDelay: 0.6
+  fullTentacleEnrageDuration: 0.5
+  growingTentacleEnrageDuration: 1
+  soundInvestigationInset: 0.5
+  soundSearchPause: 0.75
+  soundMemoryDuration: 7.5
   world: {fileID: 1005271864}
   initialState: 4
-  spawnFacing: 0
   sleepPoint: {fileID: 0}
   returnToSleepAfterSound: 1
   soundInspectionDuration: 1.5
@@ -33086,9 +33128,9 @@ MonoBehaviour:
   reportNoticeDelay: 0.3
   watchLostSightTime: 2
   watchSightMultiplier: 1.4
-  roamingSpeedMultiplier: 0.5
+  roamingSpeedMultiplier: 0.6
   watchStandOff: 1.2
-  runningAngerTime: 0.5
+  runningAngerTime: 1.5
   continuingInteractionAttackTime: 0.5
   angerDecayTime: 1
   reportedAngerMultiplier: 2
@@ -34418,12 +34460,15 @@ MonoBehaviour:
   destinationScene: Assets/Scenes/RecoilPrototype.unity
   destinationSpawn: Factory Right Return Spawn
   permanentlyBlocked: 0
+  blockedByThreat: 0
+  blockedPrompt: E / DAMAGED DOOR
   irreparableDamage: 0
   blockedByItemId: 
   blockedMessage: The door is damaged and will not open.
   rememberOnTravel: 
   openStateItemId: factory_shortcut_ground_right
   requiresFlyingToOpen: 0
+  startsOpened: 0
   firstOpenMessage: Service exit unlocked. Press E again to leave.
   autoTravelAboveOpening: 0
   autoExitHalfWidth: 1
@@ -41345,12 +41390,15 @@ MonoBehaviour:
   destinationScene: Assets/Scenes/FactoryRooms/FactoryChangingRoomF2.unity
   destinationSpawn: Room Entrance Spawn
   permanentlyBlocked: 0
+  blockedByThreat: 0
+  blockedPrompt: E / DAMAGED DOOR
   irreparableDamage: 0
   blockedByItemId: 
   blockedMessage: The door is damaged and will not open.
   rememberOnTravel: 
   openStateItemId: 
   requiresFlyingToOpen: 0
+  startsOpened: 0
   firstOpenMessage: 
   autoTravelAboveOpening: 0
   autoExitHalfWidth: 1
@@ -43949,12 +43997,15 @@ MonoBehaviour:
   destinationScene: Assets/Scenes/RecoilPrototype.unity
   destinationSpawn: Left Fire Escape Floor 2 Outside Spawn
   permanentlyBlocked: 0
+  blockedByThreat: 0
+  blockedPrompt: E / DAMAGED DOOR
   irreparableDamage: 0
   blockedByItemId: 
   blockedMessage: The door is damaged and will not open.
   rememberOnTravel: 
   openStateItemId: factory_shortcut_floor2
   requiresFlyingToOpen: 0
+  startsOpened: 0
   firstOpenMessage: Fire exit unlocked.
   autoTravelAboveOpening: 0
   autoExitHalfWidth: 1
@@ -45088,12 +45139,15 @@ MonoBehaviour:
   destinationScene: Assets/Scenes/FactoryRooms/FactoryMeetingRoomF4.unity
   destinationSpawn: Room Entrance Spawn
   permanentlyBlocked: 0
+  blockedByThreat: 0
+  blockedPrompt: E / DAMAGED DOOR
   irreparableDamage: 0
   blockedByItemId: 
   blockedMessage: The door is damaged and will not open.
   rememberOnTravel: 
   openStateItemId: 
   requiresFlyingToOpen: 0
+  startsOpened: 0
   firstOpenMessage: 
   autoTravelAboveOpening: 0
   autoExitHalfWidth: 1
@@ -45541,6 +45595,7 @@ GameObject:
   - component: {fileID: 2112000005}
   - component: {fileID: 2116000002}
   - component: {fileID: 2121000002}
+  - component: {fileID: 997632630}
   m_Layer: 0
   m_Name: Rampager
   m_TagString: Untagged
@@ -45632,9 +45687,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 415ddb5aa46e4aa28c52cda17bbac007, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  soundEnergyNearFar: {x: 35, y: 15}
+  soundQuietDelay: 0.6
+  fullTentacleEnrageDuration: 0.5
+  growingTentacleEnrageDuration: 1
+  soundInvestigationInset: 0.5
+  soundSearchPause: 0.75
+  soundMemoryDuration: 7.5
   world: {fileID: 1005271864}
   initialState: 4
-  spawnFacing: 0
   sleepPoint: {fileID: 0}
   returnToSleepAfterSound: 1
   soundInspectionDuration: 1.5
@@ -45644,9 +45705,9 @@ MonoBehaviour:
   reportNoticeDelay: 0.3
   watchLostSightTime: 2
   watchSightMultiplier: 1.4
-  roamingSpeedMultiplier: 0.5
+  roamingSpeedMultiplier: 0.6
   watchStandOff: 1.2
-  runningAngerTime: 0.5
+  runningAngerTime: 1.5
   continuingInteractionAttackTime: 0.5
   angerDecayTime: 1
   reportedAngerMultiplier: 2
@@ -46513,12 +46574,15 @@ MonoBehaviour:
   destinationScene: Assets/Scenes/FactoryRooms/FactoryArchiveF3.unity
   destinationSpawn: Room Entrance Spawn
   permanentlyBlocked: 0
+  blockedByThreat: 0
+  blockedPrompt: E / DAMAGED DOOR
   irreparableDamage: 0
   blockedByItemId: 
   blockedMessage: The door is damaged and will not open.
   rememberOnTravel: 
   openStateItemId: 
   requiresFlyingToOpen: 0
+  startsOpened: 0
   firstOpenMessage: 
   autoTravelAboveOpening: 0
   autoExitHalfWidth: 1
@@ -47656,6 +47720,7 @@ GameObject:
   - component: {fileID: 1734871242}
   - component: {fileID: 1734871241}
   - component: {fileID: 2121000003}
+  - component: {fileID: 2121000008}
   m_Layer: 0
   m_Name: Rampager (1)
   m_TagString: Untagged
@@ -47726,6 +47791,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96bbef7e410fb4f8eb682dc2581befad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  turnSpeed: 180
+  bodyScale: 1
   leftOffset: -2.1999998
   rightOffset: 3.3999996
   patrolSpeed: 0.9
@@ -47762,9 +47829,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 415ddb5aa46e4aa28c52cda17bbac007, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  soundEnergyNearFar: {x: 35, y: 15}
+  soundQuietDelay: 0.6
+  fullTentacleEnrageDuration: 0.5
+  growingTentacleEnrageDuration: 1
+  soundInvestigationInset: 0.5
+  soundSearchPause: 0.75
+  soundMemoryDuration: 7.5
   world: {fileID: 1005271864}
   initialState: 4
-  spawnFacing: 0
   sleepPoint: {fileID: 0}
   returnToSleepAfterSound: 1
   soundInspectionDuration: 1.5
@@ -47774,9 +47847,9 @@ MonoBehaviour:
   reportNoticeDelay: 0.3
   watchLostSightTime: 2
   watchSightMultiplier: 1.4
-  roamingSpeedMultiplier: 0.5
+  roamingSpeedMultiplier: 0.6
   watchStandOff: 1.2
-  runningAngerTime: 0.5
+  runningAngerTime: 1.5
   continuingInteractionAttackTime: 0.5
   angerDecayTime: 1
   reportedAngerMultiplier: 2
@@ -51823,12 +51896,15 @@ MonoBehaviour:
   destinationScene: Assets/Scenes/RecoilPrototype.unity
   destinationSpawn: Third Floor Fire Escape Spawn
   permanentlyBlocked: 0
+  blockedByThreat: 0
+  blockedPrompt: E / DAMAGED DOOR
   irreparableDamage: 0
   blockedByItemId: 
   blockedMessage: The door is damaged and will not open.
   rememberOnTravel: 
   openStateItemId: factory_shortcut_floor3
   requiresFlyingToOpen: 0
+  startsOpened: 0
   firstOpenMessage: Fire exit unlocked. This route now connects to the exterior stairs.
   autoTravelAboveOpening: 0
   autoExitHalfWidth: 1
@@ -52234,8 +52310,8 @@ MonoBehaviour:
   head: {fileID: 1743371708}
   hat: {fileID: 400281326}
   gun: {fileID: 1796214790}
-  walkSpeed: 2.52
-  sneakSpeed: 0.99
+  walkSpeed: 2.772
+  sneakSpeed: 1.1880001
   hoverSpeed: 2.2
   verticalHoverSpeed: 1.5
   gravity: 14
@@ -56332,6 +56408,7 @@ GameObject:
   - component: {fileID: 1996878482}
   - component: {fileID: 1996878481}
   - component: {fileID: 2121000004}
+  - component: {fileID: 2121000007}
   m_Layer: 0
   m_Name: Rampager (2)
   m_TagString: Untagged
@@ -56402,6 +56479,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96bbef7e410fb4f8eb682dc2581befad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  turnSpeed: 180
+  bodyScale: 1
   leftOffset: -2.1999998
   rightOffset: 3.3999996
   patrolSpeed: 0.9
@@ -56438,9 +56517,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 415ddb5aa46e4aa28c52cda17bbac007, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  soundEnergyNearFar: {x: 35, y: 15}
+  soundQuietDelay: 0.6
+  fullTentacleEnrageDuration: 0.5
+  growingTentacleEnrageDuration: 1
+  soundInvestigationInset: 0.5
+  soundSearchPause: 0.75
+  soundMemoryDuration: 7.5
   world: {fileID: 1005271864}
   initialState: 4
-  spawnFacing: 0
   sleepPoint: {fileID: 0}
   returnToSleepAfterSound: 1
   soundInspectionDuration: 1.5
@@ -56450,9 +56535,9 @@ MonoBehaviour:
   reportNoticeDelay: 0.3
   watchLostSightTime: 2
   watchSightMultiplier: 1.4
-  roamingSpeedMultiplier: 0.5
+  roamingSpeedMultiplier: 0.6
   watchStandOff: 1.2
-  runningAngerTime: 0.5
+  runningAngerTime: 1.5
   continuingInteractionAttackTime: 0.5
   angerDecayTime: 1
   reportedAngerMultiplier: 2
@@ -59858,6 +59943,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96bbef7e410fb4f8eb682dc2581befad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  turnSpeed: 180
+  bodyScale: 1
   leftOffset: -2.5
   rightOffset: 3.5
   patrolSpeed: 0.9
@@ -59895,6 +59982,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96bbef7e410fb4f8eb682dc2581befad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  turnSpeed: 180
+  bodyScale: 1
   leftOffset: -2.1999998
   rightOffset: 3.3999996
   patrolSpeed: 0.9
@@ -60312,12 +60401,15 @@ MonoBehaviour:
   destinationScene: Assets/Scenes/RecoilPrototype.unity
   destinationSpawn: Factory Return Spawn
   permanentlyBlocked: 0
+  blockedByThreat: 0
+  blockedPrompt: E / DAMAGED DOOR
   irreparableDamage: 0
   blockedByItemId: 
   blockedMessage: The door is damaged and will not open.
   rememberOnTravel: 
   openStateItemId: 
   requiresFlyingToOpen: 0
+  startsOpened: 0
   firstOpenMessage: 
   autoTravelAboveOpening: 0
   autoExitHalfWidth: 1
@@ -60479,6 +60571,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 1856315160}
   viewSize: 5.4
+  perspective3D: 0
+  frameOnGameplayPlane: 0
+  use3DComposition: 0
+  pitch3D: 0
+  panY3D: 0
   followOffset: {x: 0, y: 3.2}
   followSpeed: 4
   outdoorHeightZoomEnabled: 0
@@ -60498,6 +60595,11 @@ MonoBehaviour:
   maximumY: 18
   preserveFootFraming: 1
   minimumFootScreenMargin: 0.1
+  limitHorizontal: 0
+  leftBoundary: {fileID: 0}
+  rightBoundary: {fileID: 0}
+  fitNarrowRooms: 1
+  horizontalBoundaryPlaneZ: 0.7
 --- !u!114 &2120000001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60597,6 +60699,58 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e981fe545da94b65861c35a4d338c10d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2121000005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1169453804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c27ce89c3e83e496da03394159c25d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  reach: 3.5
+--- !u!114 &2121000006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1212613600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c27ce89c3e83e496da03394159c25d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  reach: 3.5
+--- !u!114 &2121000007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1996878479}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c27ce89c3e83e496da03394159c25d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  reach: 3.5
+--- !u!114 &2121000008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1734871239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c27ce89c3e83e496da03394159c25d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  reach: 3.5
 --- !u!1 &2127834692
 GameObject:
   m_ObjectHideFlags: 0

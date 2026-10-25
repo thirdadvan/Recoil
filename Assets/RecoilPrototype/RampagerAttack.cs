@@ -11,13 +11,16 @@ public sealed class RampagerAttack : MonoBehaviour
     public AttackPhase Phase {get;private set;}
     public bool MovementLocked {get{return isActiveAndEnabled && Phase!=AttackPhase.Ready;}}
     public float PhaseRemaining {get{return Mathf.Max(0,remaining);}}
+    public Vector3 StrikePosition {get;private set;}
+    public int StrikeSequence {get;private set;}
+    public float PhaseProgress {get{return Phase==AttackPhase.Ready?0:Mathf.Clamp01(1-PhaseRemaining/Mathf.Max(.0001f,Phase==AttackPhase.Windup?windupDuration:recoveryDuration));}}
     RecoilPrototype world;RampagerPerception perception;
     RecoilPlayerController strikePlayer;EscortChild strikeChild;
     float nextAttackAt,remaining;
     public float CooldownRemaining {get{return world?Mathf.Max(0,nextAttackAt-world.Clock):0;}}
     public void Initialize(RecoilPrototype context,RampagerPerception senses)
     {world=context;perception=senses;ResetAttack();}
-    public void ResetAttack(){nextAttackAt=0;CancelAttack();}
+    public void ResetAttack(){nextAttackAt=0;StrikeSequence=0;StrikePosition=transform.position;CancelAttack();}
     public void CancelAttack(){Phase=AttackPhase.Ready;remaining=0;strikePlayer=null;strikeChild=null;}
     // Start a swing and commit to its target; range and cover are checked again at impact.
     public bool TryAttack(bool allowed)
@@ -27,6 +30,7 @@ public sealed class RampagerAttack : MonoBehaviour
         if(!hitPlayer&&!hitChild)return false;
         bool child=hitChild&&(!hitPlayer||perception.ChildIsCloser);
         strikeChild=child?world.Child:null;strikePlayer=child?null:world.Player;
+        StrikePosition=child?world.Child.transform.position:world.Player.WorldPosition;StrikeSequence++;
         Phase=AttackPhase.Windup;remaining=Mathf.Max(0,windupDuration);
         if(remaining<=0)Impact();return true;
     }

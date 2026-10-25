@@ -700,6 +700,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 243297581}
   viewSize: 4.2
+  perspective3D: 0
+  frameOnGameplayPlane: 0
+  use3DComposition: 0
+  pitch3D: 0
+  panY3D: 0
   followOffset: {x: 1.2, y: 1.2}
   followSpeed: 4
   outdoorHeightZoomEnabled: 0
@@ -719,6 +724,11 @@ MonoBehaviour:
   maximumY: 3.6
   preserveFootFraming: 0
   minimumFootScreenMargin: 0.1
+  limitHorizontal: 0
+  leftBoundary: {fileID: 0}
+  rightBoundary: {fileID: 0}
+  fitNarrowRooms: 1
+  horizontalBoundaryPlaneZ: 0.7
 --- !u!1 &125641485
 GameObject:
   m_ObjectHideFlags: 0
@@ -1495,8 +1505,8 @@ MonoBehaviour:
   head: {fileID: 674267828}
   hat: {fileID: 585943472}
   gun: {fileID: 1945631904}
-  walkSpeed: 2.52
-  sneakSpeed: 0.99
+  walkSpeed: 2.772
+  sneakSpeed: 1.1880001
   hoverSpeed: 2.2
   verticalHoverSpeed: 1.5
   gravity: 14
@@ -1556,7 +1566,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   standingHeight: 1.12
-  crouchingHeight: 0.66
   halfWidth: 0.22
   legs:
   - {fileID: 1901186083}
@@ -5110,6 +5119,7 @@ MonoBehaviour:
   enableCheckpoint: 0
   legacyEvidenceEnabled: 0
   startWithWaterGun: 0
+  showMonsterStateUI: 0
 --- !u!1 &942771589
 GameObject:
   m_ObjectHideFlags: 0
@@ -10045,12 +10055,15 @@ MonoBehaviour:
   destinationScene: 
   destinationSpawn: 
   permanentlyBlocked: 0
+  blockedByThreat: 0
+  blockedPrompt: E / DAMAGED DOOR
   irreparableDamage: 0
   blockedByItemId: 
   blockedMessage: The door is damaged and will not open.
   rememberOnTravel: 
   openStateItemId: 
   requiresFlyingToOpen: 0
+  startsOpened: 0
   firstOpenMessage: 
   autoTravelAboveOpening: 0
   autoExitHalfWidth: 1

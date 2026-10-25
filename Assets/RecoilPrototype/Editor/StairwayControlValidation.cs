@@ -8,7 +8,7 @@ public static class StairwayControlValidation
 {
  static void Set(object o,string n,object v){o.GetType().GetField(n,BindingFlags.Instance|BindingFlags.NonPublic).SetValue(o,v);}
  static void Require(bool ok,string msg){if(!ok)throw new Exception(msg);}
- static void Tick(RecoilPrototype w,RecoilPlayerController p,float x,float y){Set(w,"simTime",w.Clock+.02f);p.Simulate(x,y,false,false,false,.02f);}
+ static void Tick(RecoilPrototype w,RecoilPlayerController p,float x,float y){Set(w,"simTime",w.Clock+.02f);p.Simulate(x,y,false,false,.02f);}
  public static void Validate()
  {
   int cases=0;

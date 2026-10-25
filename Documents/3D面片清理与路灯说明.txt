@@ -1,0 +1,34 @@
+3D 面片清理与路灯修订 — 2026-10-22
+
+范围
+检查13个已启用3D场景，重复表面主要集中于室外RecoilPrototype。
+原2D场景不改动。
+
+几何清理
+移除375个已被Surface - unified industrial material替代的旧生成网格。
+保留对应的逻辑、2D碰撞和表面状态来源，旧精灵保持不渲染。
+移除15个旧Distant city天际线薄模型，保留现有立体厂区和远景建筑。
+6个塔顶喇叭改为连续中空喇叭壳、厚度口沿、压缩驱动器与凹入喉部，不再叠放二维喇叭切片。
+18根塔架斜撑/横撑错开深度，消除共面交叉表面。
+海报、窗户、玻璃和合法的材质污渍不作为错误面片删除。
+
+路灯比例与布局
+按6米钢制灯杆重建：下段直径0.14米，上段0.076米。
+灯杆前景Z=-1.6；灯头Z=-0.85，高度5.99米。
+灯头约0.24米宽、0.65米长、0.15米高，挑臂沿纵深伸向照射区域。
+最近的实体网格仍在默认玩家操作面前约0.5米以外。
+每盏灯的模型、灯头、真实灯光、开关状态与闪烁仍归属同一根对象。
+未添加额外3D碰撞。
+照射/受光范围随灯头高度对齐；关灯和不稳定频闪同时控制实际灯与发光材质。
+
+尺寸来源（仅作造型和比例参考）
+Avanti Lighting厂家钢制灯柱尺寸表：6米，OD1 Ø140mm，OD2 Ø76mm。
+https://www.avanti-lighting.co.uk/street-lighting-columns-for-car-parks-residential-urban/
+Thorn产品安装高度参考：
+https://www.thornlighting.com/PDB/resources/teaser/EN/TLG_Thor.pdf
+
+验证
+Unity Play：路灯互动熄灭、重置点亮、随机闪烁与新灯头同步，地面受光判定保留。
+6只原生立体喇叭在场；旧精灵实际渲染数为0；无缺失脚本、无控制台错误。
+截图：Captures/CameraWindowPass/native-streetlamp-store.png、native-siren-horns.png。
+备份：Backups/NativeGeometryCleanup/20261022，包含修改前尚未保存的室外场景。

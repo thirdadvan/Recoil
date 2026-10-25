@@ -38,7 +38,7 @@ public sealed partial class RecoilPrototype : MonoBehaviour
     static void ClearPendingTravel(){pendingTravel=null;}
     public void TravelToScene(string scene,string destinationSpawn)
     {
-        pendingTravel=new SceneTravel{scene=scene,spawn=destinationSpawn,items=new List<string>(inventory).ToArray(),health=player.Health};
+        pendingTravel=new SceneTravel{scene=RecoilSceneLoader.Resolve(scene),spawn=destinationSpawn,items=new List<string>(inventory).ToArray(),health=player.Health};
         RecoilSceneLoader.Load(scene);
     }
     Sprite square; Material flat;
@@ -82,7 +82,7 @@ public sealed partial class RecoilPrototype : MonoBehaviour
         inCone=InStreetLampCone(p);return inCone?1:.28f;
     }
     public void PublishReport(RampagerController.Report report,float radius)
-    {foreach(var e in enemies)if(e!=report.source && Vector2.Distance(e.Position,report.source.Position)<=radius)e.ReceiveReport(report);if(SoundWaves)SoundWaves.EmitAid(report.source.Position,radius);}
+    {foreach(var e in enemies)if(e!=report.source && Vector3.Distance(e.transform.position,report.source.transform.position)<=radius)e.ReceiveReport(report);if(SoundWaves)SoundWaves.EmitAid(report.source.Position,radius);}
     readonly HashSet<string> inventory=new HashSet<string>();
     public const string UniversalKey="debug_universal_door_key";
     public EscortChild Child {get;private set;}
@@ -94,11 +94,11 @@ public sealed partial class RecoilPrototype : MonoBehaviour
         Vector2 waitPosition;bool waiting=EscortChild.TryWaitingPosition(gameObject.scene.path,out waitPosition);
         if(!escort && EscortChild.WaitingElsewhere(gameObject.scene.path)){if(Child){Child.ResetChild(false);Child.gameObject.SetActive(false);}return;}
         if(!escort && !waiting && spawnedEscortChild && Child){Destroy(Child.gameObject);Child=null;spawnedEscortChild=false;}
-        if(!Child && (escort||waiting)){var prefab=Resources.Load<GameObject>("RecoilEscortChild");if(prefab)Child=Instantiate(prefab,transform).GetComponent<EscortChild>();if(Child){Child.Initialize(this);spawnedEscortChild=true;}}
+        if(!Child && (escort||waiting)){var prefab=Resources.Load<GameObject>(Recoil3DScene.Is3D?"Recoil3DEscortChild":"RecoilEscortChild");if(prefab)Child=Instantiate(prefab,transform).GetComponent<EscortChild>();if(Child){Child.Initialize(this);spawnedEscortChild=true;}}
         if(Child){Child.gameObject.SetActive(true);Child.ResetChild(escort);if(waiting&&!escort)Child.RestoreWaiting(waitPosition);}
     }
     public void EquipUniversalKey(){RememberProgress(UniversalKey);if(doors!=null)foreach(var d in doors)if(d)d.ResetDoor(this);ShowInteractionMessage("TEST KEY / All doors unlocked.");}
-    public void ChildKilled(){dead=true;deathReason="The child was killed.";InterruptInteraction();nextHudTextRefresh=float.NegativeInfinity;}
+    public void ChildKilled(){dead=true;deathReason="The child was killed.";deathTip="TIP: Keep the child away from Coalers.";InterruptInteraction();nextHudTextRefresh=float.NegativeInfinity;}
     RecoilDoor[] doors;
     public bool HasClue {get{return hasClue;}}
     public void CompleteLevel(string message){won=true;Say(message);}
@@ -183,22 +183,26 @@ public sealed partial class RecoilPrototype : MonoBehaviour
     Transform sceneryRoot, terrainRoot, propsRoot, actorsRoot;
     float monologueUntil, dialogueUntil, elapsed, simTime;
     bool dead, won, started, paused, checkpoint, hasClue;
-    string monologue = "", dialogue = "", deathReason = "";
+    string monologue = "", dialogue = "", deathReason = "", deathTip = "";
     // Self-talk has no screen placement yet; never occupies the bottom dialogue panel.
     public string SelfTalk {get{return monologue;}}
     public bool SelfTalkActive {get{return simTime<monologueUntil;}}
+    [Header("Animation readability test")]
+    [Tooltip("显示怪物头顶状态文字和怒气条；默认关闭，只观察动画。")]
+    public bool showMonsterStateUI=false;
     GUIStyle label, small, title, center, hudTitle, enemyLabel;
     const float HudTextInterval=.1f;
     float nextHudTextRefresh=float.NegativeInfinity;
-    string hudObjective="",hudStatus="",hudHealth="",hudIllumination="",hudWave="",hudDialogue="",hudDeath="",hudSummary="";
+    string hudObjective="",hudStatus="",hudHealth="",hudIllumination="",hudWave="",hudDialogue="",hudDeath="",hudDeathTip="",hudSummary="";
     readonly Dictionary<RampagerController,string> hudEnemyLabels=new Dictionary<RampagerController,string>();
     Texture2D white;
     Vector2 spawn = new Vector2(2, 1.1f);
     int attempts = 1;
     public RecoilPlayerController Player {get{return player;}}
+    public Camera ViewCamera {get{return cam;}}
     public float Clock {get{return simTime;}}
     public float FrameDelta {get;private set;}
-    public bool Playing {get{return started && !paused && !dead && !won && !ActiveReadable && !ActiveElectricalPanel;}}
+    public bool Playing {get{return started && !paused && !dead && !won && !ActiveReadable && !ActiveElectricalPanel && !ConversationBlocksInput;}}
     public Material SprayMaterial {get{return flat;}}
     public IEnumerable<Rect> SolidRects
     {
@@ -290,7 +294,9 @@ public sealed partial class RecoilPrototype : MonoBehaviour
         ConfigureCamera();
         if(player)
         {
-            player.InitializeNoise(this);
+            player.InitializeNoise(this);player.InitializeDepthPlane(this);
+            var grab=player.GetComponent<PlayerGrabPressure>();if(!grab)grab=player.gameObject.AddComponent<PlayerGrabPressure>();grab.Initialize(this);
+            RecoilBackgroundMusic.Bind(player);
             var gaze=player.GetComponent<PlayerGazeFeedback>();if(!gaze)gaze=player.gameObject.AddComponent<PlayerGazeFeedback>();gaze.Initialize(this);
         }
         if(player && !player.GetComponent<PlayerAmmoRingUI>())player.gameObject.AddComponent<PlayerAmmoRingUI>();
@@ -387,6 +393,8 @@ public sealed partial class RecoilPrototype : MonoBehaviour
     }
     void ResetRun(bool full)
     {
+        CancelConversation();
+        deathReason=deathTip="";
         deathCountedForMemory=false;
         ActiveElectricalPanel=null;ActiveReadable=null;ReaderInputConsumed=false;nextHudTextRefresh=float.NegativeInfinity;hudEnemyLabels.Clear();dialogue="";dialogueUntil=float.NegativeInfinity;
         if (full) { checkpoint=false; hasClue=false;  elapsed=0; attempts=1; }
@@ -406,6 +414,7 @@ public sealed partial class RecoilPrototype : MonoBehaviour
         if(SoundWaves)SoundWaves.ResetManager();
         Say(checkpoint ? "The doorway. Again. This time, slower." : "A plastic water gun. I somehow remember what it does.");
         if(cameraController)cameraController.SnapToTarget();
+        if(RunReset!=null)RunReset();
     }
     public void Say(string s) { monologue=s; monologueUntil=simTime+5; nextHudTextRefresh=float.NegativeInfinity; }
     public void ShowDialogue(string message,float duration=5)
@@ -415,6 +424,7 @@ public sealed partial class RecoilPrototype : MonoBehaviour
     {
         if(dead && TryEnterDeathMemory())return;
         ReaderInputConsumed=false;
+        if(ConsumeConversationInput())return;
         if(ActiveElectricalPanel){if(Input.GetKeyDown(KeyCode.E)||Input.GetKeyDown(KeyCode.Escape))CloseElectricalPanel();FrameDelta=0;return;}
         if(ActiveReadable)
         {
@@ -442,12 +452,14 @@ public sealed partial class RecoilPrototype : MonoBehaviour
     }
     public void InterruptInteraction()
     {if(ActiveInteraction)ActiveInteraction.Cancel();ActiveInteraction=null;interactionHeld=true;}
+    public void DragPlayerToDeath()
+    {if(!Playing)return;InterruptInteraction();player.CancelEscortFlight();dead=true;deathReason="Dawn has become one with the Coalers.";deathTip="TIP: Keep your distance from Coalers to avoid becoming one of them.";nextHudTextRefresh=float.NegativeInfinity;}
     public void CatchPlayer(){CatchPlayer(Vector2.zero);}
     public void CatchPlayer(Vector2 knockback)
     {
         if(!player.TakeMonsterHit())return;
         if(knockback.sqrMagnitude>0)player.ApplyMonsterKnockback(knockback);
-        if(player.Health<=0){dead=true;deathReason="Your health ran out.";}
+        if(player.Health<=0){dead=true;deathReason="Dawn has died.";deathTip="TIP: Break line of sight and keep your distance from Coalers.";nextHudTextRefresh=float.NegativeInfinity;}
     }
     public void ObservePlayer(bool interact)
     {
@@ -508,13 +520,14 @@ public sealed partial class RecoilPrototype : MonoBehaviour
         nextHudTextRefresh=now+HudTextInterval;
         string sceneObjective=HasItem("employee_access_card")?objectiveWithCard:objectiveWithoutCard;
         hudObjective=!string.IsNullOrEmpty(sceneObjective)?sceneObjective:hasClue?"02  /  Reach the green exit. Press E.":"01  /  Search the factory for the missing person's clue.";
-        string status=player.Climbing?"CLIMBING":player.Flying?"HOVERING":player.Crouched?"CROUCHING":player.SilentWalking?"SILENT WALK":player.Grounded?"GROUNDED":"FALLING";
+        string status=player.Climbing?"CLIMBING":player.Flying?"HOVERING":player.SilentWalking?"STEALTH WALK":player.Running?"RUNNING":player.Grounded?"GROUNDED":"FALLING";
         if(EscortingChild)status+=" / HOLDING HANDS";
         hudStatus=status+"   /   "+(checkpoint?"FACTORY CHECKPOINT":locationLabel);
         hudHealth="HEALTH: "+player.Health+" / "+player.maxHealth;
         hudIllumination="ILLUMINATION: "+(player.Illumination*100).ToString("0")+"%";
         hudDialogue=dialogue;
-        hudDeath=deathReason+"  Cover blocks sight; C quiets your steps.";
+        hudDeath=deathReason;
+        hudDeathTip=deathTip;
         hudSummary="Clue recovered   /   "+Mathf.FloorToInt(elapsed)+" seconds   /   "+attempts+" attempts";
         if(SoundWaves && SoundWaves.Contains(player.Position))
         {
@@ -522,6 +535,8 @@ public sealed partial class RecoilPrototype : MonoBehaviour
             string phase=sw.CueDelay>0?"MOVE IN "+sw.CueDelay.ToString("0.0")+"s":sw.CueHold>0?"HOLD "+sw.CueHold.ToString("0.0")+"s":sw.CueMove>0?"MOVE "+sw.CueMove.ToString("0.0")+"s":"WAITING FOR NEXT WAVE";
             hudWave=sw.Phase==SoundWaveManager.BroadcastPhase.Idle?"B: test waves / next in "+sw.Remaining.ToString("0.0")+"s":sw.Phase==SoundWaveManager.BroadcastPhase.Recovery?"SEQUENCE COMPLETE":sw.Phase==SoundWaveManager.BroadcastPhase.Warning?"RED ALERT / FIRST DIRECTION IN "+sw.Remaining.ToString("0.0")+"s":phase+" / "+direction+" / wave "+sw.CueIndex+"/"+sw.TotalWaves;
         }
+        hudEnemyLabels.Clear();
+        if(!showMonsterStateUI)return;
         foreach(var e in enemies)
         {
             string state=e.State==RampagerController.Behaviour.Attack?"ATTACK":e.State==RampagerController.Behaviour.Sleeping?"SLEEPING":"ROAMING";
@@ -542,6 +557,7 @@ public sealed partial class RecoilPrototype : MonoBehaviour
     {
         if(ActiveElectricalPanel){ActiveElectricalPanel.DrawPage(this);return;}
         Styles(); RefreshHudText(); GUI.matrix=Matrix4x4.TRS(Vector3.zero,Quaternion.identity,new Vector3(Screen.width/1280f,Screen.height/720f,1));
+        if(ConversationActive){DrawConversation();return;}
         if(ActiveReadable)
         {
             Panel(new Rect(0,0,1280,720),Hex(0x05090d,.98f));
@@ -554,7 +570,7 @@ public sealed partial class RecoilPrototype : MonoBehaviour
         Text(28,14,280,40,"R E C O I L",hudTitle);
         Text(29,53,360,24,"PLAYABLE STUDY  /  TOWN ENTRANCE",small);
         Text(480,20,770,30,hudObjective);
-        Text(480,55,770,25,"A/D move   •   Mouse + hold click fire   •   W launch   •   W/S fly   •   C crouch / Shift silent walk   •   E hold to search",small);
+        Text(480,55,770,25,"A/D move   •   Mouse + hold click fire   •   W launch   •   W/S fly   •   Hold Shift run   •   E hold to search",small);
         Panel(new Rect(0,664,1280,56),Hex(0x0c151b,.94f));
         Text(28,678,380,24,hudStatus,small);
         Text(28,597,390,24,hudHealth,small);
@@ -592,15 +608,15 @@ public sealed partial class RecoilPrototype : MonoBehaviour
                 Panel(new Rect(230,110,820,65),Hex(0x102733,.94f));Text(245,115,790,28,hudWave,center);
                 Text(245,145,790,22,"EXPAND > RIGHT / SHRINK < LEFT. Random direction. Delay 0.1s, MOVE 1s, then WAIT 1.5s.",small);
             }
-            foreach(var e in enemies) if(e.Alert>.02f && (!lighting || lighting.VisibilityAt(e.Position+Vector2.up*1.25f)>.08f))
+            if(showMonsterStateUI)foreach(var e in enemies) if(e.OnGameplayPlane && !e.HideStatusLabel && e.Alert>.02f && (!lighting || lighting.VisibilityAt(e.Position+Vector2.up*1.25f)>.08f))
             {
-                Vector3 p=cam.WorldToViewportPoint(e.Position+Vector2.up*1.25f);
+                Vector3 p=cam.WorldToViewportPoint(e.transform.position+Vector3.up*1.25f);
                 Panel(new Rect(p.x*1280-24,(1-p.y)*720,48,5),Hex(0x4b4140));
                 Panel(new Rect(p.x*1280-24,(1-p.y)*720,48*e.Alert,5),Hex(0xef8f75));
             }
-            foreach(var e in enemies)if(!lighting || lighting.VisibilityAt(e.Position+Vector2.up*.45f)>.08f)
+            if(showMonsterStateUI)foreach(var e in enemies)if(e.OnGameplayPlane && !e.HideStatusLabel && (!lighting || lighting.VisibilityAt(e.Position+Vector2.up*.45f)>.08f))
             {
-                Vector3 p=cam.WorldToViewportPoint(e.Position+Vector2.up*1.55f);
+                Vector3 p=cam.WorldToViewportPoint(e.transform.position+Vector3.up*1.55f);
                 string state;
                 if(hudEnemyLabels.TryGetValue(e,out state))Text(p.x*1280-55,(1-p.y)*720-8,110,20,state,enemyLabel);
             }
@@ -622,6 +638,7 @@ public sealed partial class RecoilPrototype : MonoBehaviour
             else if(dead)
             {
                 Text(260,258,760,50,hudDeath);
+                Text(260,316,760,35,hudDeathTip,small);
                 if(GUI.Button(new Rect(260,360,300,52),"RETRY FROM CHECKPOINT  [R]")) { attempts++;ResetRun(false); }
             }
             else if(won)

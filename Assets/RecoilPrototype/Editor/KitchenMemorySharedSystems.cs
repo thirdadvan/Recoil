@@ -11,7 +11,7 @@ public static class KitchenMemorySharedSystems
  static Transform G(string name,Transform parent,Vector2 p){var t=new GameObject(name).transform;t.SetParent(parent,false);t.position=p;return t;}
  public static void ApplyChild(RecoilPrototype world){
   var player=world.Player;var profile=player.GetComponent<RecoilPlayerBodyProfile>();if(!profile)profile=player.gameObject.AddComponent<RecoilPlayerBodyProfile>();
-  profile.standingHeight=1.12f;profile.crouchingHeight=.66f;profile.halfWidth=.22f;
+  profile.standingHeight=1.12f;profile.halfWidth=.22f;
   var ps=new SerializedObject(player);var body=(Transform)ps.FindProperty("coat").objectReferenceValue;var head=(Transform)ps.FindProperty("head").objectReferenceValue;var hair=(Transform)ps.FindProperty("hat").objectReferenceValue;
   body.name="Boy sweater";body.GetComponent<SpriteRenderer>().color=RecoilPrototype.Hex(0x647b7e);head.name="Boy head";hair.name="Boy hair - no detective hat";
   var old=player.transform.Find("Boy legs and shoes");if(old)UnityEngine.Object.DestroyImmediate(old.gameObject);var group=new GameObject("Boy legs and shoes").transform;group.SetParent(player.transform,false);

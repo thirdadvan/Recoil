@@ -11,6 +11,8 @@ public sealed class FreightEquipmentLighting : MonoBehaviour
         public RecoilLight2D illumination;
         public Light realtimeLight;
         public SpriteRenderer lens;
+        public Renderer meshLens;
+        public bool powerOnlyIndicator;
         public bool statusIndicator;
         public Color onColor=new Color(1,.87f,.58f);
         public Color offColor=new Color(.16f,.18f,.15f);
@@ -29,13 +31,20 @@ public sealed class FreightEquipmentLighting : MonoBehaviour
         foreach(var lamp in lamps)
         {
             if(lamp==null)continue;
-            Color color=lamp.statusIndicator?RecoilPrototype.Hex(busy?0xd7a64b:0x53db79):lamp.onColor;
+            Color color=lamp.statusIndicator?RecoilPrototype.Hex(busy&&!lamp.powerOnlyIndicator?0xd7a64b:0x53db79):lamp.onColor;
             if(lamp.illumination)lamp.illumination.enabled=power;
             if(lamp.realtimeLight){lamp.realtimeLight.enabled=power;lamp.realtimeLight.color=color;}
             if(lamp.lens)lamp.lens.color=power?color:lamp.offColor;
+            if(lamp.meshLens)
+            {
+                if(properties==null)properties=new MaterialPropertyBlock();
+                properties.Clear();properties.SetColor("_Color",power?color:lamp.offColor);
+                properties.SetColor("_EmissionColor",power?color*.7f:Color.black);lamp.meshLens.SetPropertyBlock(properties);
+            }
         }
     }
     void OnEnable(){RefreshLighting(true);}
+    MaterialPropertyBlock properties;
     void Update(){RefreshLighting();}
     void OnValidate(){applied=false;}
     void OnDisable(){RefreshLighting(true);}

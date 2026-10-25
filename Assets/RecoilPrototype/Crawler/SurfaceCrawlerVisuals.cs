@@ -6,6 +6,7 @@ public sealed class SurfaceCrawlerVisuals : MonoBehaviour
     public Transform visualRoot,abdomen,head;
     public Transform[] upperLimbs,lowerLimbs;
     public SpriteRenderer[] eyes;
+    [Min(.1f)] public float visualScale=1;
     float poseTime;
     public void Show(bool show){if(visualRoot)visualRoot.gameObject.SetActive(show);if(!show)poseTime=0;}
     public void Pose(Vector2 normal,Vector2 target,float distance,float preparation,SurfaceCrawlerController.Behaviour state,float dt)
@@ -14,7 +15,7 @@ public sealed class SurfaceCrawlerVisuals : MonoBehaviour
         float rotation=Mathf.Atan2(normal.y,normal.x)*Mathf.Rad2Deg-90;
         visualRoot.localRotation=Quaternion.Euler(0,0,rotation);
         Vector2 tangent=new Vector2(normal.y,-normal.x);float facing=Vector2.Dot(target,tangent)>=0?1:-1;
-        visualRoot.localScale=new Vector3(facing,1,1);
+        visualRoot.localScale=new Vector3(facing,1,1)*visualScale;
         bool tense=state==SurfaceCrawlerController.Behaviour.PreparingPounce;
         bool moving=state==SurfaceCrawlerController.Behaviour.Crawling;
         if(abdomen)abdomen.localPosition=new Vector3(-.06f,(tense?-.025f:0)+Mathf.Sin(poseTime*2)*.008f,0);

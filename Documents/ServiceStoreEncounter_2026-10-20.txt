@@ -1,0 +1,55 @@
+Service store: clerk / hidden observer tutorial
+
+Scene: Assets/Scenes/RecoilServiceStore.unity
+Editable hierarchy: RECOIL - Service Store / Store Clerk Encounter - editable
+- Adult store clerk - assembled 2D art: individual editable graphic pieces.
+- Counter approach - stealth arrival: move this marker to change the reassurance trigger location.
+- Monster emergence - clear of counter: keep this point outside counter/wall collisions.
+- Hidden Rampager - clerk tutorial: uses standard perception / movement / attack components.
+
+Sequence:
+1. Skylight starts open; gun requirement and existing roof destination remain intact.
+2. On gameplay entry, invisible Rampager establishes watch, clerk says:
+   Stay there.
+   If you want to live, slowly walk to me.
+3. Click or Space advances. Player, enemies and camera freeze; audio remains running.
+   Closing input is consumed until release, so advancing dialogue cannot also shoot/jump.
+4. Hint: Press SHIFT to stealth walk.
+5. Normal running uses the existing accumulated 0.5-second watch anger threshold.
+   On Attack, the Rampager becomes visible beside the counter and pursues normally.
+6. Quiet arrival near the counter starts: Be nice... Go to sleep!
+   Hidden observer sleeps, heartbeat stops, tutorial completion is remembered.
+7. Existing water gun pickup and skylight exit remain available.
+8. Retry before completion resets this encounter. Completion survives ordinary retry/travel;
+   a full new game resets it. No new background music track was added (store has no authored BGM).
+
+Reusable dialogue architecture:
+- NpcDialogueSequence.cs: ScriptableObject containing speaker/text lines.
+- RecoilNpcDialogue.cs: world runner, input, gameplay pause and bottom dialogue presentation.
+- ServiceStoreEncounter.cs: scene story progression only.
+- PlayerGazeFeedback.cs: heartbeat uses unscaled time during conversation.
+- RecoilDoor.cs: startsOpened flag, independent of actual travel completion.
+
+Dialogue content assets: Assets/RecoilPrototype/Dialogue/StoreClerk_*.asset
+Inspector: dialogue lines are editable without changing the encounter script.
+Hidden tutorial observer has extended authored sight distance and large watch stand-off so the
+entrance/counter staging works in darkness; normal Rampager defaults were not changed.
+
+Research decision:
+Follow content / runner / presentation separation used by Yarn Spinner. For this small,
+linear encounter a lightweight existing-project implementation avoids adding a package,
+while preserving separate content assets and callbacks for future scripted NPCs.
+https://docs.yarnspinner.dev/components/dialogue-runner
+https://docs.yarnspinner.dev/2.2/using-yarnspinner-with-unity/components/dialogue-view/dialogue-advance-input
+Do not pause AudioListener or set timeScale to zero; existing gameplay gates freeze simulation
+and camera while the heartbeat continues independently. Unity documents global listener pause:
+https://docs.unity.com/en-us/engine/6000.6/script-reference/unityengine/audiolistener/pause
+
+Validation:
+Disposable clones of the actual saved store scene: open skylight/collision, intro line advance,
+world pause, continuing heartbeat, hidden artwork/HUD, actual normal walking -> attack,
+actual Shift walking from entrance -> reassurance, heartbeat removal, retry reset/persistence.
+Unity compilation: no errors. Saved scene contains no duplicate object identifiers.
+Art capture: Captures/ServiceStoreEncounter/clerk-art-preview.png (darkness disabled for inspection).
+Original outdoor scene remains loaded with its pre-existing unsaved edits; only store scene saved.
+Backups: Backups/ServiceStoreEncounter/20261020/

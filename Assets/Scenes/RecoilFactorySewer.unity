@@ -524,12 +524,15 @@ MonoBehaviour:
   destinationScene: Assets/Scenes/RecoilPrototype.unity
   destinationSpawn: Sewer West Return Spawn
   permanentlyBlocked: 0
+  blockedByThreat: 0
+  blockedPrompt: E / DAMAGED DOOR
   irreparableDamage: 0
   blockedByItemId: 
   blockedMessage: The door is damaged and will not open.
   rememberOnTravel: 
   openStateItemId: 
   requiresFlyingToOpen: 0
+  startsOpened: 0
   firstOpenMessage: 
   autoTravelAboveOpening: 0
   autoExitHalfWidth: 1
@@ -983,6 +986,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 195552261}
   viewSize: 2.5
+  perspective3D: 0
+  frameOnGameplayPlane: 0
+  use3DComposition: 0
+  pitch3D: 0
+  panY3D: 0
   followOffset: {x: 1.2, y: 1.2}
   followSpeed: 4
   outdoorHeightZoomEnabled: 0
@@ -1002,6 +1010,11 @@ MonoBehaviour:
   maximumY: 1.6
   preserveFootFraming: 0
   minimumFootScreenMargin: 0.1
+  limitHorizontal: 0
+  leftBoundary: {fileID: 0}
+  rightBoundary: {fileID: 0}
+  fitNarrowRooms: 1
+  horizontalBoundaryPlaneZ: 0.7
 --- !u!81 &142492964
 AudioListener:
   m_ObjectHideFlags: 0
@@ -1559,8 +1572,8 @@ MonoBehaviour:
   head: {fileID: 1512144483}
   hat: {fileID: 2137186160}
   gun: {fileID: 2000186490}
-  walkSpeed: 2.52
-  sneakSpeed: 0.99
+  walkSpeed: 2.772
+  sneakSpeed: 1.1880001
   hoverSpeed: 2.2
   verticalHoverSpeed: 1.5
   gravity: 14
@@ -4386,12 +4399,15 @@ MonoBehaviour:
   destinationScene: Assets/Scenes/RecoilPrototype.unity
   destinationSpawn: Sewer East Return Spawn
   permanentlyBlocked: 0
+  blockedByThreat: 0
+  blockedPrompt: E / DAMAGED DOOR
   irreparableDamage: 0
   blockedByItemId: 
   blockedMessage: The door is damaged and will not open.
   rememberOnTravel: 
   openStateItemId: 
   requiresFlyingToOpen: 0
+  startsOpened: 0
   firstOpenMessage: 
   autoTravelAboveOpening: 0
   autoExitHalfWidth: 1
@@ -5602,6 +5618,7 @@ MonoBehaviour:
   enableCheckpoint: 0
   legacyEvidenceEnabled: 0
   startWithWaterGun: 0
+  showMonsterStateUI: 0
 --- !u!1 &1677673762
 GameObject:
   m_ObjectHideFlags: 0

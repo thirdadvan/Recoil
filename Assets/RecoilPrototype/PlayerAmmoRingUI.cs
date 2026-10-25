@@ -37,7 +37,7 @@ public sealed class PlayerAmmoRingUI : MonoBehaviour
         if(alpha<=0)return;
         if(!ring || cachedAmmo!=player.Ammo || cachedCapacity!=player.ammoCapacity)RebuildRing();
         var camera=Camera.main;if(!camera)return;
-        var center=camera.WorldToScreenPoint(player.Position+player.Aim*.5f);if(center.z<=0)return;
+        var center=camera.WorldToScreenPoint(player.WorldPosition+(Vector3)(player.Aim*.5f));if(center.z<=0)return;
         center.y+=36*Screen.height/720f;
         float size=radius*(128f/48)*Screen.height/720f;
         var matrix=GUI.matrix;var color=GUI.color;

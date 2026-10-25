@@ -1,0 +1,39 @@
+玩家瞄准、倒退步态与空中腿部姿态（2026-10-21最终方案）
+
+当前方案
+身体快速跟随鼠标，Body Turn Speed默认1440度/秒。Movement Controls Facing和Limit Ground Aim均关闭，地面和空中自由瞄准。A/D移动与鼠标朝向相反时，按实际位移反向推进步态，表现为倒退行走。
+保留之前的地面加减速：Acceleration Time=.14秒、Stop Time=.12秒、Reversal Brake Time=.09秒，不改变最高速度或后座力物理。
+
+空中姿态
+后座力池实际产生加速时：一腿抬高收膝，另一腿向下伸展。
+悬浮或下落时：双腿慢速蹬车，一圈默认2.4秒。与移动距离无关，不再播放地面行走。
+落地后：平滑收回空中姿态，回到站立或行走。
+梯子、铁链、悬挂把手：使用独立收腿姿态。游戏暂停时动作暂停。
+
+架构与编辑
+Player > PlayerAimLocomotion：鼠标/移动朝向模式、转身速度、地面加减速。
+Player > Recoil3DPlayerLegPose：高低脚角度、膝关节角度、蹬车周期与幅度、姿态过渡速度。
+Player > Recoil3DActorVisual：身体旋转、倒退步态推进、调用腿部姿态组件。
+Player > 3D character - editable model > Body dimensions > Left/Right leg > Knee pivot：新增膝关节和小腿、鞋。没有新增物理碰撞。
+RecoilPlayerController.RecoilAccelerating：提供实际后座力加速阶段，避免根据已经衰减但仍存储的速度池误判。
+原2D场景内容保留；13个3D场景统一使用此方案。
+旧的移动决定朝向、地面瞄准限位只是上一轮测试，已被本方案取代。旧版备份见Backups/MouseFacingAirPose/20261021_203304。
+
+此前调研记录（不代表仍启用瞄准角度限制）
+调研
+1. 人体胳膊不是单一二维转轴。肩关节研究分别记录屈曲、伸展、外展、跨体、内外旋等方向，实际持枪还涉及肘与躯干。因此不能把肩关节的某个测量角度直接等同于游戏枪口可转范围。此次105度/125度是针对横版视角的可调瞄准锥，不是医学测量值。
+研究：Namdari et al., Defining functional shoulder range of motion for activities of daily living, 2012.
+https://pubmed.ncbi.nlm.nih.gov/22047785/
+NASA关于肩部复合关节与协调运动的说明：
+https://www.nasa.gov/directorates/stmd/space-tech-research-grants/modeling-and-control-methods-for-supporting-scapulohumeral-rhythm-with-a-robotic-exoskeleton/
+
+2. My Friend Pedro：开发者2015年的一手访谈介绍A/D移动、鼠标独立瞄准，以及双持分离瞄准/空中特技的设计。它为自由动作与自由射击服务；采用这一路线，需要相应的身体与步态表现来支持反向移动。它不直接给出可照搬到本项目的胳膊限位参数。
+https://80.lv/articles/my-friend-pedro-awesome-slow-motion-platformer-shooter
+
+3. Celeste：开发者公开代码中，Facing直接根据moveX设置，水平速度另外用Approach与RunAccel计算。可借鉴其“朝向快速响应、实际速度独立变化”的控制架构；并非要把本项目做成Celeste的精确手感。
+https://github.com/NoelFB/Celeste/blob/master/Source/Player/Player.cs
+未找到Inside/Replaced官方公开的可直接确认的转身或刹停秒数；下列时间是本项目测试值。
+
+
+验证完成
+Unity Play实际射击进入Recoil姿态；速度池耗尽时仍在飞行但进入Pedalling；下落保持Pedalling；落地平滑回Grounded；暂停姿态不变。向右移动且瞄准左侧时，Facing=-1且步态相位反向。腿部无新增碰撞体。13个3D场景均保存，配置一致，对象ID无重复。控制台无错误。

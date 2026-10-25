@@ -1,0 +1,53 @@
+开场加油站与公路美术调整 — 2026-10-22
+
+场景：Assets/Scenes/3D/RecoilPrototype.unity
+
+参考方向
+波兰旧乡镇加油站：薄钢雨棚、细立柱、独立泵岛、低矮服务房，旧式机械加油机与褪色油漆。
+https://polska-org.pl/7177988,foto.html
+https://zbioryspoleczne.pl/en/units/PL_2104_015_001_001_004
+
+汽车：以20世纪70至80年代中东欧紧凑型轿车为比例和细节参考，不复制车型或品牌。四圆灯、倾斜风挡、狭窄钢保险杠、钢制轮毂。
+https://cdn.skoda-storyboard.com/2025/10/Press_Kit_Classic_Days_2025_120GLS_b035a243.pdf
+
+地貌：选择波兰—捷克矿业工业带与乡村交界的低丘、林带、聚落及复绿矿业堆丘；不是把整个东欧视为单一地貌。
+https://www.visitostrava.eu/en/discover-ostrava/sights-and-architecture/310-the-ema-heap.html
+https://www.ostrava.cz/en/tour/presentation/presentation-materials/visit_aj-1
+https://commons.wikimedia.org/wiki/Category:Rural_landscapes_of_the_Czech_Republic
+
+场景变化
+汽车车头朝镜头，停在路肩。旁边双车道公路延伸到远景低丘间的谷地，配套电线杆、垂落电线、路桩、村屋及林带。左侧关卡边界的碰撞保持，外观以道路切坡替换原薄墙。
+加油机采用前3、中3、后3的对齐网格，总计9台，尺寸统一。列间距8米，排间距7.25米，全体相对原位置向远景移动0.45米；中间3台可互动，前后6台只显示。后排左起第1台、中排左起第2台、前排左起第2台初始黑屏损坏，其余6台显示绿色IN SERVICE。
+任意原有互动油枪被拿起后，站内所有互动及显示用加油机统一显示OUT OF ORDER。
+新增前后景加油机没有互动和碰撞，不会在主角经过对应X时产生远程互动。
+雨棚连成完整加油区，前后景错位泵岛让横向穿行更清晰。
+远处地形仅用低对比轮廓保留层次，不提高全场景亮度。
+
+编辑层级
+Service Station - editable exterior > Forecourt - move all pump islands together：雨棚、原互动加油机、前后景泵岛、各自屏幕和灯具。
+03 Props and Objectives > Parked car > Dun sedan - front toward camera：汽车模型。
+Opening - roadside service station > Road - foreground to misty horizon：公路及沿路设施。
+Opening - roadside service station > Countryside - low hills woods and mining settlement：低丘、林带、村屋及矿业堆丘。
+Roadside cutting - natural left boundary：左侧路堑外观，原边界碰撞保留。
+每个灯光保留在其发光物体下面。静态细节按材质合并网格，屏幕、可拿起的油枪等动态物件单独保留。
+
+新增脚本
+RecoilFuelStation：同一加油站的故障分组标记。
+Recoil3DFuelPumpDisplay：前后景加油机读取互动加油机状态，只在状态变化时切换屏幕。
+Recoil3DOpeningForecourtPass：仅用于编辑器制作本次美术，不在运行时重新生成场景。
+
+验证
+Unity Play：三台互动加油机及六台前后景显示同步变为故障；无缺失网格和控制台错误。
+所有新网格、材质均在本地生成。网络图片仅作为造型参考，未作为游戏贴图导入。
+修改前备份：Backups/OpeningForecourt/20261022。
+
+旧冲突遗留（2026-10-22）
+去掉九台机身数字，以及雨棚、服务区、仓库和天窗上方的悬空标题文字。
+小丘前方放置两辆不同角度的报废轿车，Z约17米和21米，锈蚀、塌顶、翘起的引擎盖和破损车门。
+加油区散落四件褪色破衣、七只旧鞋、三面破损防爆盾牌和一块褪色标牌。各物件保留独立可移动根节点，静态部分按材质合并。
+统一位于Forecourt - move all pump islands together > Old unrest aftermath - aged debris。
+指定三台startsBroken独立于故事中的全站故障；取油枪后它们保持黑屏，其余六台显示故障。
+编辑器制作用Recoil3DForecourtAftermathPass，运行时不重新摆放。
+验证：指定3台黑屏、其余6台正常；取油枪后仍3台黑屏、其余6台故障；0条控制台错误。备份：Backups/ForecourtAftermath/20261022。
+
+故障位置修订：后左1、中左2、前左2。三台油枪分别落在不同方向的地面，保留垂落弯曲油管；外壳凹陷、盖板松脱、屏幕破损但无显示。中排损坏泵禁止取枪互动，也不写入剧情完成标记。所有故障分支重置后保持一致。备份：Backups/FuelPumpDamage/20261022。
