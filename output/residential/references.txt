@@ -1,0 +1,8 @@
+Reference: Nowa Huta workers housing, Krakow official heritage documentation.
+https://zabytek.pl/pl/obiekty/dzielnica-nowa-huta-
+https://www.krakow.pl/turystyka/297737,artykul,nowa-huta-na-europejskim-szlaku-kulturowym-atrium.html
+Street-facing ground-floor shops have separate housing entrances; repeated upstairs windows, weathered plaster, substantial side walls. No national location imposed on the fictional town.
+Layout: road x130..247; river x149..167 runs +Z; booths x142/174; watchtower (158,0,21); Block 3 entrance x203.2. Ground floor labelled 0, upper landings 1 and 2 (third physical level).
+Original kitchen memory and legacy 2D scenes preserved. Apartment is a separate scene with adult Dawn and a return route, with no death-memory story controller.
+Searchlight inspector exposes sweep timing, detection delay and onPlayerDetected event. Default detection gives a warning, without inventing a new death condition.
+Backup: Backups/ResidentialDistrict/20261028-201218

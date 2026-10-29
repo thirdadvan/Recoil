@@ -1,0 +1,1 @@
+PASS: shared adult player ascends both flights to floor 3 at Z=.7; enters apartment; camera settled on arrival; apartment returns to floor 3; descends to ground floor; exterior return spawn at x203.2; searchlight detects open lane and is occluded by booth colliders.

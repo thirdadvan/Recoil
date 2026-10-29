@@ -20,7 +20,8 @@ public static class RecoilMacBuild
             if(!BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.Standalone,BuildTarget.StandaloneOSX))throw new Exception("Mac build support is missing.");
             var scenes=EditorBuildSettings.scenes.Where(s=>s.enabled).Select(s=>s.path).ToArray();
             if(scenes.Length==0 || scenes.Any(s=>!File.Exists(s)))throw new Exception("Build scene list is empty or contains missing scenes.");
-            if(!EditorSceneManager.SaveOpenScenes())throw new Exception("Could not save open scenes.");
+            // Batch builds use the saved build scenes; the initial untitled scene cannot be saved.
+            if(!Application.isBatchMode && !EditorSceneManager.SaveOpenScenes())throw new Exception("Could not save open scenes.");
             Directory.CreateDirectory(Folder);
             var engine=Path.GetFullPath("Builds/BuildTools/MacStandaloneSupport");
             if(!Directory.Exists(engine+"/Variations"))throw new Exception("Local Mac build tool extraction is incomplete.");

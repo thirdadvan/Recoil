@@ -10,6 +10,24 @@ Shader "Recoil/Art Tests/Warehouse Atmosphere"
  UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
  float3 _CameraPosition;float3 _Ray00,_Ray10,_Ray01,_Ray11;
  float4 _LampPos[3],_LampDir[3],_LampColour[3];int _LampCount,_VolumeSteps;float _Glow;
+ float4 _LampVolumeProfile[3],_VolumeShelterHalfSize[6];
+ float4x4 _VolumeShelterWorldToLocal[6];
+ // Trace the light-to-sample segment through authored shelter boxes. This is independent
+ // of the viewing ray, so the same protected space stays dark while the camera moves.
+ float ShelterVisibility(int lamp,float3 samplePosition){
+ float visible=1;
+ [unroll]for(int j=0;j<2;j++){
+ int slot=clamp(lamp*2+j,0,5);if(_VolumeShelterHalfSize[slot].w<.5)continue;
+ float3 a=mul(_VolumeShelterWorldToLocal[slot],float4(_LampPos[lamp].xyz,1)).xyz;
+ float3 b=mul(_VolumeShelterWorldToLocal[slot],float4(samplePosition,1)).xyz;
+ float3 delta=b-a,extent=_VolumeShelterHalfSize[slot].xyz;
+ float3 inverse=(step(0,delta)*2-1)/max(abs(delta),.00001);
+ float3 ta=(-extent-a)*inverse,tb=(extent-a)*inverse;
+ float3 nearT=min(ta,tb),farT=max(ta,tb);
+ float enter=max(nearT.x,max(nearT.y,nearT.z)),exit=min(farT.x,min(farT.y,farT.z));
+ if(exit>max(enter,0)&&enter<.999&&exit>0)visible=0;
+ }return visible;
+ }
  float _SkyEnabled,_SkyFeather;float3 _SkyTop;float4 _SkyShape,_SkyColour;
  // A rectangular roof aperture, widening gently downward. World-space bounds keep
  // the shaft anchored to the architecture when the camera pans or changes pitch.
@@ -56,9 +74,12 @@ Shader "Recoil/Art Tests/Warehouse Atmosphere"
  float3 v=p-_LampPos[n].xyz;float distance=length(v);
  float cone=smoothstep(_LampDir[n].w,min(.999,_LampDir[n].w+.12),dot(v/max(.001,distance),_LampDir[n].xyz));
  float fade=saturate(1-distance/_LampPos[n].w);
- // Bounded cone scatter, not a replacement for shadow-mapped volumetrics.
+ float4 profile=_LampVolumeProfile[n];
+ float heightMask=profile.w>.5?1-smoothstep(profile.y-profile.z,profile.y,p.y):1;
+ if(cone<=0||fade<=0||heightMask<=0||profile.x<=0)continue;
+ float visibility=ShelterVisibility(n,p);
  float dust=.88+.12*sin(p.x*2.3+p.z*1.7+p.y*.8);
- sum+=_LampColour[n].rgb*(cone*fade*fade*dust*len/steps*.045);
+ sum+=_LampColour[n].rgb*(cone*fade*fade*dust*len/steps*.045*profile.x*heightMask*visibility);
  }}
  sum+=Skylight(direction,len,jitter);
  return float4(sum,1);}

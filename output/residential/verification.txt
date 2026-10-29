@@ -1,0 +1,6 @@
+Searchlight: 393 exposed samples; 144 sheltered samples. Actual colliders occlude detection.
+Assets/Scenes/3D/RecoilPrototype.unity: valid scripts and destination routes
+Stairwell: three levels, two shared-controller switchback stairs; third floor right apartment.
+Assets/Scenes/3D/RecoilResidentialStairwell.unity: valid scripts and destination routes
+Apartment: independent geometry duplicate, adult player, reversible stairwell route.
+Assets/Scenes/3D/RecoilResidentialApartment.unity: valid scripts and destination routes

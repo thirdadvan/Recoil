@@ -83,4 +83,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/RecoilKitchenMemory.unity
     guid: a58a1bce5baf14579adfb15334d3302d
+  - enabled: 1
+    path: Assets/Scenes/3D/RecoilResidentialStairwell.unity
+    guid: e63f2da244fc4421c8d06c95c04d2119
+  - enabled: 1
+    path: Assets/Scenes/3D/RecoilResidentialApartment.unity
+    guid: 0fe4ea9c9c9ed422ebf636f7c5b479cc
   m_configObjects: {}

@@ -52,6 +52,9 @@ public sealed class WarehouseAtmosphereTest : MonoBehaviour
     readonly Light[] nearest=new Light[3];
     readonly float[] distances=new float[3];
     readonly Vector4[] pos=new Vector4[3],dir=new Vector4[3],colour=new Vector4[3];
+    readonly Vector4[] volumeProfiles=new Vector4[3],shelterExtents=new Vector4[6];
+    readonly Matrix4x4[] shelterTransforms=new Matrix4x4[6];
+    readonly Dictionary<Light,VolumetricLightProfile> fixtureProfiles=new Dictionary<Light,VolumetricLightProfile>();
     void OnEnable(){powerResolved=false;lens=GetComponent<Camera>();lens.depthTextureMode|=DepthTextureMode.Depth;}
     void Update(){if(showTestControls && Application.isPlaying && Input.GetKeyDown(KeyCode.F6))testLook=!testLook;}
     void LateUpdate()
@@ -88,15 +91,31 @@ public sealed class WarehouseAtmosphereTest : MonoBehaviour
             float d=(l.transform.position-lens.transform.position).sqrMagnitude;
             for(int i=0;i<3;i++)if(d<distances[i]){for(int j=2;j>i;j--){distances[j]=distances[j-1];nearest[j]=nearest[j-1];}distances[i]=d;nearest[i]=l;break;}
         }
+        for(int i=0;i<6;i++){shelterExtents[i]=Vector4.zero;shelterTransforms[i]=Matrix4x4.identity;}
         foreach(var l in nearest)
         {
             if(!l)continue;
             var p=l.transform.position;var d=l.transform.forward;
             pos[count]=new Vector4(p.x,p.y,p.z,l.range);
             dir[count]=new Vector4(d.x,d.y,d.z,Mathf.Cos(l.spotAngle*.5f*Mathf.Deg2Rad));
-            colour[count]=(Vector4)(l.color*(l.intensity*scattering));count++;
+            colour[count]=(Vector4)(l.color*(l.intensity*scattering));
+            VolumetricLightProfile profile;
+            if(!fixtureProfiles.TryGetValue(l,out profile)||!Application.isPlaying)
+            {profile=l.GetComponent<VolumetricLightProfile>();fixtureProfiles[l]=profile;}
+            volumeProfiles[count]=profile&&profile.enabled?new Vector4(profile.scatteringMultiplier,profile.maximumVisibleHeight,Mathf.Max(.05f,profile.heightFeather),profile.fadeAboveHeight?1:0):new Vector4(1,0,1,0);
+            if(profile&&profile.enabled&&profile.shelters!=null)for(int i=0;i<Mathf.Min(2,profile.shelters.Length);i++)
+            {
+                var shelter=profile.shelters[i];if(!shelter||!shelter.enabled||!shelter.gameObject.activeInHierarchy)continue;
+                int slot=count*2+i;var half=shelter.size*.5f;
+                shelterTransforms[slot]=Matrix4x4.Translate(-shelter.center)*shelter.transform.worldToLocalMatrix;
+                shelterExtents[slot]=new Vector4(half.x,half.y,half.z,1);
+            }
+            count++;
         }
         material.SetVectorArray("_LampPos",pos);material.SetVectorArray("_LampDir",dir);material.SetVectorArray("_LampColour",colour);
+        material.SetVectorArray("_LampVolumeProfile",volumeProfiles);
+        material.SetMatrixArray("_VolumeShelterWorldToLocal",shelterTransforms);
+        material.SetVectorArray("_VolumeShelterHalfSize",shelterExtents);
         material.SetInt("_LampCount",count);
         bool sky=skylightOpening&&skylightOpening.gameObject.activeInHierarchy;
         material.SetFloat("_SkyEnabled",sky?1:0);
@@ -133,5 +152,5 @@ public sealed class WarehouseAtmosphereTest : MonoBehaviour
         if(!Application.isPlaying||!showTestControls)return;
         GUI.Label(new Rect(18,100,550,26),"WAREHOUSE LIGHTING TEST   |   F6: "+(testLook?"TEST LOOK":"ORIGINAL LOOK"));
     }
-    void OnDisable(){foreach(var pair in decorativeBaseIntensities)if(pair.Key)pair.Key.intensity=pair.Value;decorativeBaseIntensities.Clear();if(material){if(Application.isPlaying)Destroy(material);else DestroyImmediate(material);}}
+    void OnDisable(){foreach(var pair in decorativeBaseIntensities)if(pair.Key)pair.Key.intensity=pair.Value;decorativeBaseIntensities.Clear();fixtureProfiles.Clear();if(material){if(Application.isPlaying)Destroy(material);else DestroyImmediate(material);}}
 }
