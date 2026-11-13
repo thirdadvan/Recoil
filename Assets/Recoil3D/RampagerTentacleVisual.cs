@@ -63,7 +63,15 @@ public sealed class RampagerTentacleVisual : MonoBehaviour
     float standing=1,opening,extension,tension,fusion,stride,clock,nextTick,bodyYaw,headYaw,slump,fusionReach,idleUnfurl;
     Vector3 previous,fusionTargetLocal;
     Vector3[] strandFrameRights;
-    float sampledSpeed,gaitStrength,glowEnergy,roar;
+    float sampledSpeed,gaitStrength,glowEnergy,roar,waterPoseBlend,coreHoldClock;
+    bool holdingCoreClock;
+    public bool CoreExposed {get{return core&&core.gameObject.activeInHierarchy&&opening>.42f&&tension<.7f;}}
+    public Vector3 CoreWorldPosition {get{return core?core.position:transform.position;}}
+    public bool WaterRayHitsCore(Vector3 start,Vector3 direction,float range){
+        if(!CoreExposed)return false;direction.Normalize();float along=Vector3.Dot(core.position-start,direction);if(along<0||along>range)return false;
+        // Unit sphere diameter is one; include only the narrow width of the water stream.
+        return core.InverseTransformPoint(start+direction*along).sqrMagnitude<=.70f*.70f;
+    }
     bool RuntimeDriven {get{return Application.isPlaying && ai;}}
     Material[] temporaryMaterials;
     MaterialPropertyBlock properties;
@@ -179,7 +187,7 @@ public sealed class RampagerTentacleVisual : MonoBehaviour
         bool changed=DesiredForm()!=CurrentForm;
         bool inView=!RuntimeDriven || !tubes || tubes.isVisible;
         if(inView && nextTick-clock>.05f)nextTick=clock;
-        bool striking=RuntimeDriven && attack && attack.Phase!=RampagerAttack.AttackPhase.Ready;
+        bool striking=RuntimeDriven && ((ai.ReactingToWater) || (attack && attack.Phase!=RampagerAttack.AttackPhase.Ready));
         bool deform=changed || striking || clock>=nextTick;
         // Unseen monsters keep their behaviour fully active; only mesh deformation updates less often.
         if(deform)nextTick=clock+(inView?1f/animationRate:.25f);
@@ -194,6 +202,8 @@ public sealed class RampagerTentacleVisual : MonoBehaviour
     void AdvancePose(float dt,bool snap,bool deform)
     {
         if(!root || !mesh)return;
+        if(RuntimeDriven&&ai.CoreStill){if(!holdingCoreClock){holdingCoreClock=true;coreHoldClock=clock;}clock=coreHoldClock;}
+        else holdingCoreClock=false;
         Form previousForm=CurrentForm;
         CurrentForm=DesiredForm();float response=CurrentForm==Form.Enraged?.16f:transitionSeconds;
         float k=snap?1:1-Mathf.Exp(-Mathf.Max(0,dt)*4/Mathf.Max(.1f,response));
@@ -222,6 +232,15 @@ public sealed class RampagerTentacleVisual : MonoBehaviour
         if(RuntimeDriven && (ai.WatchingPlayer || ai.PreparingAttack)){opening=Mathf.Min(opening,1-anger);extension=Mathf.Min(extension,1-anger);tension=anger;}
         else tension=snap?anger:Mathf.Lerp(tension,anger,k*.9f);
         glowEnergy=RuntimeDriven?ai.TentacleGlowEnergy:CurrentForm==Form.Enraged?1:CurrentForm==Form.Watching||CurrentForm==Form.Approaching||CurrentForm==Form.Fusion?Mathf.Clamp01(previewSoundEnergy*.01f):0;
+        bool water=RuntimeDriven&&ai.ReactingToWater;
+        waterPoseBlend=snap?(water?1:0):Mathf.MoveTowards(waterPoseBlend,water?1:0,dt/(water&&ai.ProtectingCore?.065f:.18f));
+        if(water){
+            slump=Mathf.MoveTowards(slump,0,dt*8);fusion=fusionReach=0;
+            if(ai.ProtectingCore){
+                float attackBlend=ai.CoreAttackProgress;
+                opening=Mathf.Lerp(opening,0,ai.CoreFoldProgress);extension=0;tension=attackBlend;glowEnergy=0;
+            }else{opening=Mathf.Lerp(opening,.1f,waterPoseBlend);extension=Mathf.Lerp(extension,0,waterPoseBlend);}
+        }
         float targetFusion=CurrentForm==Form.Fusion?(RuntimeDriven && world && world.Player && world.Player.GrabPressure?world.Player.GrabPressure.Pressure:fusionProgress):0;
         fusion=Mathf.Lerp(fusion,targetFusion*(1-anger),k);
         fusionReach=Mathf.Lerp(fusionReach,CurrentForm==Form.Fusion?1:0,k);
@@ -253,7 +272,7 @@ public sealed class RampagerTentacleVisual : MonoBehaviour
             mesh.vertices=vertices;mesh.normals=normals;mesh.colors=vertexColours;mesh.RecalculateBounds();
         }
         core.localPosition=new Vector3(.025f,1.145f+Mathf.Sin(clock*1.2f)*.007f,-.045f);core.localScale=new Vector3(.12f,.19f,.12f)*(1+Mathf.Sin(clock*2)*.035f);
-        core.gameObject.SetActive(CurrentForm!=Form.Enraged && standing>.86f && opening>.42f && tension<.7f);
+        core.gameObject.SetActive(!(RuntimeDriven&&ai.ProtectingCore&&ai.CoreFoldProgress>.8f) && CurrentForm!=Form.Enraged && standing>.86f && opening>.42f && tension<.7f);
         badge.localPosition=Vector3.Lerp(new Vector3(-.4f,.075f,-.26f),new Vector3(-.13f-opening*.24f,1.27f,-.21f),standing);
         Vector3 badgePos=badge.localPosition;if(badgePos.y>.8f){float height=badgePos.y-.8f;badgePos.y-=height*.30f*slump;badgePos.z-=height*.15f*slump;badge.localPosition=badgePos;}
         badge.localRotation=Quaternion.Euler(standing<.3f?84:10,0,-19-opening*12+Mathf.Sin(clock)*2);
@@ -349,9 +368,43 @@ public sealed class RampagerTentacleVisual : MonoBehaviour
         {float side=i%2==0?-1:1;float level=(i/2f)/5;float progress=Mathf.Clamp01(fusion*1.5f-level*.35f);
             p0=new Vector3(side*.24f,1.31f-level*.36f,-.12f);Vector3 end=target+new Vector3(Mathf.Cos(a)*.23f,(level-.5f)*.83f,Mathf.Sin(a)*.23f);
             p1=Vector3.Lerp(p0,end+new Vector3(side*.33f,.16f,-.24f),progress);p2=Vector3.Lerp(p0,end+new Vector3(-side*.28f,-.13f,-.25f),progress);p3=Vector3.Lerp(p0,end,progress);}
+        // Blend from the current form into the guarding pose, then make irregular outward
+        // flicks to shed water. Core hits instead wrap tightly and slowly open into windup.
+        if(waterPoseBlend>.001f&&(s.group==2||s.group==3||s.group==4||s.group==5||s.group==6||RuntimeDriven&&ai.ProtectingCore&&s.group<7)){
+            float side=s.group==4?-1:s.group==5?1:s.index%2==0?-1:1;
+            float progress=RuntimeDriven?ai.WaterReactionProgress:0;
+            Vector3 incoming=RuntimeDriven?root.InverseTransformPoint(ai.LastKnownWorldPosition)-new Vector3(0,1.15f,0):Vector3.back;incoming.y=0;if(incoming.sqrMagnitude<.001f)incoming=Vector3.back;incoming.Normalize();
+            Vector3 across=Vector3.Cross(Vector3.up,incoming).normalized;
+            if(RuntimeDriven&&ai.ProtectingCore){
+                float reveal=Mathf.SmoothStep(0,1,ai.CoreAttackProgress);
+                // The lower arm, opposite arm, chest wraps and upper fibres arrive in
+                // sequence over one second. A fixed folded shape then holds for2.5s.
+                float delay=s.group==6?0:s.group==4?.08f:s.group==5?.18f:s.group==2||s.group==3?.24f:.34f;
+                float fold=Mathf.SmoothStep(0,1,Mathf.InverseLerp(delay,1,ai.CoreFoldProgress));
+                float foldWeight=fold*(1-reveal);
+                Vector3 centre=new Vector3(.025f,1.145f,-.045f);
+                Vector3 wrap=centre+new Vector3(Mathf.Sin(a)*.12f,Mathf.Cos(a)*.16f,-.13f);
+                p1=Vector3.Lerp(p1,centre+new Vector3(side*.23f,.15f,.02f),foldWeight);
+                p2=Vector3.Lerp(p2,wrap+Vector3.up*.1f,foldWeight);
+                p3=Vector3.Lerp(p3,wrap,foldWeight);
+            }else if(s.group==4||s.group==5||s.group==6){
+                float spread=Mathf.SmoothStep(0,1,Mathf.InverseLerp(.23f,.50f,progress));
+                float flick=Mathf.Sin(clock*(14+r*4)+s.index*1.9f)*spread;
+                Vector3 guard=new Vector3(0,1.22f,0)+incoming*.43f+across*(side*.12f+Mathf.Sin(a)*.13f)+Vector3.up*Mathf.Cos(a)*.20f;
+                // All three controls unfold: the shake travels along an extended curved
+                // strand instead of wobbling the tip of a tightly gathered hand.
+                float reach=s.group==4?1.28f:s.group==5?1.04f:1.12f;
+                Vector3 fan1=p0+new Vector3(side*.35f,-.035f,.08f);
+                Vector3 fan2=p0+new Vector3(side*(reach*.73f),-.14f+flick*.09f,-.16f+Mathf.Sin(a)*.12f);
+                Vector3 fan3=p0+new Vector3(side*(reach+r*.18f+flick*.07f),-.32f+Mathf.Cos(a)*.17f+flick*.23f,-.24f+Mathf.Sin(a)*.25f);
+                p1=Vector3.Lerp(p1,Vector3.Lerp(p0+incoming*.25f+Vector3.up*.10f,fan1,spread),waterPoseBlend);
+                p2=Vector3.Lerp(p2,Vector3.Lerp(guard+across*side*.17f+Vector3.up*.08f,fan2,spread),waterPoseBlend);
+                p3=Vector3.Lerp(p3,Vector3.Lerp(guard,fan3,spread),waterPoseBlend);
+            }
+        }
         // Idle fibres sag below their roots, then curl outwards and upwards at the tips.
         float unfurl=IdleUnfurlAmount;
-        if(unfurl>.001f&&(s.group==4||s.group==5||s.group==6))
+        if(waterPoseBlend<.01f&&unfurl>.001f&&(s.group==4||s.group==5||s.group==6))
         {
             float side=s.group==4?-1:s.group==5?1:s.index%2==0?-1:1;
             float wave=Mathf.Sin(clock*(.65f+r*.35f)+i*1.73f)*.0675f*idleSwayAmplitude;
@@ -392,7 +445,7 @@ public sealed class RampagerTentacleVisual : MonoBehaviour
         // Keep the tired torso slumped while the loose idle fibres remain lifted.
         if(slump>.001f&&s.group!=4&&s.group!=5&&s.group!=6)for(int c=0;c<4;c++)
         {float height=Mathf.Max(0,curve[c].y-.80f);curve[c].y-=height*.30f*slump;curve[c].z-=height*.15f*slump;curve[c].x+=Mathf.Sin(i*2.3f)*height*.08f*slump;}
-        float flutter=(standing>.1f?1:.15f)*(1-tension*.65f);curve[1].x+=sway*flutter;curve[2].z+=sway*flutter;
+        float flutter=(RuntimeDriven&&ai.CoreStill)?0:(standing>.1f?1:.15f)*(1-tension*.65f);curve[1].x+=sway*flutter;curve[2].z+=sway*flutter;
         if(tension>.1f && attack && attack.Phase==RampagerAttack.AttackPhase.Windup)
         {float twitch=Mathf.Sin(attack.PhaseProgress*Mathf.PI)*.003f*tension;curve[1].x+=twitch;}
     }
@@ -413,7 +466,7 @@ public sealed class RampagerTentacleVisual : MonoBehaviour
     {
         float radius=s.radius;if(s.group==8)radius*=Mathf.SmoothStep(0,1,fusion)*Mathf.Lerp(1,2.8f,fusion);if(s.group==7)radius*=standing;
         int glowGroup=s.group==6?0:s.group==4||s.group==5?1+Mathf.Min(2,Mathf.FloorToInt(s.index/(s.group==4?8f:6f)*3)):s.group==8?Mathf.Clamp(s.index/3,0,3):-1;
-        float intensity=glowGroup<0?0:Mathf.Clamp01(glowEnergy*4-glowGroup);
+        float intensity=RuntimeDriven&&ai.ProtectingCore?0:glowGroup<0?0:Mathf.Clamp01(glowEnergy*4-glowGroup);
         Color glow=new Color(1,.012f,.025f)*intensity;
         Vector3 previousRight=Vector3.zero;
         for(int r=0;r<Rings;r++)

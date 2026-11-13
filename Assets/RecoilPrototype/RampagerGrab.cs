@@ -12,7 +12,7 @@ public sealed class RampagerGrab : MonoBehaviour
     {
         if(!owner)owner=GetComponent<RampagerController>();
         if(!senses)senses=GetComponent<RampagerPerception>();
-        IsGrabbing=isActiveAndEnabled && owner && owner.isActiveAndEnabled && owner.WatchingPlayer && !owner.PreparingAttack && senses && senses.CanTouchPlayer(reach);
+        IsGrabbing=isActiveAndEnabled && owner && owner.isActiveAndEnabled && owner.WatchingPlayer && !owner.PreparingAttack && !owner.ReactingToWater && senses && senses.CanTouchPlayer(reach);
         return IsGrabbing;
     }
     public void Release(){IsGrabbing=false;}

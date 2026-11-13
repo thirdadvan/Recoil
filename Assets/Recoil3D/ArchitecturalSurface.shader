@@ -9,13 +9,17 @@ Shader "Recoil/3D/Metric Architectural Surface"
  _PlasterCoverage("Plaster coverage",Range(0,1))=.4
  _Metallic("Metal",Range(0,1))=0
  _Glossiness("Smoothness",Range(0,1))=.18
+ _FacadeAlignment("Shared building perimeter mapping",Float)=0
+ _FacadeOrigin("Facade centre X Y and front Z",Vector)=(0,0,0,0)
+ _FacadeSpan("Half width and depth in metres",Vector)=(1,1,0,0)
  }
  SubShader { Tags {"RenderType"="Opaque"} LOD 200
  CGPROGRAM
- #pragma surface surf Standard fullforwardshadows addshadow
+ #pragma surface surf RouteMoonStandard fullforwardshadows addshadow exclude_path:deferred
  #pragma target 3.0
+#include "OperationPlaneMoonlight.cginc"
  #include "UnityCG.cginc"
- fixed4 _Color,_BaseTint,_MortarTint;float4 _BrickSize;float _Kind,_PlasterCoverage,_Metallic,_Glossiness;
+ fixed4 _Color,_BaseTint,_MortarTint;float4 _BrickSize,_FacadeOrigin,_FacadeSpan;float _Kind,_PlasterCoverage,_Metallic,_Glossiness,_FacadeAlignment;
  struct Input {float3 worldPos;float3 worldNormal;};
  float hash(float2 p){return frac(sin(dot(p,float2(127.1,311.7)))*43758.5453);}
  float noise(float2 p){float2 i=floor(p),f=frac(p);f=f*f*(3-2*f);return lerp(lerp(hash(i),hash(i+float2(1,0)),f.x),lerp(hash(i+float2(0,1)),hash(i+1),f.x),f.y);}
@@ -27,6 +31,16 @@ Shader "Recoil/3D/Metric Architectural Surface"
    float3 p=mul(unity_WorldToObject,float4(IN.worldPos,1)).xyz*sc;
    float3 n=abs(mul((float3x3)unity_WorldToObject,IN.worldNormal));
    float2 uv=n.z>n.x&&n.z>n.y?p.xy:n.x>n.y?p.zy:p.xz;
+   if(_FacadeAlignment>.5)
+   {
+     // All faces share the front wall's vertical origin and physical brick size.
+     // Unwrap along the perimeter so courses and weathering continue around corners.
+     float3 q=IN.worldPos-_FacadeOrigin.xyz;float3 wn=IN.worldNormal;
+     float u=q.x;
+     if(abs(wn.x)>abs(wn.z))u=wn.x>0?_FacadeSpan.x+q.z:-_FacadeSpan.x-q.z;
+     else if(wn.z>0)u=_FacadeSpan.x*2+_FacadeSpan.y-q.x;
+     uv=float2(u,q.y);
+   }
    float grain=noise(uv*34),patch=noise(uv*.7)+.35*noise(uv*3.1);
    float3 c=_BaseTint.rgb*(.86+.1*grain+.1*patch);float smooth=_Glossiness;
    if(_Kind>.5 && _Kind<1.5)

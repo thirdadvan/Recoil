@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Building commands affect all scene Rampagers together. Travelling ripples are visual cues.
+// A measured outward packet carries each command: one beat left, two beats right.
 [DefaultExecutionOrder(-250),DisallowMultipleComponent]
 public sealed class SoundWaveManager : MonoBehaviour
 {
@@ -20,13 +20,25 @@ public sealed class SoundWaveManager : MonoBehaviour
     [HideInInspector] public float moveDelay=.1f; // Legacy scene data; reaction timing has one owner below.
     [Header("Readable broadcast cues")]
     [Min(.1f)] public float directionWaveDuration=3;
-    [UnityEngine.Serialization.FormerlySerializedAs("postWaveMoveDelay")]
-    [Min(0),Tooltip("指令波开始后，怪物开始移动前的反应时间；此期间不累计方向违规。") ] public float commandReactionDelay=.5f;
-    public float CommandMoveDelay {get{return Mathf.Max(0,commandReactionDelay);}}
+    [UnityEngine.Serialization.FormerlySerializedAs("postWaveMoveDelay"),HideInInspector]
+    public float commandReactionDelay=.5f; // Legacy data; measured packet arrival owns timing.
+    [Min(.15f),Tooltip("右移指令两道声波之间的间隔。")]
+    public float doublePulseSpacing=.4f;
+    public float CommandMoveDelay {get{return measuredMoveDelay;}}
+    public int CuePulseCount {get{return Direction>0?2:Direction<0?1:0;}}
+    public float FirstCentreArrival {get;private set;}
+    public int PlayedDrumCount {get;private set;}
+    float measuredMoveDelay,simulationClock;
+    BroadcastRefractionEffect refraction;
+    BroadcastDrumAudio drum;
+    sealed class Arrival
+    {public BroadcastRefractionEffect.FlightPlan plan;public float starts;public bool played;}
+    readonly List<Arrival> arrivals=new List<Arrival>();
     class Wave
     {
         public Vector2 position;public float radius,age,duration;public int direction,id,index,total;
         public WaveKind kind;public LineRenderer line;public LineRenderer[] trails;
+        public bool measured;public BroadcastRefractionEffect.FlightPlan flight;
     }
     readonly List<Wave> waves=new List<Wave>();
     float remaining,cueDelay,cueHold,cueMove;int nextCount,serial;
@@ -56,7 +68,7 @@ public sealed class SoundWaveManager : MonoBehaviour
     public void Configure(RecoilPrototype owner,Transform area,Transform source,Material material){world=owner;controlArea=area;emitter=source;waveMaterial=material;}
     public void Initialize(RecoilPrototype owner){world=owner;world.RegisterSoundWaveManager(this);ResetManager();}
     public void ResetManager()
-    {foreach(var w in waves)if(w.line)Destroy(w.line.gameObject);waves.Clear();triggeredSource=null;Phase=BroadcastPhase.Idle;Round=CueIndex=serial=0;TotalWaves=nextCount=rounds;remaining=initialDelay;cueDelay=cueHold=cueMove=0;DelayStep=MoveStep=HoldStep=0;CueStartedAt=WarningStartedAt=0;Direction=0;}
+    {foreach(var w in waves)if(w.line)Destroy(w.line.gameObject);waves.Clear();arrivals.Clear();if(drum)drum.Stop();simulationClock=measuredMoveDelay=0;FirstCentreArrival=0;PlayedDrumCount=0;triggeredSource=null;Phase=BroadcastPhase.Idle;Round=CueIndex=serial=0;TotalWaves=nextCount=rounds;remaining=initialDelay;cueDelay=cueHold=cueMove=0;DelayStep=MoveStep=HoldStep=0;CueStartedAt=WarningStartedAt=0;Direction=0;}
     public bool Contains(Vector2 p)
     {return triggeredSource.HasValue && RedAlert || buildingBroadcastsEnabled && controlArea && Mathf.Abs(p.x-controlArea.position.x)<=Mathf.Abs(controlArea.lossyScale.x)/2 && Mathf.Abs(p.y-controlArea.position.y)<=Mathf.Abs(controlArea.lossyScale.y)/2;}
     public void StartBroadcast()
@@ -74,9 +86,8 @@ public sealed class SoundWaveManager : MonoBehaviour
         TotalWaves=nextCount;nextCount=TotalWaves>=Mathf.Max(rounds,maxRounds)?rounds:TotalWaves+1;
         Round=CueIndex=0;Direction=0;cueDelay=cueMove=0;cueHold=warningDuration;Phase=BroadcastPhase.Warning;remaining=warningDuration;
         WarningStartedAt=world.Clock;DelayStep=MoveStep=HoldStep=0;
-        AddWave(Source,100,warningDuration,WaveKind.RedWarning,0);
         foreach(var enemy in world.Rampagers)enemy.ReceiveBuildingWarning(warningDuration);
-        world.Say("RED ALERT: Coalers wake and look upward; attacks gain speed. First direction wave in 3 seconds.");
+        world.Say("RED ALERT: One wave and one drum beat: LEFT. Two waves and two beats: RIGHT. Move when the waves reach the centre; stop when the Coalers stop.");
     }
     void Update(){if(world && world.Playing)Simulate(world.FrameDelta);}
     public void EmitAid(Vector2 location,float radius){AddWave(location,radius,.8f,WaveKind.AidReport,-1);}
@@ -93,7 +104,8 @@ public sealed class SoundWaveManager : MonoBehaviour
         line.useWorldSpace=true;line.loop=true;line.positionCount=128;
         line.startWidth=line.endWidth=(wave.kind==WaveKind.BuildingBroadcast || wave.kind==WaveKind.RedWarning)?.07f:.045f;line.sortingOrder=150;
         wave.line=line;
-        if(wave.kind!=WaveKind.BuildingBroadcast && wave.kind!=WaveKind.RedWarning)return;
+        // Each command must read as exactly one or two packets, with no extra rings.
+        if(wave.kind!=WaveKind.RedWarning)return;
         wave.trails=new LineRenderer[2];
         for(int i=0;i<2;i++)
         {
@@ -104,14 +116,50 @@ public sealed class SoundWaveManager : MonoBehaviour
     }
     void EmitBroadcast()
     {
-        var w=AddWave(Source,100,DirectionVisualDuration,WaveKind.BuildingBroadcast,Random.value<.5f?-1:1);
-        w.id=++serial;w.index=Round+1;w.total=TotalWaves;
-        CueIndex=w.index;Direction=w.direction;cueDelay=CommandMoveDelay;cueHold=holdDuration;cueMove=commandDuration;
+        BeginCommand(Random.value<.5f?-1:1);
+    }
+    void ResolvePresentation()
+    {
+        if(refraction&&refraction.gameObject.scene==gameObject.scene)return;
+        foreach(var root in gameObject.scene.GetRootGameObjects())
+            foreach(var fx in root.GetComponentsInChildren<BroadcastRefractionEffect>(true))
+                if(fx.broadcast==this){refraction=fx;return;}
+    }
+    public void BeginCommand(int direction)
+    {
+        ResolvePresentation();
+        var plan=refraction?refraction.MeasureFlight(DirectionVisualDuration):new BroadcastRefractionEffect.FlightPlan{origin=Source,start=0,end=100,duration=DirectionVisualDuration};
+        if(!refraction)plan.centreArrival=plan.ArrivalAt(world.Player?Vector2.Distance(Source,world.Player.Position):50);
+        Direction=direction<0?-1:1;CueIndex=Round+1;FirstCentreArrival=plan.centreArrival;
+        measuredMoveDelay=FirstCentreArrival+(CuePulseCount-1)*Mathf.Max(.15f,doublePulseSpacing);
+        cueDelay=measuredMoveDelay;cueHold=holdDuration;cueMove=commandDuration;
         CueStartedAt=world.Clock;DelayStep=MoveStep=HoldStep=0;
-        foreach(var enemy in world.Rampagers)if(enemy.ReceiveBuildingWave(w.id,w.index,w.total,w.direction))AddWave(enemy.Position,3,DirectionVisualDuration,WaveKind.DirectionCue,w.direction);
+        int id=++serial;
+        for(int i=0;i<CuePulseCount;i++) {
+            float offset=i*Mathf.Max(.15f,doublePulseSpacing);
+            var w=AddWave(Source,100,DirectionVisualDuration,WaveKind.BuildingBroadcast,Direction);
+            w.age=-offset;w.id=id;w.index=CueIndex;w.total=TotalWaves;w.measured=true;w.flight=plan;
+            if(refraction)refraction.EmitMeasuredPulse(plan,true,CueStartedAt+offset);
+            arrivals.Add(new Arrival{plan=plan,starts=simulationClock+offset});
+        }
+        foreach(var enemy in world.Rampagers)enemy.ReceiveBuildingWave(id,CueIndex,TotalWaves,Direction);
+    }
+    void AdvanceArrivals(float dt)
+    {
+        simulationClock+=dt;
+        for(int i=arrivals.Count-1;i>=0;i--) {
+            var a=arrivals[i];float age=simulationClock-a.starts;if(age<0)continue;
+            float distance=world.Player?(refraction?refraction.DistanceToWorld(a.plan,world.Player.WorldPosition):Vector2.Distance(a.plan.origin,world.Player.Position)):50;
+            if(!a.played&&a.plan.RadiusAt(age)>=distance) {
+                if(!drum){drum=GetComponent<BroadcastDrumAudio>();if(!drum)drum=gameObject.AddComponent<BroadcastDrumAudio>();}
+                drum.Play();a.played=true;PlayedDrumCount++;
+            }
+            if(age>=a.plan.duration)arrivals.RemoveAt(i);
+        }
     }
     public void Simulate(float dt)
     {
+        AdvanceArrivals(dt);
         float delayUsed=Mathf.Min(dt,cueDelay);cueDelay-=delayUsed;
         float moveUsed=Mathf.Min(dt-delayUsed,cueMove);cueMove-=moveUsed;
         cueHold=Mathf.Max(0,cueHold-(dt-delayUsed-moveUsed));
@@ -120,38 +168,40 @@ public sealed class SoundWaveManager : MonoBehaviour
         if((buildingBroadcastsEnabled || RedAlert) && remaining<=.000001f)
         {
             if(Phase==BroadcastPhase.Idle)StartBroadcast();
-            else if(Phase==BroadcastPhase.Warning){Phase=BroadcastPhase.Commands;remaining+=WaveInterval;EmitBroadcast();}
+            else if(Phase==BroadcastPhase.Warning){Phase=BroadcastPhase.Commands;EmitBroadcast();remaining+=WaveInterval;}
             else if(Phase==BroadcastPhase.Commands)
             {
-                if(Round+1<TotalWaves){Round++;remaining+=WaveInterval;EmitBroadcast();}
+                if(Round+1<TotalWaves){Round++;EmitBroadcast();remaining+=WaveInterval;}
                 else{foreach(var enemy in world.Rampagers)enemy.EndSwarm(recoveryDuration);Phase=BroadcastPhase.Recovery;remaining=recoveryDuration;cueDelay=cueHold=cueMove=0;DelayStep=MoveStep=HoldStep=0;}
             }
             else if(Phase==BroadcastPhase.Recovery){Phase=BroadcastPhase.Idle;remaining=interval;triggeredSource=null;}
         }
         for(int i=waves.Count-1;i>=0;i--)
         {
-            var w=waves[i];w.age+=dt;float t=Mathf.Clamp01(w.age/w.duration);
+            var w=waves[i];w.age+=dt;
+            if(w.age<0){if(w.line)w.line.enabled=false;continue;}
+            float t=Mathf.Clamp01(w.age/w.duration);
             if(t>=1){if(w.line)Destroy(w.line.gameObject);waves.RemoveAt(i);continue;}
             if(!w.line && drawBroadcastCircles)AttachWaveLines(w);
             if(w.line)w.line.enabled=drawBroadcastCircles || w.kind==WaveKind.AidReport;
             if(w.trails!=null)foreach(var trail in w.trails)if(trail)trail.enabled=drawBroadcastCircles;
             Vector2 center=w.position;
-            float radius=Mathf.Max(.05f,w.radius*((w.kind==WaveKind.DirectionCue || w.kind==WaveKind.BuildingBroadcast) && w.direction<0?1-t:t));
-            if((w.kind==WaveKind.BuildingBroadcast || w.kind==WaveKind.RedWarning) && Camera.main)
+            float radius=Mathf.Max(.05f,w.measured?w.flight.RadiusAt(w.age):w.radius*t);
+            if(!w.measured&&(w.kind==WaveKind.BuildingBroadcast || w.kind==WaveKind.RedWarning) && Camera.main)
             {
                 var camera=Camera.main;float offset=camera.orthographicSize*2,width=camera.orthographicSize*camera.aspect*2;
                 if(triggeredSource.HasValue)
                 {
                     float reach=Vector2.Distance(center,camera.transform.position)+width+offset;
-                    radius=Mathf.Max(.05f,reach*(w.kind==WaveKind.BuildingBroadcast && w.direction<0?1-t:t));
+                    radius=Mathf.Max(.05f,reach*t);
                 }
                 else
                 {
                     center=new Vector2(camera.transform.position.x-width/2-offset,camera.transform.position.y);
-                    radius=offset+.6f+(w.kind==WaveKind.BuildingBroadcast && w.direction<0?1-t:t)*width;
+                    radius=offset+.6f+t*width;
                 }
             }
-            Color color=RecoilPrototype.Hex(w.kind==WaveKind.RedWarning?0xff3434:w.kind==WaveKind.AidReport?0xd49cff:w.direction>0?0xffc77d:0x77d7ff,(w.kind==WaveKind.BuildingBroadcast || w.kind==WaveKind.RedWarning)?.9f:.6f*(1-t));
+            Color color=RecoilPrototype.Hex(w.kind==WaveKind.AidReport?0xd49cff:0xff3434,(w.kind==WaveKind.BuildingBroadcast || w.kind==WaveKind.RedWarning)?.9f:.6f*(1-t));
             if(w.line){w.line.startColor=w.line.endColor=color;DrawRing(w.line,center,radius);}
             if(w.trails!=null)for(int n=0;n<w.trails.Length;n++)
             {var trailColor=color;trailColor.a*=n==0?.55f:.3f;w.trails[n].startColor=w.trails[n].endColor=trailColor;DrawRing(w.trails[n],center,Mathf.Max(.05f,radius-(n+1)*.65f));}

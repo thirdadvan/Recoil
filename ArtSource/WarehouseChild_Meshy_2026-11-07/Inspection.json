@@ -1,0 +1,114 @@
+[
+  {
+    "file": "Meshy_AI_Determined_Stance_20261107_animated_mixamo_01a1b6da_b862_70b6_9cf5_2a8bb1694aa3.fbx",
+    "actions": [
+      [
+        "SmartRigArmature|SmartRigArmature|SmartRigArmature|retarget_clip|BaseLayer",
+        [
+          1.0,
+          90.0
+        ]
+      ]
+    ],
+    "height": 1.6999997423578144,
+    "span": 1.6825544834136963,
+    "ratio": 0.989738081418811,
+    "bones": 66
+  },
+  {
+    "file": "Meshy_AI_Determined_Stance_20261107_animated_mixamo_01a1b6dc_2ca0_771e_bf24_83fcba605237.fbx",
+    "actions": [
+      [
+        "SmartRigArmature|SmartRigArmature|SmartRigArmature|retarget_clip|BaseLayer",
+        [
+          1.0,
+          90.0
+        ]
+      ]
+    ],
+    "height": 1.6999997423578144,
+    "span": 1.6825544834136963,
+    "ratio": 0.989738081418811,
+    "bones": 66
+  },
+  {
+    "file": "Meshy_AI_Determined_Stance_20261107_animated_mixamo_01a1b6e2_cb96_77ce_ad42_d7f17fc4251a.fbx",
+    "actions": [
+      [
+        "SmartRigArmature|SmartRigArmature|SmartRigArmature|retarget_clip|BaseLayer",
+        [
+          1.0,
+          90.0
+        ]
+      ]
+    ],
+    "height": 1.6999997423578144,
+    "span": 1.6825544834136963,
+    "ratio": 0.989738081418811,
+    "bones": 66
+  },
+  {
+    "file": "Meshy_AI_Determined_Stance_20261107_animated_mixamo_01a1b6e4_824f_71ba_81da_28959e485f24.fbx",
+    "actions": [
+      [
+        "SmartRigArmature|SmartRigArmature|SmartRigArmature|retarget_clip|BaseLayer",
+        [
+          1.0,
+          90.0
+        ]
+      ]
+    ],
+    "height": 1.6999997423578144,
+    "span": 1.6825544834136963,
+    "ratio": 0.989738081418811,
+    "bones": 66
+  },
+  {
+    "file": "Meshy_AI_Determined_Stance_20261107_animated_mixamo_Running.fbx",
+    "actions": [
+      [
+        "SmartRigArmature|Running|BaseLayer",
+        [
+          1.0,
+          20.0
+        ]
+      ]
+    ],
+    "height": 1.6999999633494909,
+    "span": 1.6825544834136963,
+    "ratio": 0.9897379527577036,
+    "bones": 66
+  },
+  {
+    "file": "Meshy_AI_Determined_Stance_20261107_animated_mixamo_Walking.fbx",
+    "actions": [
+      [
+        "SmartRigArmature|Walking|BaseLayer",
+        [
+          1.0,
+          32.0
+        ]
+      ]
+    ],
+    "height": 1.6999999633494909,
+    "span": 1.6825544834136963,
+    "ratio": 0.9897379527577036,
+    "bones": 66
+  },
+  {
+    "file": "Meshy_AI_Determined_Stance_20261107_character_mixamo.fbx",
+    "actions": [
+      [
+        "SmartRigArmature|rest|BaseLayer",
+        [
+          1.0,
+          2.0
+        ]
+      ]
+    ],
+    "height": 1.6999999833762516,
+    "span": 1.6825544834136963,
+    "ratio": 0.9897379410981475,
+    "bones": 66
+  }
+]

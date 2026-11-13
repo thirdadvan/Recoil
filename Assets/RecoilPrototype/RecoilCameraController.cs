@@ -118,7 +118,10 @@ public sealed class RecoilCameraController : MonoBehaviour
         float halfHeight=cameraComponent?cameraComponent.orthographicSize:Mathf.Max(.1f,viewSize);
         position.y=HeightFramingY(follow.y,TargetFeetY(),halfHeight);
         if(perspective3D && use3DComposition)position.y+=panY3D;
-        if(mouseLook)position+=(Vector3)MouseOffset(Input.mousePosition);
+        if(mouseLook){
+            if(RecoilInput.UsingGamepad){var look=RecoilInput.LookStick*Mathf.Max(0,maximumMouseOffset);if(limitDownwardMouseOffset)look.y=Mathf.Max(look.y,-Mathf.Max(0,maximumDownwardMouseOffset));position+=(Vector3)look;}
+            else position+=(Vector3)MouseOffset(Input.mousePosition);
+        }
         // Mouse look may reveal more above, but cannot push the player past the height framing cap.
         if(outdoorHeightZoomEnabled && HeightProgress(TargetFeetY())>0)
             position.y=Mathf.Max(position.y,follow.y+(1-2*maximumHeightPlayerViewportY)*halfHeight);

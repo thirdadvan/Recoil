@@ -24,7 +24,7 @@ public static class ServiceStoreEncounterBuilder
         string path=folder+"/"+file+".asset";
         var data=AssetDatabase.LoadAssetAtPath<NpcDialogueSequence>(path);
         if(!data){data=ScriptableObject.CreateInstance<NpcDialogueSequence>();AssetDatabase.CreateAsset(data,path);}
-        data.lines=lines.Select(text=>new NpcDialogueSequence.Line{speaker="STORE CLERK",text=text}).ToArray();EditorUtility.SetDirty(data);return data;
+        data.lines=lines.Select(text=>new NpcDialogueSequence.Line{speaker="The Counter Sales",text=text}).ToArray();EditorUtility.SetDirty(data);return data;
     }
     public static string Apply()
     {

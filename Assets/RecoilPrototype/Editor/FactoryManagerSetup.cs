@@ -26,7 +26,7 @@ public static class FactoryManagerSetup
         try
         {
             var world=room.GetRootGameObjects().SelectMany(g=>g.GetComponentsInChildren<RecoilPrototype>(true)).First();
-            if(world.GetComponentsInChildren<ContinuousInteractionItem>(true).Any(i=>i.itemId=="factory_manager_warehouse_key"))throw new InvalidOperationException("Manager already installed.");
+            if(world.GetComponentsInChildren<ManagerAnetaConversation>(true).Any() || world.GetComponentsInChildren<ContinuousInteractionItem>(true).Any(i=>i.itemId=="factory_manager_warehouse_key"))throw new InvalidOperationException("Manager already installed.");
             string backup="Backups/FactoryManager/"+DateTime.Now.ToString("yyyyMMdd_HHmmss");Directory.CreateDirectory(backup);EditorSceneManager.SaveScene(room,backup+"/ManagerOffice.unity",true);
             var data=new SerializedObject(world);sprite=(Sprite)data.FindProperty("sceneSprite").objectReferenceValue;material=(Material)data.FindProperty("sceneMaterial").objectReferenceValue;
             if(!sprite || !material)throw new InvalidOperationException("Office art references are missing.");

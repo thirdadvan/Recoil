@@ -31,6 +31,11 @@ public sealed class PlayerAimLocomotion : MonoBehaviour
     public float ActualLocalAimAngle {get;private set;}
     float boundarySide=1;
     public void ResetTuning(){FacingSign=boundarySide=1;IsBraking=AimLimited=false;RequestedLocalAimAngle=ActualLocalAimAngle=0;}
+    public void FaceConversationPartner(float sign)
+    {
+        FacingSign=sign<0?-1:1;IsBraking=AimLimited=false;
+        RequestedLocalAimAngle=ActualLocalAimAngle=0;
+    }
     public void UpdateFacing(float horizontal,Vector2 requestedAim)
     {
         if(movementControlsFacing){if(Mathf.Abs(horizontal)>.1f)FacingSign=Mathf.Sign(horizontal);}

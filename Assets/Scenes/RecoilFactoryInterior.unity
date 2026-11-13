@@ -14643,6 +14643,7 @@ GameObject:
   m_Component:
   - component: {fileID: 562409630}
   - component: {fileID: 562409631}
+  - component: {fileID: 562409632}
   m_Layer: 0
   m_Name: MANAGER OFFICE
   m_TagString: Untagged
@@ -14668,6 +14669,7 @@ Transform:
   - {fileID: 1003609947}
   - {fileID: 1272039633}
   - {fileID: 2041139711}
+  - {fileID: 835595340}
   m_Father: {fileID: 133270863}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &562409631
@@ -14716,6 +14718,27 @@ MonoBehaviour:
   onOpened:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &562409632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 562409629}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49c17fdd8cbc34439aa6a77eaba45e93, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  role: 1
+  world: {fileID: 1005271864}
+  door: {fileID: 562409631}
+  voiceAnchor: {fileID: 835595340}
+  opening: {fileID: 11400000, guid: e2380eb83328540779cf9d05bf3e4c8f, type: 2}
+  peacefulRepeat: {fileID: 11400000, guid: 9b76ae17802ef40638c9c1dc0b8cf732, type: 2}
+  threatRepeat: {fileID: 11400000, guid: c63010f4648cf467ca619f5879b474d0, type: 2}
+  silentRepeat: {fileID: 11400000, guid: 8ab2609c8e3bb4a9ebe6855b024efa5e, type: 2}
+  approachRange: 3
 --- !u!1 &573507539
 GameObject:
   m_ObjectHideFlags: 0
@@ -19268,10 +19291,13 @@ MonoBehaviour:
   initialDelay: 12
   interval: 15
   warningDuration: 3
-  moveDelay: 0.1
   holdDuration: 1.5
   commandDuration: 1
   recoveryDuration: 1.25
+  moveDelay: 0.1
+  directionWaveDuration: 3
+  commandReactionDelay: 0.5
+  doublePulseSpacing: 0.4
 --- !u!1 &739846460
 GameObject:
   m_ObjectHideFlags: 0
@@ -22133,6 +22159,37 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: -4
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &835595339
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 835595340}
+  m_Layer: 0
+  m_Name: Voice behind door
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &835595340
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 835595339}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.54999924, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 562409630}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &836137704
 GameObject:
   m_ObjectHideFlags: 0
@@ -31428,7 +31485,7 @@ MonoBehaviour:
   fullTentacleEnrageDuration: 0.5
   growingTentacleEnrageDuration: 1
   soundInvestigationInset: 0.5
-  soundSearchPause: 0.75
+  soundSearchPause: 1.5
   soundMemoryDuration: 7.5
   world: {fileID: 1005271864}
   initialState: 4
@@ -31459,6 +31516,14 @@ MonoBehaviour:
   stoppedTolerance: 0.5
   reverseTolerance: 0.5
   currentState: 0
+  attackSearchRadius: 2
+  attackSearchMoveInterval: {x: 1.5, y: 2.5}
+  searchRoarDuration: 0.9
+  waterBlockDuration: 1.2
+  exposedCoreRecoveryDuration: 4
+  coreFoldDuration: 1
+  coreStillDuration: 2.5
+  coreAttackTransitionDuration: 0.5
 --- !u!1 &1171308136
 GameObject:
   m_ObjectHideFlags: 0
@@ -32851,6 +32916,8 @@ MonoBehaviour:
   idealSightRange: 11.946668
   fieldOfView: 100
   minimumExposure: 0.34
+  rearSenseAngle: 60
+  rearSenseRangeMultiplier: 0.6
 --- !u!114 &1212613604
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32906,7 +32973,7 @@ MonoBehaviour:
   fullTentacleEnrageDuration: 0.5
   growingTentacleEnrageDuration: 1
   soundInvestigationInset: 0.5
-  soundSearchPause: 0.75
+  soundSearchPause: 1.5
   soundMemoryDuration: 7.5
   world: {fileID: 1005271864}
   initialState: 4
@@ -32937,6 +33004,14 @@ MonoBehaviour:
   stoppedTolerance: 0.5
   reverseTolerance: 0.5
   currentState: 0
+  attackSearchRadius: 2
+  attackSearchMoveInterval: {x: 1.5, y: 2.5}
+  searchRoarDuration: 0.9
+  waterBlockDuration: 1.2
+  exposedCoreRecoveryDuration: 4
+  coreFoldDuration: 1
+  coreStillDuration: 2.5
+  coreAttackTransitionDuration: 0.5
 --- !u!212 &1212613607
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -45451,7 +45526,7 @@ MonoBehaviour:
   fullTentacleEnrageDuration: 0.5
   growingTentacleEnrageDuration: 1
   soundInvestigationInset: 0.5
-  soundSearchPause: 0.75
+  soundSearchPause: 1.5
   soundMemoryDuration: 7.5
   world: {fileID: 1005271864}
   initialState: 4
@@ -45482,6 +45557,14 @@ MonoBehaviour:
   stoppedTolerance: 0.5
   reverseTolerance: 0.5
   currentState: 0
+  attackSearchRadius: 2
+  attackSearchMoveInterval: {x: 1.5, y: 2.5}
+  searchRoarDuration: 0.9
+  waterBlockDuration: 1.2
+  exposedCoreRecoveryDuration: 4
+  coreFoldDuration: 1
+  coreStillDuration: 2.5
+  coreAttackTransitionDuration: 0.5
 --- !u!1 &1683452815
 GameObject:
   m_ObjectHideFlags: 0
@@ -47538,6 +47621,8 @@ MonoBehaviour:
   idealSightRange: 11.946668
   fieldOfView: 100
   minimumExposure: 0.34
+  rearSenseAngle: 60
+  rearSenseRangeMultiplier: 0.6
 --- !u!114 &1734871243
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -47593,7 +47678,7 @@ MonoBehaviour:
   fullTentacleEnrageDuration: 0.5
   growingTentacleEnrageDuration: 1
   soundInvestigationInset: 0.5
-  soundSearchPause: 0.75
+  soundSearchPause: 1.5
   soundMemoryDuration: 7.5
   world: {fileID: 1005271864}
   initialState: 4
@@ -47624,6 +47709,14 @@ MonoBehaviour:
   stoppedTolerance: 0.5
   reverseTolerance: 0.5
   currentState: 0
+  attackSearchRadius: 2
+  attackSearchMoveInterval: {x: 1.5, y: 2.5}
+  searchRoarDuration: 0.9
+  waterBlockDuration: 1.2
+  exposedCoreRecoveryDuration: 4
+  coreFoldDuration: 1
+  coreStillDuration: 2.5
+  coreAttackTransitionDuration: 0.5
 --- !u!212 &1734871246
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -52063,6 +52156,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c701381275b6476fa894118197048ba0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  automaticStepHeight: 0.28
   world: {fileID: 1005271864}
   aimCamera: {fileID: 988281054}
   coat: {fileID: 98482066}
@@ -56226,6 +56320,8 @@ MonoBehaviour:
   idealSightRange: 11.946668
   fieldOfView: 100
   minimumExposure: 0.34
+  rearSenseAngle: 60
+  rearSenseRangeMultiplier: 0.6
 --- !u!114 &1996878483
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -56281,7 +56377,7 @@ MonoBehaviour:
   fullTentacleEnrageDuration: 0.5
   growingTentacleEnrageDuration: 1
   soundInvestigationInset: 0.5
-  soundSearchPause: 0.75
+  soundSearchPause: 1.5
   soundMemoryDuration: 7.5
   world: {fileID: 1005271864}
   initialState: 4
@@ -56312,6 +56408,14 @@ MonoBehaviour:
   stoppedTolerance: 0.5
   reverseTolerance: 0.5
   currentState: 0
+  attackSearchRadius: 2
+  attackSearchMoveInterval: {x: 1.5, y: 2.5}
+  searchRoarDuration: 0.9
+  waterBlockDuration: 1.2
+  exposedCoreRecoveryDuration: 4
+  coreFoldDuration: 1
+  coreStillDuration: 2.5
+  coreAttackTransitionDuration: 0.5
 --- !u!212 &1996878486
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -59697,6 +59801,8 @@ MonoBehaviour:
   idealSightRange: 11.946668
   fieldOfView: 100
   minimumExposure: 0.34
+  rearSenseAngle: 60
+  rearSenseRangeMultiplier: 0.6
 --- !u!114 &2112000004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -59736,6 +59842,8 @@ MonoBehaviour:
   idealSightRange: 11.946668
   fieldOfView: 100
   minimumExposure: 0.34
+  rearSenseAngle: 60
+  rearSenseRangeMultiplier: 0.6
 --- !u!1 &2113791166
 GameObject:
   m_ObjectHideFlags: 0

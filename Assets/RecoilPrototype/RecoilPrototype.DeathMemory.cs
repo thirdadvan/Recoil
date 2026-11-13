@@ -7,8 +7,8 @@ public sealed partial class RecoilPrototype
     public const string KitchenMemoryScene="Assets/Scenes/RecoilKitchenMemory.unity";
     sealed class MemoryReturn
     {
-        public string scene;public Vector2 position;public string[] entryItems,retryItems;
-        public bool checkpoint;public int attempts;public float elapsed;
+        public string scene;public Vector2 position,entrySpawn;public string[] entryItems,retryItems;
+        public bool checkpoint;public int attempts;public float elapsed;public RecoilWeaponSave weapon;
     }
     static MemoryReturn memoryReturn;
     static bool returningFromMemory;
@@ -22,9 +22,9 @@ public sealed partial class RecoilPrototype
         if(RecoilSceneLoader.SameScene(gameObject.scene.path,KitchenMemoryScene))started=true;
         if(!returningFromMemory || memoryReturn==null || memoryReturn.scene!=gameObject.scene.path)return;
         var saved=memoryReturn;returningFromMemory=false;memoryReturn=null;
-        checkpoint=saved.checkpoint;attempts=saved.attempts;elapsed=saved.elapsed;
+        checkpoint=saved.checkpoint;spawn=saved.entrySpawn;attempts=saved.attempts;elapsed=saved.elapsed;
         entryInventory.Clear();entryInventory.AddRange(saved.entryItems);
-        player.ResetController(saved.position);started=true;
+        player.ResetController(IsWarehouseScene?RetryPosition:saved.position);ResetEscortChild();player.RestoreWeaponSave(saved.weapon);started=true;
         if(cameraController)cameraController.SnapToTarget();
     }
     bool ShouldPlayDeathMemory()
@@ -39,20 +39,21 @@ public sealed partial class RecoilPrototype
         if(!ShouldPlayDeathMemory() || !RecoilSceneLoader.CanLoad(KitchenMemoryScene))return false;
         var retry=new HashSet<string>(entryInventory);
         foreach(var id in inventory)if(RetainedOnRetry(id))retry.Add(id);
-        memoryReturn=new MemoryReturn{scene=gameObject.scene.path,position=checkpoint?CheckpointPosition:spawn,entryItems=entryInventory.ToArray(),retryItems=new List<string>(retry).ToArray(),checkpoint=checkpoint,attempts=attempts+1,elapsed=elapsed};
+        memoryReturn=new MemoryReturn{scene=gameObject.scene.path,position=RetryPosition,entrySpawn=spawn,entryItems=entryInventory.ToArray(),retryItems=new List<string>(retry).ToArray(),checkpoint=checkpoint,attempts=attempts+1,elapsed=elapsed,weapon=player.CaptureWeaponSave()};
         KitchenMemoryVisits++;InterruptInteraction();FrameDelta=0;
         RecoilSceneLoader.Load(KitchenMemoryScene);return true;
     }
     static bool RetainedOnRetry(string id)
     {
-        if(id==ServiceStoreEncounter.CompletedFlag)return true;
+        if(id.StartsWith("child_food_") || id==ChildFoodQuest.Sandwich || id==ChildFoodQuest.Biscuits || id==ManagerGlassesPickup.CollectedFlag || id.StartsWith("cosplayer_") || id==CoalerCosplayerConversation.GlassesLocationFlag || id.StartsWith("manager_aneta_") || id.StartsWith("information_") || id==ManagerAnetaConversation.StoreroomKey || id==ManagerGlassesPickup.InventoryId || id.StartsWith("door_dialogue_") || id=="water_gun_unequipped")return true;
+        if(id==ServiceStoreEncounter.CompletedFlag || id==StoreClerkConversation.CompletedFlag || id==StoreClerkConversation.ManagerLocationFlag || id.StartsWith("coaler_tutorial_") || id.StartsWith("warehouse_child_"))return true;
         return id=="water_gun" || id==UniversalKey || id==EscortChild.EscortFlag || id.StartsWith("station_") || id.StartsWith("factory_shortcut_") || id.StartsWith("warehouse_power_");}
     public static bool ReturnFromKitchenMemory()
     {
         if(memoryReturn==null || returningFromMemory)return false;
         if(!RecoilSceneLoader.CanLoad(memoryReturn.scene))return false;
         returningFromMemory=true;
-        pendingTravel=new SceneTravel{scene=memoryReturn.scene,spawn="",items=memoryReturn.retryItems,health=3};
+        pendingTravel=new SceneTravel{scene=memoryReturn.scene,spawn="",items=memoryReturn.retryItems,health=3,weapon=memoryReturn.weapon};
         RecoilSceneLoader.Load(memoryReturn.scene);return true;
     }
     void RestartFullGameMemory(){ResetDeathMemorySession();}

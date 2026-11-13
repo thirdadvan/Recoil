@@ -1,6 +1,12 @@
 Shader "Recoil/Art Tests/Warehouse Atmosphere"
 {
- Properties{_MainTex("Image",2D)="white"{}}
+ Properties{
+ _MainTex("Image",2D)="white"{}
+ [HideInInspector]_Scattering("Scattering",2D)="black"{}
+ [HideInInspector]_BroadGlow("Broad glow",2D)="black"{}
+ [HideInInspector]_DoorCookie0("First doorway light cookie",2D)="white"{}
+ [HideInInspector]_DoorCookie1("Second doorway light cookie",2D)="white"{}
+ }
  SubShader{
  Cull Off ZWrite Off ZTest Always
  CGINCLUDE
@@ -29,12 +35,12 @@ Shader "Recoil/Art Tests/Warehouse Atmosphere"
  }return visible;
  }
  float _SkyEnabled,_SkyFeather;float3 _SkyTop;float4 _SkyShape,_SkyColour;
+ float4 _SkyTops[4];int _SkyCount;
  // A rectangular roof aperture, widening gently downward. World-space bounds keep
  // the shaft anchored to the architecture when the camera pans or changes pitch.
- float3 Skylight(float3 direction,float sceneDistance,float jitter){
- if(_SkyEnabled<.5)return 0;
+ float3 SkylightAperture(float3 direction,float sceneDistance,float jitter,float3 skyTop){
  float3 extent=float3(_SkyShape.x+_SkyShape.z*_SkyShape.w,_SkyShape.z*.5,_SkyShape.y+_SkyShape.z*_SkyShape.w);
- float3 centre=_SkyTop-float3(0,_SkyShape.z*.5,0);
+ float3 centre=skyTop-float3(0,_SkyShape.z*.5,0);
  float3 safeDir=direction+float3(abs(direction.x)<.00001?.00001:0,abs(direction.y)<.00001?.00001:0,abs(direction.z)<.00001?.00001:0);
  float3 ta=(centre-extent-_CameraPosition)/safeDir,tb=(centre+extent-_CameraPosition)/safeDir;
  float3 nearT=min(ta,tb),farT=max(ta,tb);
@@ -44,14 +50,68 @@ Shader "Recoil/Art Tests/Warehouse Atmosphere"
  float stepSize=(end-start)/16;float3 total=0;
  [unroll]for(int k=0;k<16;k++){
  float3 p=_CameraPosition+direction*(start+(k+jitter)*stepSize);
- float down=_SkyTop.y-p.y;
+ float down=skyTop.y-p.y;
  float2 halfSize=_SkyShape.xy+down*_SkyShape.w;
- float2 uv=abs(p.xz-_SkyTop.xz)/halfSize;
+ float2 uv=abs(p.xz-skyTop.xz)/halfSize;
  float edge=1-smoothstep(1-_SkyFeather,1,max(uv.x,uv.y));
  float vertical=saturate(down/.12)*lerp(1,.4,saturate(down/_SkyShape.z));
  vertical*=smoothstep(0,.24,_SkyShape.z-down);
  float dust=.96+.04*sin(p.x*2.3+p.z*1.7+p.y*.8);
  total+=_SkyColour.rgb*(edge*vertical*dust*stepSize);
+ }return total;
+ }
+ float3 Skylight(float3 direction,float sceneDistance,float jitter){
+ if(_SkyEnabled<.5)return 0;
+ float3 total=0;
+ [loop]for(int aperture=0;aperture<min(_SkyCount,4);aperture++)total+=SkylightAperture(direction,sceneDistance,jitter,_SkyTops[aperture].xyz);
+ return total;
+ }
+ // Door scattering shares the surface light's projection and cookie, rather than
+ // constructing an unrelated world-Z-aligned rectangular shaft.
+ float4 _DoorOrigin[2],_DoorShape[2],_DoorColour[2];int _DoorCount;
+ float4 _DoorLightPosition[2],_DoorLightShape[2];
+ float4x4 _DoorWorldToLight[2];sampler2D _DoorCookie0,_DoorCookie1;
+ float3 DoorShaft(float3 direction,float sceneDistance,float jitter){
+ float3 total=0;
+ [loop]for(int n=0;n<2;n++){
+ if(n>=_DoorCount)break;
+ float4 origin=_DoorOrigin[n],shape=_DoorShape[n],lightShape=_DoorLightShape[n];
+ float3 localCamera=mul(_DoorWorldToLight[n],float4(_CameraPosition,1)).xyz;
+ float3 localDirection=mul((float3x3)_DoorWorldToLight[n],direction);
+ float3 localOpening=mul(_DoorWorldToLight[n],float4(origin.xyz,1)).xyz;
+ float openingDepthSpread=abs(_DoorWorldToLight[n][2][0])*shape.x+abs(_DoorWorldToLight[n][2][1])*shape.y;
+ float nearZ=max(.01,localOpening.z-openingDepthSpread),farZ=min(_DoorLightPosition[n].w,localOpening.z+origin.w);
+ if(farZ<=nearZ)continue;
+ float3 centre=float3(0,0,(nearZ+farZ)*.5);
+ float3 extent=float3(farZ*lightShape.x,farZ*lightShape.x,(farZ-nearZ)*.5);
+ float3 safeDir=localDirection+float3(abs(localDirection.x)<.00001?.00001:0,abs(localDirection.y)<.00001?.00001:0,abs(localDirection.z)<.00001?.00001:0);
+ float3 ta=(centre-extent-localCamera)/safeDir,tb=(centre+extent-localCamera)/safeDir;
+ float3 nearT=min(ta,tb),farT=max(ta,tb);
+ float start=max(0,max(nearT.x,max(nearT.y,nearT.z)));
+ float end=min(sceneDistance,min(farT.x,min(farT.y,farT.z)));if(end<=start)continue;
+ float stepSize=(end-start)/16;
+ [unroll]for(int k=0;k<16;k++){
+ float sampleDistance=start+(k+jitter)*stepSize;
+ float3 p=localCamera+localDirection*sampleDistance;
+ if(p.z<=nearZ||p.z>=farZ)continue;
+ float3 worldPoint=_CameraPosition+direction*sampleDistance;
+ float3 fromLight=worldPoint-_DoorLightPosition[n].xyz;
+ if(fromLight.z<=.00001)continue;
+ float openingT=(origin.z-_DoorLightPosition[n].z)/fromLight.z;
+ if(openingT<=0||openingT>=1)continue;
+ float2 openingPoint=_DoorLightPosition[n].xy+fromLight.xy*openingT;
+ float2 openingUV=abs(openingPoint-origin.xy)/max(shape.xy,.001);
+ float aperture=1-smoothstep(.9,1,max(openingUV.x,openingUV.y));
+ if(aperture<=0)continue;
+ float distance=length(p);float cosine=p.z/max(.001,distance);
+ if(distance>=_DoorLightPosition[n].w||cosine<=lightShape.y)continue;
+ float2 cookieUV=.5+.5*p.xy/max(.001,p.z*lightShape.x);
+ float cookie=n==0?tex2Dlod(_DoorCookie0,float4(cookieUV,0,0)).a:tex2Dlod(_DoorCookie1,float4(cookieUV,0,0)).a;
+ float cone=smoothstep(lightShape.y,max(lightShape.y+.001,lightShape.z),cosine);
+ float attenuation=pow(saturate(1-distance/_DoorLightPosition[n].w),2);
+ float ends=smoothstep(nearZ,nearZ+.12,p.z)*(1-smoothstep(farZ-.35,farZ,p.z));
+ total+=_DoorColour[n].rgb*(shape.w*lightShape.w*cookie*cone*aperture*attenuation*ends*stepSize);
+ }
  }return total;
  }
  float4 Volume(v2f_img i):SV_Target{
@@ -82,6 +142,7 @@ Shader "Recoil/Art Tests/Warehouse Atmosphere"
  sum+=_LampColour[n].rgb*(cone*fade*fade*dust*len/steps*.045*profile.x*heightMask*visibility);
  }}
  sum+=Skylight(direction,len,jitter);
+ sum+=DoorShaft(direction,len,jitter);
  return float4(sum,1);}
  float4 Blur(v2f_img i):SV_Target{
  float2 t=_MainTex_TexelSize.xy*1.7;float4 c=tex2D(_MainTex,i.uv)*.2;

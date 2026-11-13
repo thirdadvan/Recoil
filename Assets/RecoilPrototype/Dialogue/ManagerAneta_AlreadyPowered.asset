@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f114ebc380394945b7e1405ee82cc98, type: 3}
+  m_Name: ManagerAneta_AlreadyPowered
+  m_EditorClassIdentifier: 
+  lines:
+  - role: 2
+    speaker: Dawn
+    text: I found Aneta's electronic employment record. She worked here.
+    offerPhoto: 0
+    slidePhotoUnderDoor: 0
+    progressFlag: 
+    choices: []
+  - role: 1
+    speaker: The Manager
+    text: ...I'm sorry. I was frightened.
+    offerPhoto: 0
+    slidePhotoUnderDoor: 0
+    progressFlag: 
+    choices: []
+  - role: 1
+    speaker: The Manager
+    text: Yes. I knew her. Please, keep your voice down.
+    offerPhoto: 0
+    slidePhotoUnderDoor: 0
+    progressFlag: 
+    choices: []
+  - role: 1
+    speaker: The Manager
+    text: I was going to ask you to restore the freight lift. The government is coming
+      for another shipment.
+    offerPhoto: 0
+    slidePhotoUnderDoor: 0
+    progressFlag: 
+    choices: []
+  - role: 2
+    speaker: Dawn
+    text: The freight lift already has power.
+    offerPhoto: 0
+    slidePhotoUnderDoor: 0
+    progressFlag: 
+    choices: []
+  - role: 1
+    speaker: The Manager
+    text: You got it working? ...Thank you. Here, take the warehouse storage room
+      key.
+    offerPhoto: 0
+    slidePhotoUnderDoor: 0
+    progressFlag: 
+    choices: []
+  - role: 2
+    speaker: Dawn
+    text: Now you answer my questions.
+    offerPhoto: 0
+    slidePhotoUnderDoor: 0
+    progressFlag: 
+    choices: []
+  - role: 1
+    speaker: The Manager
+    text: Yes. I... I'll tell you what I know.
+    offerPhoto: 0
+    slidePhotoUnderDoor: 0
+    progressFlag: 
+    choices: []

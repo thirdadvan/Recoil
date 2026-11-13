@@ -119,6 +119,11 @@ public sealed class SurfaceCrawlerController : MonoBehaviour
     bool CanPrepare(Vector2 target)
     {return (world.Player.WorldPosition-transform.position).sqrMagnitude<=pounceRange*pounceRange && navigation.SweepClear(Motor.Position,target,navigation.bodyRadius);}
     void BeginRecovery(float duration){State=Behaviour.Recovering;remaining=Mathf.Max(.05f,duration);path.Clear();repositioning=true;}
+    public bool TryWaterIntersection(Vector2 start,Vector2 direction,float range,out float distance)
+    {
+        distance=range;if(!Present||!world||!world.Player||!navigation)return false;
+        return RecoilPrototype.WaterRayDistance(new Vector3(start.x,start.y,world.Player.GameplayZ-.1f),(Vector3)direction,transform.position,navigation.bodyRadius+.18f,range,out distance);
+    }
     public void TakeWaterHit(Vector2 start,Vector2 direction,float range)
     {
         if(!Present || Mathf.Abs(transform.position.z-world.Player.GameplayZ)>navigation.bodyRadius+.18f)return;float along=Vector2.Dot(Motor.Position-start,direction);

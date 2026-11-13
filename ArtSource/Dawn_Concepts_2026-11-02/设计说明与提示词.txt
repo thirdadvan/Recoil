@@ -1,0 +1,9 @@
+Dawn 主角形象探索，2026-11-02
+使用内置 image_gen 生成，概念图，不是游戏模型。
+设定依据：项目交接文档中 Dawn 的侦探身份、工业矿业小镇、童年压抑与救赎方向；用户提供的低多边形长衣背影。
+年龄、发型、配色是本次可选视觉提案，不是已确定剧情设定。
+
+共用提示规格：Adult male detective Dawn in Recoil, dark industrial/mining town psychological game, suppressed childhood emotions and redemption. Reference governs angular black long coat silhouette, raised collar, narrow legs. Simple lowpoly 3D game concept, large purposeful facets, muted matte colors, minimal detail, natural human proportions. Two fullbody views of same character: front threequarter and straight back, neutral pose, warm gray studio background. No weapons, supernatural symbols, invented lore, armor or tactical gear.
+A: Tall slender clean-shaven man around35, short swept dark hair, thoughtful tired eyes, charcoal knee-length coat with raised collar and geometric back yoke, offwhite shirt collar, olive sweater, dark straight trousers, black ankle boots. Closest to supplied silhouette.
+B: Wiry man around32, short side-part brown hair, faint stubble, practical mid-thigh charcoal workwear coat with simple patch pockets and rear vent, ochre sweater, gray trousers, sturdy brown boots. More movement-friendly.
+C: Slender weary man around42, receding dark hair and gray temples, light stubble, loose faded graphite-brown knee-length coat, ivory shirt and loosened burgundy tie, charcoal trousers and black shoes. Vulnerable and humane mood.

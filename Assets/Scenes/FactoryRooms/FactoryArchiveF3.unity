@@ -887,10 +887,13 @@ MonoBehaviour:
   initialDelay: 12
   interval: 15
   warningDuration: 3
-  moveDelay: 0.1
   holdDuration: 1.5
   commandDuration: 1
   recoveryDuration: 1.25
+  moveDelay: 0.1
+  directionWaveDuration: 3
+  commandReactionDelay: 0.5
+  doublePulseSpacing: 0.4
 --- !u!1 &157001007
 GameObject:
   m_ObjectHideFlags: 0
@@ -1090,6 +1093,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c701381275b6476fa894118197048ba0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  automaticStepHeight: 0.28
   world: {fileID: 1658313658}
   aimCamera: {fileID: 142492965}
   coat: {fileID: 1061686321}
@@ -2127,6 +2131,52 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &379230035
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 379230036}
+  - component: {fileID: 379230037}
+  m_Layer: 0
+  m_Name: Aneta electronic employment record - legacy terminal interaction
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &379230036
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 379230035}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 6.2, y: 0.9, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1658313657}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &379230037
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 379230035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b749222b179fa444595be46d0cff1e12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  world: {fileID: 1658313658}
+  record: {fileID: 11400000, guid: 4fbdf42d245ad4deb99cce4a1c70c67b, type: 2}
 --- !u!1 &392302194
 GameObject:
   m_ObjectHideFlags: 0
@@ -9087,6 +9137,7 @@ Transform:
   - {fileID: 1064534193}
   - {fileID: 405665816}
   - {fileID: 1771851031}
+  - {fileID: 379230036}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1658313658

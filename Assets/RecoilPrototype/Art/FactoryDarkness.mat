@@ -32,8 +32,8 @@ Material:
     - _AlarmAmbient: 0
     - _AlarmRed: 0
     - _FactoryEnabled: 0
-    - _OutdoorAmbient: 0.12
-    - _UnlitAmbientScale: 0.15
+    - _OutdoorAmbient: 0.22
+    - _UnlitAmbientScale: 0.6
     m_Colors:
     - _FactoryMax: {r: 0, g: 0, b: 0, a: 0}
     - _FactoryMin: {r: 0, g: 0, b: 0, a: 0}

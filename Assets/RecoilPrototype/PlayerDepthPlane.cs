@@ -40,6 +40,11 @@ public sealed class PlayerDepthPlane : MonoBehaviour
         if(world)foreach(var roof in world.SoftRoofs)if(StandingOn(roof,position))
         {support=roof;CurrentZ=PlatformZ;state=DepthState.OnPlatform;break;}
     }
+    public void RestoreSavedPlane(Vector2 position,float depth)
+    {
+        ResetPlane(position);CurrentZ=Mathf.Clamp(depth,Mathf.Min(defaultZ,PlatformZ),Mathf.Max(defaultZ,PlatformZ));
+        if(support && Mathf.Abs(CurrentZ-defaultZ)<.02f){lowStepSupport=support;lowStepZ=CurrentZ;}
+    }
     bool StandingOn(SoftRoofPlatform roof,Vector2 position)
     {
         if(!roof||!roof.Available||roof==ignoredRoof)return false;

@@ -156,7 +156,7 @@ public sealed partial class RampagerController : MonoBehaviour
         waveActive=attackWaveBoost=sleepingBeforeWave=waterGunPriority=false;
         wakeRemaining=noticeRemaining=watchElapsed=chaseElapsed=safeElapsed=inspectionRemaining=sleepRemaining=detectionProgress=stun=waveDelay=waveMove=waveHold=waveRecovery=stopped=reverse=0;
         reports.Clear();lastReportAt=lastSight=-100;waveAction=-1;lastWaveId=WaveIndex=0;waveDirection=0;WatchingHighFlyer=false;
-        disengaging=false;disengageRemaining=0;ResetAcoustics();
+        disengaging=false;disengageRemaining=0;ResetAcoustics();ResetWaterReaction();
         currentState=initialState;trackedPitch=roamingSightPitch;
         sleepDepth=sleepPoint?sleepPoint.position.z:Motor.MovementPlaneZ;returnDepth=Motor.MovementPlaneZ;
         returnPosition=Position;target=lastHeardPosition=Position;targetDepth=lastHeardDepth=Motor.MovementPlaneZ;
@@ -168,7 +168,8 @@ public sealed partial class RampagerController : MonoBehaviour
     void Update(){if(world && world.Playing)Simulate(world.FrameDelta);}
     public bool CanSeePlayer(){return world && State!=Behaviour.Sleeping && Senses.CanSeePlayer();}
     public void HearNoise(Vector2 source,float radius){HearNoise((Vector3)source,radius);}
-    public void HearNoise(Vector3 source,float radius){float effectiveRadius=radius*Senses.PerceptionRangeMultiplier(source);if(DistanceToSound(source)<=effectiveRadius){lastHeardDepth=source.z;heardRadius=radius;Senses.HearNoise(source,effectiveRadius);}}
+    public void HearNoise(Vector3 source,float radius){HearNoise(source,radius,true);}
+    public void HearNoise(Vector3 source,float radius,bool directionalHearing){float effectiveRadius=radius*(directionalHearing?Senses.PerceptionRangeMultiplier(source):1);if(DistanceToSound(source)<=effectiveRadius){lastHeardDepth=source.z;heardRadius=radius;Senses.HearNoise(source,effectiveRadius);}}
     static float Delay(Vector2 range){return Random.Range(Mathf.Max(.01f,Mathf.Min(range.x,range.y)),Mathf.Max(.01f,Mathf.Max(range.x,range.y)));}
     void OnNoiseHeard(Vector2 source){if(!waveActive)ReceiveAcousticNoise(source,lastHeardDepth,heardRadius);}
     void BeginNotice(Vector2 source,bool fromReport,float depth=float.NaN)
@@ -203,17 +204,14 @@ public sealed partial class RampagerController : MonoBehaviour
     // Explicit story commands reuse the standard state/perception/movement components.
     public bool HideStatusLabel {get;set;}
     public void WatchForStory()
-    {SetState(Behaviour.Roaming);waking=noticing=false;wakeRemaining=noticeRemaining=0;
+    {soundInvestigationPriority=false;SetState(Behaviour.Roaming);waking=noticing=false;wakeRemaining=noticeRemaining=0;
         attentionFromSleeping=reportedAttention=false;Senses.SetTargetChild(false);
         lastHeardPosition=world.Player.Position;lastHeardDepth=world.Player.GameplayZ;lastSoundAt=world.Clock;BeginWatching();Senses.Sense();}
     public void SleepForStory(){SetState(Behaviour.Sleeping);Senses.ResetPerception();}
     public void MoveForStory(Vector2 position){Motor.Position=position;Motor.ApplyPosition();}
     public void TakeWaterHit(Vector2 start,Vector2 direction,float range,Vector2 source)
     {
-        if(!world || !Senses.WaterHits(start,direction,range))return;
-        if(State!=Behaviour.Attack && !watching && !noticing && !waking){returnPosition=Position;returnDepth=Motor.MovementPlaneZ;}
-        lastSoundAt=world.Clock;
-        stun=State==Behaviour.Attack?.65f:0;Attack.CancelAttack();Senses.SetTargetChild(false);target=source;targetDepth=world.Player.GameplayZ;RequestAttack();waterGunPriority=true;lastSight=world.Clock;TrackPosition(new Vector3(source.x,source.y,targetDepth));
+        float hit;if(TryWaterIntersection(start,direction,range,out hit))ReceiveWaterImpact(start,direction,range,source);
     }
     public bool ReceiveReport(Report report)
     {
@@ -233,7 +231,7 @@ public sealed partial class RampagerController : MonoBehaviour
     }
     void SetState(Behaviour next)
     {
-        WatchingHighFlyer=false;if(State==next)return;attackPreparationRemaining=0;StopAttackSearch();
+        WatchingHighFlyer=false;if(next!=Behaviour.Roaming)soundInvestigationPriority=false;if(State==next)return;attackPreparationRemaining=0;StopAttackSearch();
         if(patrolRoute)patrolRoute.Suspend();currentState=next;
         disengaging=false;disengageRemaining=0;
         waking=noticing=watching=checking=false;wakeRemaining=noticeRemaining=inspectionRemaining=watchElapsed=detectionProgress=0;
@@ -255,7 +253,7 @@ public sealed partial class RampagerController : MonoBehaviour
     void CancelReturn(){returning=waitingToSleep=false;sleepRemaining=0;}
     void BeginReturn(bool sleep)
     {
-        attackPreparationRemaining=0;StopAttackSearch();
+        soundInvestigationPriority=false;attackPreparationRemaining=0;StopAttackSearch();
         SetState(Behaviour.Roaming);watching=checking=noticing=waking=false;detectionProgress=inspectionRemaining=0;
         disengaging=false;disengageRemaining=0;
         returning=true;waitingToSleep=false;returnAsSleeping=sleep;sleepRemaining=0;reportedAttention=false;
@@ -272,7 +270,7 @@ public sealed partial class RampagerController : MonoBehaviour
     // Broadcasts are modifiers and movement commands, not a fourth behaviour state.
     public bool ReceiveBuildingWarning(float duration)
     {
-        attackPreparationRemaining=0;
+        soundInvestigationPriority=false;attackPreparationRemaining=0;
         if(!waveActive)sleepingBeforeWave=State==Behaviour.Sleeping;
         if(State==Behaviour.Sleeping)SetState(Behaviour.Roaming);
         waveActive=true;if(State==Behaviour.Attack)attackWaveBoost=true;
@@ -284,7 +282,9 @@ public sealed partial class RampagerController : MonoBehaviour
         if(id<=lastWaveId)return false;
         if(!waveActive)ReceiveBuildingWarning(0);lastWaveId=id;WaveIndex=index;waveDirection=direction<0?-1:1;
         stopped=reverse=0;waveAction=-1;waveDelay=world.SoundWaves.CommandMoveDelay;waveMove=world.SoundWaves.commandDuration;waveHold=world.SoundWaves.holdDuration;waveRecovery=0;
-        if(State!=Behaviour.Attack)Motor.Facing=waveDirection;return true;
+        // Keep the current facing during propagation; navigation turns the body
+        // only when the shared movement slice starts after the counted packet.
+        return true;
     }
     public void EndSwarm(float duration){if(waveActive)waveRecovery=Mathf.Max(.01f,duration);}
     void AdvanceWave(float dt,out float delayDt,out float moveDt,out float holdDt)
@@ -344,6 +344,7 @@ public sealed partial class RampagerController : MonoBehaviour
     public void Simulate(float dt)
     {
         if(!world || dt<=0)return;
+        if(SimulateWaterReaction(dt))return;
         if(depthArrival){bool tracking=Noticing||WatchingPlayer||State==Behaviour.Attack||checking;if(tracking || !depthArrival.Travelling)depthArrival.Face(AttentionWorldPosition,tracking,dt);}
         else Motor.AdvanceTurn(dt);
         stun=Mathf.Max(0,stun-dt);float delayDt,moveDt,holdDt;AdvanceWave(dt,out delayDt,out moveDt,out holdDt);

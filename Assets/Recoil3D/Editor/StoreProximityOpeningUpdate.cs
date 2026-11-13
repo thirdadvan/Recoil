@@ -30,7 +30,7 @@ public static class StoreProximityOpeningUpdate
                     {
                         story.stealthTutorial=ServiceStoreOutdoorEncounter.RunTutorial;EditorUtility.SetDirty(story);
                         if(!story.warning)throw new Exception("Outdoor warning dialogue is missing");
-                        story.warning.lines=new[]{new NpcDialogueSequence.Line{speaker="VOICE FROM THE STORE",text=ServiceStoreOutdoorEncounter.OpeningLineOne},new NpcDialogueSequence.Line{speaker="VOICE FROM THE STORE",text=ServiceStoreOutdoorEncounter.OpeningLineTwo}};
+                        story.warning.lines=new[]{new NpcDialogueSequence.Line{speaker="The Counter Sales",text=ServiceStoreOutdoorEncounter.OpeningLineOne},new NpcDialogueSequence.Line{speaker="The Counter Sales",text=ServiceStoreOutdoorEncounter.OpeningLineTwo}};
                         EditorUtility.SetDirty(story.warning);count++;
                     }
                     EditorSceneManager.MarkSceneDirty(scene);if(!EditorSceneManager.SaveScene(scene))throw new Exception("Could not save "+path);

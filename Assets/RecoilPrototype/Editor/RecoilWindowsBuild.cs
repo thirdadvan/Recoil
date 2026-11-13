@@ -6,8 +6,18 @@ using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
+[InitializeOnLoad]
 public static class RecoilWindowsBuild
 {
+    const string Request="Builds/windows-build.request";
+    static RecoilWindowsBuild(){EditorApplication.update+=ProcessRequest;}
+    static void ProcessRequest()
+    {
+        if(!File.Exists(Request)||EditorApplication.isCompiling||EditorApplication.isUpdating)return;
+        if(EditorApplication.isPlaying){EditorApplication.isPlaying=false;return;}
+        if(EditorApplication.isPlayingOrWillChangePlaymode)return;
+        File.Delete(Request);EditorApplication.delayCall+=Build;
+    }
     public const string Folder="Builds/Recoil-Windows";
     public const string Status="Builds/windows-build-status.txt";
     [MenuItem("Recoil/Build Windows x64")]

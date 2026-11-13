@@ -8,8 +8,19 @@ public sealed class ElectricalPanelInteraction : MonoBehaviour
  string notice="Lighting is connected. The Freight supply is burned out.";
  float lightingUnplugAt=float.NegativeInfinity,freightUnplugAt=float.NegativeInfinity;
  GUIStyle label,title,note;
+ Vector2 controllerPointer=new Vector2(308,420);
+ RecoilPrototype owner;
+ void Update()
+ {
+  if(!owner)owner=GetComponentInParent<RecoilPrototype>();
+  if(!owner||owner.ActiveElectricalPanel!=this||!RecoilInput.UsingGamepad)return;
+  var stick=RecoilInput.PointerStick;
+  controllerPointer+=new Vector2(stick.x,-stick.y)*500*Mathf.Min(Time.unscaledDeltaTime,.05f);
+  controllerPointer.x=Mathf.Clamp(controllerPointer.x,200,1080);controllerPointer.y=Mathf.Clamp(controllerPointer.y,60,590);
+  if(RecoilInput.ConfirmPressed)ClickAt(owner,controllerPointer);
+ }
  static readonly Rect LightingTerminalHit=new Rect(260,243,95,95),FreightTerminalHit=new Rect(420,243,95,95),CloseHit=new Rect(990,60,75,32);
- public bool InRange(RecoilPrototype w){return isActiveAndEnabled && w && w.Player && Vector2.Distance(w.Player.Position,transform.position)<=interactionRange && w.Clear(w.Player.Position,transform.position);}
+ public bool InRange(RecoilPrototype w){return isActiveAndEnabled && w && w.Player && RecoilInteractionRange.Contains(w,transform.position,interactionRange) && w.Clear(w.Player.Position,transform.position);}
  void Styles(){if(label!=null)return;label=new GUIStyle(GUI.skin.label){fontSize=18,normal={textColor=new Color(.8f,.79f,.68f)}};title=new GUIStyle(label){fontSize=26,fontStyle=FontStyle.Bold};note=new GUIStyle(label){fontSize=15,wordWrap=true};}
  static void Plate(Rect r,int color){GUI.color=RecoilPrototype.Hex(color);GUI.DrawTexture(r,Texture2D.whiteTexture);GUI.color=Color.white;}
  void Text(Rect r,string s,GUIStyle style=null){GUI.Label(r,s,style??label);}
@@ -45,6 +56,7 @@ public sealed class ElectricalPanelInteraction : MonoBehaviour
  {
   Styles();var matrix=GUI.matrix;Vector2 screenPointer=Event.current.mousePosition;GUI.matrix=Matrix4x4.TRS(Vector3.zero,Quaternion.identity,new Vector3(Screen.width/1280f,Screen.height/720f,1));
   Vector2 pointer=GUI.matrix.inverse.MultiplyPoint(screenPointer);
+  if(RecoilInput.UsingGamepad)pointer=controllerPointer;
   if(Event.current.type==EventType.MouseDown && Event.current.button==0){ClickAt(w,pointer);Event.current.Use();}
   var state=WarehousePowerState.Read(w);
   Plate(new Rect(0,0,1280,720),0x070e10);Plate(new Rect(180,42,920,635),0x4a5149);Plate(new Rect(203,106,874,495),0x222e2b);
@@ -88,6 +100,9 @@ public sealed class ElectricalPanelInteraction : MonoBehaviour
   {
    float top=338+PullOffset(state.FreightCut,freightUnplugAt);CableSegment(new Vector2(469,top),new Vector2(469,Mathf.Min(top+184,558)),freightColor);Connector(new Vector2(469,top),freightColor);
   }
-  Text(new Rect(226,611,805,44),notice,note);Text(new Rect(226,655,800,24),"Click cables to unplug / pick up; click a free terminal to connect.   E / Esc: close",note);GUI.matrix=matrix;
+  Text(new Rect(226,611,805,44),notice,note);
+  Text(new Rect(226,655,800,24),RecoilInput.UsingGamepad?"STICK: move pointer.  CROSS: select cable / terminal.  CIRCLE / OPTIONS: close.":"Click cables to unplug / pick up; click a free terminal to connect.   E / Esc: close",note);
+  if(RecoilInput.UsingGamepad){Plate(new Rect(pointer.x-8,pointer.y-1,16,2),0xe5eacc);Plate(new Rect(pointer.x-1,pointer.y-8,2,16),0xe5eacc);}
+  GUI.matrix=matrix;
  }
 }

@@ -13,7 +13,13 @@ MonoBehaviour:
   m_Name: StoreClerk_Introduction
   m_EditorClassIdentifier: 
   lines:
-  - speaker: STORE CLERK
+  - role: 0
+    speaker: The Counter Sales
     text: Stay there.
-  - speaker: STORE CLERK
+    offerPhoto: 0
+    choices: []
+  - role: 0
+    speaker: The Counter Sales
     text: If you want to live, slowly walk to me.
+    offerPhoto: 0
+    choices: []

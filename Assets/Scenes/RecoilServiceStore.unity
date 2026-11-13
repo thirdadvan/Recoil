@@ -495,7 +495,7 @@ MonoBehaviour:
   fullTentacleEnrageDuration: 0.5
   growingTentacleEnrageDuration: 1
   soundInvestigationInset: 0.5
-  soundSearchPause: 0.75
+  soundSearchPause: 1.5
   soundMemoryDuration: 7.5
   world: {fileID: 1658313658}
   initialState: 4
@@ -526,6 +526,14 @@ MonoBehaviour:
   stoppedTolerance: 0.5
   reverseTolerance: 0.5
   currentState: 0
+  attackSearchRadius: 2
+  attackSearchMoveInterval: {x: 1.5, y: 2.5}
+  searchRoarDuration: 0.9
+  waterBlockDuration: 1.2
+  exposedCoreRecoveryDuration: 4
+  coreFoldDuration: 1
+  coreStillDuration: 2.5
+  coreAttackTransitionDuration: 0.5
 --- !u!114 &62740502
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -593,6 +601,8 @@ MonoBehaviour:
   idealSightRange: 48
   fieldOfView: 100
   minimumExposure: 0.34
+  rearSenseAngle: 60
+  rearSenseRangeMultiplier: 0.6
 --- !u!212 &62740506
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1170,10 +1180,13 @@ MonoBehaviour:
   initialDelay: 12
   interval: 15
   warningDuration: 3
-  moveDelay: 0.1
   holdDuration: 1.5
   commandDuration: 1
   recoveryDuration: 1.25
+  moveDelay: 0.1
+  directionWaveDuration: 3
+  commandReactionDelay: 0.5
+  doublePulseSpacing: 0.4
 --- !u!1 &171754244
 GameObject:
   m_ObjectHideFlags: 0
@@ -1340,6 +1353,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c701381275b6476fa894118197048ba0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  automaticStepHeight: 0.28
   world: {fileID: 1658313658}
   aimCamera: {fileID: 142492965}
   coat: {fileID: 1061686321}
@@ -5353,6 +5367,37 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &1230926775
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1230926776}
+  m_Layer: 0
+  m_Name: Conversation head anchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1230926776
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1230926775}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.7, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1951955998}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1236124980
 GameObject:
   m_ObjectHideFlags: 0
@@ -5784,7 +5829,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1359290985}
   - component: {fileID: 1359290987}
-  - component: {fileID: 1359290986}
   m_Layer: 0
   m_Name: Water gun pickup
   m_TagString: Untagged
@@ -5807,25 +5851,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2004670175}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1359290986
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1359290984}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96fe75fef1014b17bd1517f70c041b8d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: water_gun_pickup
-  displayName: Water gun
-  description: A plastic water gun. Use its recoil to reach the skylight.
-  interactionDuration: 0
-  interactionRange: 1.8
-  resultId: water_gun
-  resultMessage: Fire, then use the direction keys to fly.
 --- !u!212 &1359290987
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -7519,10 +7544,8 @@ MonoBehaviour:
   factoryEntrance: {fileID: 336315036}
   solidObjects: []
   locationLabel: SERVICE STORE
-  objectiveWithoutCard: Follow the clerk's instructions. Find the water gun, then
-    leave through the open skylight.
-  objectiveWithCard: Follow the clerk's instructions. Find the water gun, then leave
-    through the open skylight.
+  objectiveWithoutCard: "\u4E0E\u67DC\u5458\u4EA4\u8C08\uFF0C\u5BFB\u627E Aneta \u7684\u7EBF\u7D22\u3002"
+  objectiveWithCard: "\u4E0E\u67DC\u5458\u4EA4\u8C08\uFF0C\u5BFB\u627E Aneta \u7684\u7EBF\u7D22\u3002"
   enableCheckpoint: 0
   legacyEvidenceEnabled: 0
   startWithWaterGun: 0
@@ -9431,6 +9454,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1951955998}
+  - component: {fileID: 1951955999}
   m_Layer: 0
   m_Name: Adult store clerk - assembled 2D art
   m_TagString: Untagged
@@ -9469,8 +9493,29 @@ Transform:
   - {fileID: 1501540383}
   - {fileID: 1093384603}
   - {fileID: 367426949}
+  - {fileID: 1230926776}
   m_Father: {fileID: 606914353}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1951955999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1951955997}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cef09a97617c34bffa0c350f4bec051c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  world: {fileID: 1658313658}
+  rescue: {fileID: 606914354}
+  firstConversation: {fileID: 11400000, guid: aa697880d4d9f49d6a3b15679c3c5235, type: 2}
+  reminder: {fileID: 11400000, guid: b6f9ba1ad7a8a4f8784e54b10e979509, type: 2}
+  headAnchor: {fileID: 1230926776}
+  interactionPoint: {fileID: 610245441}
+  tableGunDisplay: {fileID: 1359290984}
+  interactionRange: 1.5
 --- !u!1 &1988970580
 GameObject:
   m_ObjectHideFlags: 0

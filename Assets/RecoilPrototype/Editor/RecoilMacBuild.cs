@@ -6,8 +6,18 @@ using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
+[InitializeOnLoad]
 public static class RecoilMacBuild
 {
+    const string Request="Builds/mac-build.request";
+    static RecoilMacBuild(){EditorApplication.update+=ProcessRequest;}
+    static void ProcessRequest()
+    {
+        if(!File.Exists(Request)||EditorApplication.isCompiling||EditorApplication.isUpdating)return;
+        if(EditorApplication.isPlaying){EditorApplication.isPlaying=false;return;}
+        if(EditorApplication.isPlayingOrWillChangePlaymode)return;
+        File.Delete(Request);EditorApplication.delayCall+=Build;
+    }
     public const string Folder="Builds/Recoil-Mac";
     public const string Status="Builds/mac-build-status.txt";
     [MenuItem("Recoil/Build Mac Universal")]

@@ -52,9 +52,9 @@ public static class CoalerAcousticAIVerification
             Require(!senses.CanSeePlayer(),"Fusion perception must include Z separation");
             motor.MovementPlaneZ=enemy.CloseSenseRadius-.25f;motor.ApplyPosition();Require(senses.CanSeePlayer(),"Nearby actor across Z must be sensed");
             reset();enemy.HearNoise(new Vector3(5,100,0),10);step(.01f);
-            for(int i=0;i<1000 && enemy.Investigation>=.749f;i++)step(.01f);
-            Require(enemy.WatchingPlayer && Mathf.Abs(5-enemy.Position.x-(enemy.CloseSenseRadius-enemy.soundInvestigationInset))<.065f,"Investigation must reach the inset fusion edge before pausing, even beyond 7.5s travel");
-            step(.76f);Require(!enemy.WatchingPlayer,"Inspection pause must end in return");
+            for(int i=0;i<1000 && enemy.Investigation>=enemy.soundSearchPause-.001f;i++)step(.01f);
+            Require(enemy.WatchingPlayer && Mathf.Abs(5-enemy.Position.x-.22f)<.065f,"Investigation must reach the sound location before pausing, even beyond 7.5s travel");
+            step(enemy.soundSearchPause+.01f);Require(!enemy.WatchingPlayer,"Inspection pause must end in return");
             reset();enemy.WatchForStory();enemy.HearNoise(new Vector3(10,100,0),20);Set(enemy,"detectionProgress",1f);step(.01f);
             Require(enemy.PreparingAttack && enemy.LitTentacleGroups==4,"Complete fibres must use the short preparation");
             step(.47f);Require(enemy.State!=RampagerController.Behaviour.Attack,"Four-fibre preparation must not finish before .5s");
@@ -69,8 +69,8 @@ public static class CoalerAcousticAIVerification
             enemy.HearNoise(new Vector3(-4,104,0),20);player.Position=new Vector2(30,100);step(.1f);
             Require(enemy.LastKnownPosition==new Vector2(-4,104),"Attack must retain the sound position rather than follow a silent distant player");
             step(7.41f);Require(enemy.State==RampagerController.Behaviour.Roaming,"No sound for 7.5 seconds must end attack");
-            reset();enemy.HearNoise(new Vector3(0,100,0),10);step(.01f);step(.76f);
-            Require(!enemy.WatchingPlayer && enemy.State==RampagerController.Behaviour.Roaming,"Absent target must return after .75s at source");
+            reset();enemy.HearNoise(new Vector3(0,100,0),10);step(.01f);step(enemy.soundSearchPause+.01f);
+            Require(!enemy.WatchingPlayer && enemy.State==RampagerController.Behaviour.Roaming,"Absent target must return after the inspection pause at source");
             reset();enemy.TakeWaterHit(new Vector2(10,100),Vector2.left,20,player.Position);step(1.01f);player.Position=new Vector2(-3,104);
             enemy.HearNoise(new Vector3(-3,104,0),20);step(.1f);Require(enemy.Position.x<0,"Airborne sound must be pursued horizontally rather than stopped by height");
             reset();enemy.TakeWaterHit(new Vector2(10,100),Vector2.left,20,player.Position);
@@ -102,7 +102,7 @@ public static class CoalerAcousticAIVerification
             Require(enemy.PreparingAttack,"Broadcast shooting must still immediately trigger attack preparation");
             step(1);Require(enemy.State==RampagerController.Behaviour.Attack && enemy.SwarmAttackBoost,"Broadcast attack must retain its boost after preparation");
             reset();var story=root.AddComponent<ServiceStoreOutdoorEncounter>();story.world=world;story.leftMonster=enemy;
-            var opening=ScriptableObject.CreateInstance<NpcDialogueSequence>();opening.lines=new[]{new NpcDialogueSequence.Line{speaker="VOICE FROM THE STORE",text=ServiceStoreOutdoorEncounter.OpeningLineOne},new NpcDialogueSequence.Line{speaker="VOICE FROM THE STORE",text=ServiceStoreOutdoorEncounter.OpeningLineTwo}};story.warning=opening;
+            var opening=ScriptableObject.CreateInstance<NpcDialogueSequence>();opening.lines=new[]{new NpcDialogueSequence.Line{speaker="The Counter Sales",text=ServiceStoreOutdoorEncounter.OpeningLineOne},new NpcDialogueSequence.Line{speaker="The Counter Sales",text=ServiceStoreOutdoorEncounter.OpeningLineTwo}};story.warning=opening;
             enemy.HearNoise(new Vector3(0,100,0),10);step(.01f);
             Require(enemy.WatchingPlayer && !story.ProximityReady,"Sound-only attention outside close range must not trigger the opening");
             var otherGo=new GameObject("Independent second Coaler");otherGo.transform.SetParent(root.transform);otherGo.transform.position=new Vector3(20,100,0);var other=otherGo.AddComponent<RampagerController>();other.Initialize(world);
@@ -112,7 +112,7 @@ public static class CoalerAcousticAIVerification
             world.AdvanceConversation();world.AdvanceConversation();Require(world.HasItem(story.completedFlag),"Opening completion must be remembered");
             late.Invoke(story,null);Require(!world.ConversationActive,"Completed opening must not repeat");UnityEngine.Object.DestroyImmediate(opening);
             Directory.CreateDirectory("Backups/CoalerAcousticAI/20261023");
-            File.WriteAllText("Backups/CoalerAcousticAI/20261023/Verification.txt","PASS: no distant vision; close fusion-range detection; no passive running/missed-shot anger; near/far sound energy; continuous-footstep grace and quiet decay; energy-driven four-group glow, .5s full / 1s partial preparation; bounded local search/roar and sound reacquisition; inset-edge investigation; Z proximity; airborne-sound pursuit; remembered sound rather than live distant player; 7.5s attack expiry; sleep wake; direct-hit preparation does not restart on repeated hits; broadcast violation and boost retained with new preparation; opening requires close perception, leaves other Coalers independent, and completes once.\n");
+            File.WriteAllText("Backups/CoalerAcousticAI/20261023/Verification.txt","PASS: no distant vision; close fusion-range detection; no passive running/missed-shot anger; near/far sound energy; continuous-footstep grace and quiet decay; energy-driven four-group glow, .5s full / 1s partial preparation; bounded local search/roar and sound reacquisition; sound-location investigation; Z proximity; airborne-sound pursuit; remembered sound rather than live distant player; 7.5s attack expiry; sleep wake; direct-hit preparation does not restart on repeated hits; broadcast violation and boost retained with new preparation; opening requires close perception, leaves other Coalers independent, and completes once.\n");
             Debug.Log("COALER_ACOUSTIC_AI_CHECK_PASS");
         }
         finally{EditorSceneManager.ClosePreviewScene(scene);}

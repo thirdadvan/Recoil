@@ -1,0 +1,97 @@
+{
+  "date": "2026-11-09",
+  "mode": "built-in image_gen",
+  "context": "Fictional Recoil 1978 factory conflict. 01-04 march; 05-09 occupation. New slogans are proposed art direction, not new confirmed history.",
+  "assets": [
+    {
+      "id": "01",
+      "name": "no-more-cuts",
+      "label": "游行举牌：不再削减",
+      "text": "NO MORE CUTS",
+      "spec": "A broad torn corrugated brown cardboard placard on ONE long salvaged wooden stick nailed behind it, full stick visible. Exact text only: 'NO MORE CUTS', three large charcoal brush-painted lines. Compressed upper-left corner, exposed corrugation, two bent nail heads. A single accidental rusty-red paint thumbprint near bottom. Early march prop, lightly handled rather than ancient.",
+      "prompt": "Use case: stylized-concept. Asset type: ONE standalone game prop concept, fictional Recoil factory workers' protest/occupation, October 1978. Handmade by ordinary industrial workers with available workshop and household scraps. Convincing physical materials, muted charcoal, dirty ivory, faded rust-red, restrained oil/soot wear. Entire object visible with generous clear margin, front view almost orthographic, readable lettering dominates, no people, no surroundings, no other props, no mockup, no logos, no political emblems, no designer typography, no modern graphics, no decorative titles or asset numbers. Letters painted awkwardly by hand with bristle gaps, uneven spacing and baseline, coherent legible English. Use transparent background, preserve holes and gaps. Detailed grounded game concept rendering, muted industrial realism. A broad torn corrugated brown cardboard placard on ONE long salvaged wooden stick nailed behind it, full stick visible. Exact text only: 'NO MORE CUTS', three large charcoal brush-painted lines. Compressed upper-left corner, exposed corrugation, two bent nail heads. A single accidental rusty-red paint thumbprint near bottom. Early march prop, lightly handled rather than ancient.",
+      "source": "/Users/zhangxiuyu/.codex/generated_images/01a1c20b-dfa6-7e13-b80e-cdbf7bccdc41/exec-8aa85646-7ef4-494e-afcc-91d71f0d64ba.png",
+      "file": "01-no-more-cuts.png"
+    },
+    {
+      "id": "02",
+      "name": "we-need-answers",
+      "label": "游行举牌：给我们答复",
+      "text": "WE NEED ANSWERS",
+      "spec": "Tall rectangular offcut of dull pale grey hardboard on ONE narrow rough wooden pole. Exact text only: 'WE NEED ANSWERS', three uneven broad rust-red painted lines. Paint thin in places, small repaired split held by cloth tape at one corner. Everyday improvised protest sign, not a printed poster.",
+      "prompt": "Use case: stylized-concept. Asset type: ONE standalone game prop concept, fictional Recoil factory workers' protest/occupation, October 1978. Handmade by ordinary industrial workers with available workshop and household scraps. Convincing physical materials, muted charcoal, dirty ivory, faded rust-red, restrained oil/soot wear. Entire object visible with generous clear margin, front view almost orthographic, readable lettering dominates, no people, no surroundings, no other props, no mockup, no logos, no political emblems, no designer typography, no modern graphics, no decorative titles or asset numbers. Letters painted awkwardly by hand with bristle gaps, uneven spacing and baseline, coherent legible English. Use transparent background, preserve holes and gaps. Detailed grounded game concept rendering, muted industrial realism. Tall rectangular offcut of dull pale grey hardboard on ONE narrow rough wooden pole. Exact text only: 'WE NEED ANSWERS', three uneven broad rust-red painted lines. Paint thin in places, small repaired split held by cloth tape at one corner. Everyday improvised protest sign, not a printed poster.",
+      "source": "/Users/zhangxiuyu/.codex/generated_images/01a1c20b-dfa6-7e13-b80e-cdbf7bccdc41/exec-d26d1db7-50bc-4eb4-907c-c702e33b9a45.png",
+      "file": "02-we-need-answers.png"
+    },
+    {
+      "id": "03",
+      "name": "where-are-they",
+      "label": "游行布旗：他们在哪里",
+      "text": "WHERE ARE THEY?",
+      "spec": "Small roughly square dirty ivory cloth banner hung from a single horizontal crossbar attached to ONE vertical wooden pole, entire pole visible. Exact text only: 'WHERE ARE THEY?' in three large charcoal hand-painted lines, dark rusty-red question mark. Loosely stitched cloth edge, slightly bowed hem, visibly different handwriting. A demand for news of missing coworkers. No portraits or names.",
+      "prompt": "Use case: stylized-concept. Asset type: ONE standalone game prop concept, fictional Recoil factory workers' protest/occupation, October 1978. Handmade by ordinary industrial workers with available workshop and household scraps. Convincing physical materials, muted charcoal, dirty ivory, faded rust-red, restrained oil/soot wear. Entire object visible with generous clear margin, front view almost orthographic, readable lettering dominates, no people, no surroundings, no other props, no mockup, no logos, no political emblems, no designer typography, no modern graphics, no decorative titles or asset numbers. Letters painted awkwardly by hand with bristle gaps, uneven spacing and baseline, coherent legible English. Use transparent background, preserve holes and gaps. Detailed grounded game concept rendering, muted industrial realism. Small roughly square dirty ivory cloth banner hung from a single horizontal crossbar attached to ONE vertical wooden pole, entire pole visible. Exact text only: 'WHERE ARE THEY?' in three large charcoal hand-painted lines, dark rusty-red question mark. Loosely stitched cloth edge, slightly bowed hem, visibly different handwriting. A demand for news of missing coworkers. No portraits or names.",
+      "source": "/Users/zhangxiuyu/.codex/generated_images/01a1c20b-dfa6-7e13-b80e-cdbf7bccdc41/exec-836c1edf-7eb6-4edd-bdd3-a25bc6850f15.png",
+      "file": "03-where-are-they.png"
+    },
+    {
+      "id": "04",
+      "name": "bring-our-workmates-home",
+      "label": "游行横幅：让工友回家",
+      "text": "BRING OUR WORKMATES HOME",
+      "spec": "Long wide horizontal old bedsheet banner designed to be carried by two workers. Two slim wooden side poles, entire poles visible. Exact text only: 'BRING OUR WORKMATES HOME' on two uneven brush-painted lines, charcoal letters with HOME in faded dark rust-red. White-grey cotton, stitched patch near one edge, broad wrinkles and slightly sagging lower hem. Broad landscape composition.",
+      "prompt": "Use case: stylized-concept. Asset type: ONE standalone game prop concept, fictional Recoil factory workers' protest/occupation, October 1978. Handmade by ordinary industrial workers with available workshop and household scraps. Convincing physical materials, muted charcoal, dirty ivory, faded rust-red, restrained oil/soot wear. Entire object visible with generous clear margin, front view almost orthographic, readable lettering dominates, no people, no surroundings, no other props, no mockup, no logos, no political emblems, no designer typography, no modern graphics, no decorative titles or asset numbers. Letters painted awkwardly by hand with bristle gaps, uneven spacing and baseline, coherent legible English. Use transparent background, preserve holes and gaps. Detailed grounded game concept rendering, muted industrial realism. Long wide horizontal old bedsheet banner designed to be carried by two workers. Two slim wooden side poles, entire poles visible. Exact text only: 'BRING OUR WORKMATES HOME' on two uneven brush-painted lines, charcoal letters with HOME in faded dark rust-red. White-grey cotton, stitched patch near one edge, broad wrinkles and slightly sagging lower hem. Broad landscape composition.",
+      "source": "/Users/zhangxiuyu/.codex/generated_images/01a1c20b-dfa6-7e13-b80e-cdbf7bccdc41/exec-867ed01c-6980-457f-a92a-e414516b87e3.png",
+      "file": "04-bring-our-workmates-home.png"
+    },
+    {
+      "id": "05",
+      "name": "we-stay-here",
+      "label": "守厂横幅：我们留下",
+      "text": "WE STAY HERE",
+      "spec": "Broad horizontal rust-red cotton banner lashed to a short horizontal rope through four crudely reinforced holes, NO poles. Exact text only: 'WE STAY HERE' in huge uneven dirty ivory hand-painted capitals, one line. Deep folds, a rough seam joining two fabric offcuts, chalk dust and handling grime. Occupation banner intended to hang across an entrance.",
+      "prompt": "Use case: stylized-concept. Asset type: ONE standalone game prop concept, fictional Recoil factory workers' protest/occupation, October 1978. Handmade by ordinary industrial workers with available workshop and household scraps. Convincing physical materials, muted charcoal, dirty ivory, faded rust-red, restrained oil/soot wear. Entire object visible with generous clear margin, front view almost orthographic, readable lettering dominates, no people, no surroundings, no other props, no mockup, no logos, no political emblems, no designer typography, no modern graphics, no decorative titles or asset numbers. Letters painted awkwardly by hand with bristle gaps, uneven spacing and baseline, coherent legible English. Use transparent background, preserve holes and gaps. Detailed grounded game concept rendering, muted industrial realism. Broad horizontal rust-red cotton banner lashed to a short horizontal rope through four crudely reinforced holes, NO poles. Exact text only: 'WE STAY HERE' in huge uneven dirty ivory hand-painted capitals, one line. Deep folds, a rough seam joining two fabric offcuts, chalk dust and handling grime. Occupation banner intended to hang across an entrance.",
+      "source": "/Users/zhangxiuyu/.codex/generated_images/01a1c20b-dfa6-7e13-b80e-cdbf7bccdc41/exec-41c9034b-58f9-4b18-9db5-0eca98afbafc.png",
+      "file": "05-we-stay-here.png"
+    },
+    {
+      "id": "06",
+      "name": "this-factory-is-our-home",
+      "label": "守厂木牌：工厂就是家",
+      "text": "THIS FACTORY IS OUR HOME",
+      "spec": "A wide rectangular makeshift sign assembled from THREE mismatched horizontal salvaged wood planks fixed to two vertical rear battens, no carrying pole. Exact text only: 'THIS FACTORY / IS OUR HOME', two large rough dirty-ivory brush-painted lines on naturally charcoal-grey weathered wood. Paint follows grain and skips across plank joins. Ends blunt and chipped. A large gate or barricade sign, no sharp protrusions.",
+      "prompt": "Use case: stylized-concept. Asset type: ONE standalone game prop concept, fictional Recoil factory workers' protest/occupation, October 1978. Handmade by ordinary industrial workers with available workshop and household scraps. Convincing physical materials, muted charcoal, dirty ivory, faded rust-red, restrained oil/soot wear. Entire object visible with generous clear margin, front view almost orthographic, readable lettering dominates, no people, no surroundings, no other props, no mockup, no logos, no political emblems, no designer typography, no modern graphics, no decorative titles or asset numbers. Letters painted awkwardly by hand with bristle gaps, uneven spacing and baseline, coherent legible English. Use transparent background, preserve holes and gaps. Detailed grounded game concept rendering, muted industrial realism. A wide rectangular makeshift sign assembled from THREE mismatched horizontal salvaged wood planks fixed to two vertical rear battens, no carrying pole. Exact text only: 'THIS FACTORY / IS OUR HOME', two large rough dirty-ivory brush-painted lines on naturally charcoal-grey weathered wood. Paint follows grain and skips across plank joins. Ends blunt and chipped. A large gate or barricade sign, no sharp protrusions.",
+      "source": "/Users/zhangxiuyu/.codex/generated_images/01a1c20b-dfa6-7e13-b80e-cdbf7bccdc41/exec-584bd908-3dfd-4cf9-8812-23f5c85f2876.png",
+      "file": "06-this-factory-is-our-home.png"
+    },
+    {
+      "id": "07",
+      "name": "wounded-passage",
+      "label": "守厂指示布：给伤员留路",
+      "text": "KEEP THE WAY CLEAR / FOR THE WOUNDED",
+      "spec": "A narrow vertical strip cut from dirty light-grey canvas tied to a short top crossbar with two loops of twine, NO pole. Exact text only: 'KEEP THE WAY CLEAR' then 'FOR THE WOUNDED', stacked in 5 readable lines of ordinary hand-painted charcoal block letters. Below text one large awkward rust-red directional arrow pointing RIGHT. A practical occupation aid station passage sign. Subtle soot hand marks, no blood, no medical logo or cross.",
+      "prompt": "Use case: stylized-concept. Asset type: ONE standalone game prop concept, fictional Recoil factory workers' protest/occupation, October 1978. Handmade by ordinary industrial workers with available workshop and household scraps. Convincing physical materials, muted charcoal, dirty ivory, faded rust-red, restrained oil/soot wear. Entire object visible with generous clear margin, front view almost orthographic, readable lettering dominates, no people, no surroundings, no other props, no mockup, no logos, no political emblems, no designer typography, no modern graphics, no decorative titles or asset numbers. Letters painted awkwardly by hand with bristle gaps, uneven spacing and baseline, coherent legible English. Use transparent background, preserve holes and gaps. Detailed grounded game concept rendering, muted industrial realism. A narrow vertical strip cut from dirty light-grey canvas tied to a short top crossbar with two loops of twine, NO pole. Exact text only: 'KEEP THE WAY CLEAR' then 'FOR THE WOUNDED', stacked in 5 readable lines of ordinary hand-painted charcoal block letters. Below text one large awkward rust-red directional arrow pointing RIGHT. A practical occupation aid station passage sign. Subtle soot hand marks, no blood, no medical logo or cross.",
+      "source": "/Users/zhangxiuyu/.codex/generated_images/01a1c20b-dfa6-7e13-b80e-cdbf7bccdc41/exec-e4fa3078-9d22-4c80-8df2-d1969ea8b4b2.png",
+      "file": "07-wounded-passage.png"
+    },
+    {
+      "id": "08",
+      "name": "no-one-left-behind",
+      "label": "守厂举牌：不落下任何人",
+      "text": "NO ONE LEFT BEHIND",
+      "spec": "A squat wide plywood placard on ONE short wooden carrying handle visible below. Exact text only: 'NO ONE / LEFT BEHIND', two charcoal hand-painted lines, LEFT BEHIND underlined once in dark rusty-red by a hesitant hand. Warm grey unvarnished plywood, splintered corners bound with faded cloth, old unused screw holes. Later occupation prop with heavier hand grime, legibility intact.",
+      "prompt": "Use case: stylized-concept. Asset type: ONE standalone game prop concept, fictional Recoil factory workers' protest/occupation, October 1978. Handmade by ordinary industrial workers with available workshop and household scraps. Convincing physical materials, muted charcoal, dirty ivory, faded rust-red, restrained oil/soot wear. Entire object visible with generous clear margin, front view almost orthographic, readable lettering dominates, no people, no surroundings, no other props, no mockup, no logos, no political emblems, no designer typography, no modern graphics, no decorative titles or asset numbers. Letters painted awkwardly by hand with bristle gaps, uneven spacing and baseline, coherent legible English. Use transparent background, preserve holes and gaps. Detailed grounded game concept rendering, muted industrial realism. A squat wide plywood placard on ONE short wooden carrying handle visible below. Exact text only: 'NO ONE / LEFT BEHIND', two charcoal hand-painted lines, LEFT BEHIND underlined once in dark rusty-red by a hesitant hand. Warm grey unvarnished plywood, splintered corners bound with faded cloth, old unused screw holes. Later occupation prop with heavier hand grime, legibility intact.",
+      "source": "/Users/zhangxiuyu/.codex/generated_images/01a1c20b-dfa6-7e13-b80e-cdbf7bccdc41/exec-52f8924c-9d53-480b-81ac-05dc3e0589ae.png",
+      "file": "08-no-one-left-behind.png"
+    },
+    {
+      "id": "09",
+      "name": "until-everyone-returns",
+      "label": "守厂横幅：等所有人回来",
+      "text": "TOGETHER / UNTIL EVERYONE RETURNS",
+      "spec": "A long low horizontal banner made from TWO opened coarse jute packing sacks stitched together, tied with frayed twine at four corners, NO poles. Exact text only: 'TOGETHER' as large upper line in charcoal paint, 'UNTIL EVERYONE RETURNS' in a smaller but clearly legible second line, also charcoal. Broad coarse brush lettering, naturally uneven sack weave, central hand-sewn join, restrained grey soot marks. Mournful stubborn solidarity. No printed packaging text, no stencils, no extra graphics.",
+      "prompt": "Use case: stylized-concept. Asset type: ONE standalone game prop concept, fictional Recoil factory workers' protest/occupation, October 1978. Handmade by ordinary industrial workers with available workshop and household scraps. Convincing physical materials, muted charcoal, dirty ivory, faded rust-red, restrained oil/soot wear. Entire object visible with generous clear margin, front view almost orthographic, readable lettering dominates, no people, no surroundings, no other props, no mockup, no logos, no political emblems, no designer typography, no modern graphics, no decorative titles or asset numbers. Letters painted awkwardly by hand with bristle gaps, uneven spacing and baseline, coherent legible English. Use transparent background, preserve holes and gaps. Detailed grounded game concept rendering, muted industrial realism. A long low horizontal banner made from TWO opened coarse jute packing sacks stitched together, tied with frayed twine at four corners, NO poles. Exact text only: 'TOGETHER' as large upper line in charcoal paint, 'UNTIL EVERYONE RETURNS' in a smaller but clearly legible second line, also charcoal. Broad coarse brush lettering, naturally uneven sack weave, central hand-sewn join, restrained grey soot marks. Mournful stubborn solidarity. No printed packaging text, no stencils, no extra graphics.",
+      "source": "/Users/zhangxiuyu/.codex/generated_images/01a1c20b-dfa6-7e13-b80e-cdbf7bccdc41/exec-fe0e3b4d-3953-4aa9-bad6-82e6d74cce86.png",
+      "file": "09-until-everyone-returns.png"
+    }
+  ]
+}

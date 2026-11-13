@@ -116,7 +116,7 @@ public static class Recoil3DArchitecturePolish
                     string n=Context(r.transform);if(Forbidden(r,n))continue;var b=r.bounds;Material selected=null;
                     bool wall=(n.Contains("wall")||n.Contains("facade")||n.Contains("masonry")||n.Contains("elevation"))&&b.size.y>.5f&&Mathf.Max(b.size.x,b.size.z)>1;
                     if(wall){selected=outdoor&&!n.Contains("perimeter")&&!n.Contains("hard wall")?brick:domestic?plaster:sewer?concrete:n.Contains("green painted")?greenPaint:n.Contains("corridor")||n.Contains("alcove")?plaster:concrete;}
-                    else if((n.Contains("floor")||n.Contains("ceiling")||n.Contains("roof")||n.Contains("foundation"))&&Mathf.Max(b.size.x,b.size.z)>2)selected=concrete;
+                    else if((n.Contains("floor")||n.Contains("ceiling")||n.Contains("roof")||n.Contains("foundation"))&&!n.Contains("rail ceiling suspension")&&Mathf.Max(b.size.x,b.size.z)>2)selected=concrete;
                     else if(n.Contains("weathered timber board"))selected=wood;
                     if(selected){r.sharedMaterial=selected;surfaces++;if(wall)AddWallWear(r,domestic,outdoor);}
                     if((n.Contains("rivet")||n.Contains("fastener")||n.Contains("rusty nail"))&&Mathf.Max(b.size.x,b.size.y)>.06f&&Mathf.Max(b.size.x,b.size.y)<.4f)

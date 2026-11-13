@@ -29,6 +29,6 @@ public sealed class ServiceStoreOutdoorEncounter : MonoBehaviour
         if(world.BeginConversation(warning,FinishWarning))played=true;
     }
     void FinishWarning()
-    {world.RememberProgress(completedFlag);world.ShowDialogue(stealthTutorial,tutorialDuration);}
+    {world.RememberProgress(completedFlag);}
     void OnDestroy(){if(world)world.RunReset-=ResetEncounter;}
 }

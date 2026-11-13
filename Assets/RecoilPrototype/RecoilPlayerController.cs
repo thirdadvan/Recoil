@@ -93,6 +93,8 @@ public sealed class RecoilPlayerController : MonoBehaviour
     bool stairApproaching;
     public bool WalkingStairs {get{return walkingStairway;}}
     public WalkableStairway CurrentStairway {get{return walkingStairway;}}
+    public float StairTravelDistance {get{return stairDistance;}}
+    public float StairTravelHeading {get{return stairHeading;}}
     void ReleaseStairs(){if(walkingStairway){walkingStairway=null;stairReattachAt=world.Clock+.2f;}}
     EquipmentHandhold holdingHandhold;
     float handholdReattachAt;
@@ -156,6 +158,7 @@ public sealed class RecoilPlayerController : MonoBehaviour
     {
         if(DepthPlane)DepthPlane.ResetPlane(position);
         if(GrabPressure)GrabPressure.ResetPressure();
+        var whispers=GetComponent<CoalerSlowdownWhispers>();if(whispers)whispers.ResetAudio();
         Position=position;velocity=pool=Vector2.zero;aim=requestedAim=Vector2.right;recoilApplied=false;
         lowStepAt=-100;lowStepRise=0;lowStepRoof=null;
         if(AimLocomotion)AimLocomotion.ResetTuning();
@@ -170,24 +173,45 @@ public sealed class RecoilPlayerController : MonoBehaviour
         foreach(var spray in sprays)if(spray.line)Destroy(spray.line.gameObject);sprays.Clear();
         SyncVisuals(0);
     }
+    public void RestoreSavedDepth(float depth){if(DepthPlane)DepthPlane.RestoreSavedPlane(Position,depth);SyncRootPosition();}
+    public void StopForConversation(Vector3? partner=null)
+    {
+        velocity=pool=Vector2.zero;HorizontalIntent=ActualHorizontalSpeed=0;
+        flying=recoilApplied=false;monsterKnockback=Vector2.zero;monsterKnockbackRemaining=0;
+        // Do not snap aim behind the still-facing body. Presentation turns the whole pose first.
+    }
+    public RecoilWeaponSave CaptureWeaponSave()
+    {
+        return new RecoilWeaponSave{id=automaticRecoil?"orange_water_gun":"blue_water_gun",capacity=ammoCapacity,ammo=Ammo,automaticRecoil=automaticRecoil,refillElapsed=refillElapsed,shotCooldown=Mathf.Max(0,nextShot-world.Clock)};
+    }
+    public void RestoreWeaponSave(RecoilWeaponSave data)
+    {
+        if(data==null)return;
+        ammoCapacity=Mathf.Max(1,data.capacity);Ammo=Mathf.Clamp(data.ammo,0,ammoCapacity);automaticRecoil=data.automaticRecoil;
+        refillElapsed=Mathf.Clamp(data.refillElapsed,0,Mathf.Max(.1f,groundRefillInterval));
+        nextShot=world.Clock+Mathf.Clamp(data.shotCooldown,0,Mathf.Max(.01f,shotInterval));refillStarted=false;
+        SyncVisuals(0);
+    }
     void Update()
     {
-        if(!world || !world.Playing || world.ReaderInputConsumed)return;
-        bool eHeld=Input.GetKey(KeyCode.E),ePressed=Input.GetKeyDown(KeyCode.E);
-        bool eConsumed=world.Child && world.Child.RouteE(eHeld,ePressed,Input.GetKeyUp(KeyCode.E),world.FrameDelta,out ePressed);
+        if(!world || !world.PlayerControlsAvailable || world.ReaderInputConsumed)return;
+        if(Input.GetKeyDown(KeyCode.K))world.EquipUniversalKey();
+        bool eHeld=RecoilInput.InteractHeld,ePressed=RecoilInput.InteractPressed;
+        bool eConsumed=world.Child && world.Child.RouteE(eHeld,ePressed,RecoilInput.InteractReleased,world.FrameDelta,out ePressed);
         if(!eConsumed && world.TryInteractElectricalPanel(ePressed))return;
         if(!eConsumed && world.TryInteractReadable(ePressed))return;
-        if(Input.GetKeyDown(KeyCode.K))world.EquipUniversalKey();
         if(Input.GetKeyDown(KeyCode.T))EquipTestWaterGun();
         var aimRay=aimCamera.ScreenPointToRay(Input.mousePosition);float aimDistance;
         Vector2 mouse=new Plane(Vector3.forward,WorldPosition).Raycast(aimRay,out aimDistance)?(Vector2)aimRay.GetPoint(aimDistance):pos+aim;
-        if((mouse-pos).sqrMagnitude>.02f)Aim=(mouse-pos).normalized;
+        if(RecoilInput.UsingGamepad)Aim=RecoilInput.PadAim;
+        else if((mouse-pos).sqrMagnitude>.02f)Aim=(mouse-pos).normalized;
         float horizontal=(Input.GetKey(KeyCode.D)||Input.GetKey(KeyCode.RightArrow)?1:0)-(Input.GetKey(KeyCode.A)||Input.GetKey(KeyCode.LeftArrow)?1:0);
-        float vertical=(Input.GetKey(KeyCode.W)||Input.GetKey(KeyCode.UpArrow)||Input.GetKey(KeyCode.Space)?1:0)-(Input.GetKey(KeyCode.S)||Input.GetKey(KeyCode.DownArrow)?1:0);
+        float vertical=(Input.GetKey(KeyCode.W)||Input.GetKey(KeyCode.UpArrow)||RecoilInput.JumpHeld?1:0)-(Input.GetKey(KeyCode.S)||Input.GetKey(KeyCode.DownArrow)?1:0);
+        if(RecoilInput.UsingGamepad){horizontal=RecoilInput.PadMovement.x;vertical=RecoilInput.PadMovement.y;if(RecoilInput.JumpHeld&&vertical>=-.2f)vertical=1;}
         if(Input.GetKey(KeyCode.S)||Input.GetKey(KeyCode.DownArrow))vertical=-1;
-        StealthHeld=!(Input.GetKey(KeyCode.LeftShift)||Input.GetKey(KeyCode.RightShift));
-        Simulate(horizontal,vertical,Input.GetMouseButton(0),Input.GetKeyDown(KeyCode.Space),world.FrameDelta,
-            Input.GetKeyDown(KeyCode.W)||Input.GetKeyDown(KeyCode.UpArrow),StealthHeld);
+        StealthHeld=!RecoilInput.RunHeld;
+        Simulate(horizontal,vertical,RecoilInput.ShootHeld,RecoilInput.JumpPressed,world.FrameDelta,
+            RecoilInput.UpPressed,StealthHeld);
         if(!eConsumed){world.UpdateContinuousInteraction(eHeld||ePressed,world.FrameDelta);world.ObservePlayer(ePressed);}
     }
     public void EquipTestWaterGun()
@@ -197,6 +221,7 @@ public sealed class RecoilPlayerController : MonoBehaviour
     }
     public void Simulate(float horizontal,float vertical,bool shoot,bool jump,float dt,bool launch=false,bool silentWalk=false)
     {
+        if(!world || !world.PlayerControlsAvailable)return;
         if(GrabPressure)
         {
             GrabPressure.SetMovementMode(grounded && silentWalk?sneakSpeed:walkSpeed);
@@ -485,15 +510,21 @@ public sealed class RecoilPlayerController : MonoBehaviour
         }
         else if(climbingChain){climbingChain.ApplyShot(aim);flying=false;grounded=false;velocity.y=0;}
         else{flying=true;climbingLadder=null;grounded=false;velocity.y=0;}
-        var start=pos+aim*.55f; float range=shotRange;
+        var start=pos+aim*.55f;
+        Vector3 sprayOrigin=new Vector3(start.x,start.y,GameplayZ-.1f);
+        var presentation=GetComponentInChildren<DawnPlayerAnimation>();
+        Vector3 waterMuzzle;
+        if(presentation&&presentation.TryGetWaterMuzzle(out waterMuzzle))
+        {sprayOrigin=waterMuzzle;start=(Vector2)waterMuzzle;}
+        float range=shotRange;
         foreach(var r in world.SolidRects) range=Mathf.Min(range,RecoilPrototype.RayRect(start,aim,r,range));
+        range=world.ApplyWaterHit(start,aim,range,pos);
         var end=start+aim*range;
         var go=new GameObject("Water spray"); var line=go.AddComponent<LineRenderer>();
         line.sharedMaterial=world.SprayMaterial; line.startColor=Hex(0x8ae5ff); line.endColor=Hex(0x8ae5ff,.15f);
         line.startWidth=.075f; line.endWidth=.025f; line.positionCount=2; line.sortingOrder=15;
-        line.SetPosition(0,new Vector3(start.x,start.y,GameplayZ-.1f)); line.SetPosition(1,new Vector3(end.x,end.y,GameplayZ-.1f));
+        line.SetPosition(0,sprayOrigin); line.SetPosition(1,new Vector3(end.x,end.y,sprayOrigin.z));
         sprays.Add(new Spray {life=.15f,line=line});
-        world.ApplyWaterHit(start,aim,range,pos);
     }
     public void SyncVisuals(float dt)
     {
@@ -503,7 +534,7 @@ public sealed class RecoilPlayerController : MonoBehaviour
         head.localPosition=new Vector2(0,.58f);
         hat.localPosition=new Vector2(0,.82f);
         if(BodyProfile)BodyProfile.Apply(coat,head,hat);
-        gun.gameObject.SetActive(HasWaterGun);gun.position=WorldPosition+(Vector3)(aim*.5f);gun.rotation=Quaternion.Euler(0,0,Mathf.Atan2(aim.y,aim.x)*Mathf.Rad2Deg);
+        gun.gameObject.SetActive(HasWaterGun && !(world && world.PropOperationActive));gun.position=WorldPosition+(Vector3)(aim*.5f);gun.rotation=Quaternion.Euler(0,0,Mathf.Atan2(aim.y,aim.x)*Mathf.Rad2Deg);
         if(!gunRenderer)gunRenderer=gun.GetComponent<SpriteRenderer>();
         if(gunRenderer)gunRenderer.color=automaticRecoil?Hex(0xf28a32):Hex(0x50ceef);
         for(int i=sprays.Count-1;i>=0;i--){sprays[i].life-=dt;if(sprays[i].life<=0){Destroy(sprays[i].line.gameObject);sprays.RemoveAt(i);}}

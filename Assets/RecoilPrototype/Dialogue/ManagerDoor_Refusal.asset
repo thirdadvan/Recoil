@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f114ebc380394945b7e1405ee82cc98, type: 3}
+  m_Name: ManagerDoor_Refusal
+  m_EditorClassIdentifier: 
+  lines:
+  - role: 1
+    speaker: The Manager
+    text: I'm sorry. It's too dangerous. Please ask someone else.
+    offerPhoto: 0
+    slidePhotoUnderDoor: 0
+    progressFlag: 
+    choices:
+    - id: manager_reassure
+      label: It's safe
+      text: I've killed all the Coalers outside. It's safe now.
+      offerPhoto: 0
+      slidePhotoUnderDoor: 0
+      continuation: {fileID: 11400000, guid: 9b76ae17802ef40638c9c1dc0b8cf732, type: 2}
+      response: []
+    - id: manager_threaten
+      label: Force entry
+      text: If you don't open this door, I'll pry it open and throw you downstairs.
+      offerPhoto: 0
+      slidePhotoUnderDoor: 0
+      continuation: {fileID: 11400000, guid: c63010f4648cf467ca619f5879b474d0, type: 2}
+      response:
+      - role: 1
+        speaker: The Manager
+        text: No, please! Who are you looking for?
+        offerPhoto: 0
+        slidePhotoUnderDoor: 0
+      - role: 2
+        speaker: Dawn
+        text: (Slides the photograph under the door.)
+        offerPhoto: 0
+        slidePhotoUnderDoor: 1

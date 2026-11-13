@@ -22,9 +22,9 @@ public sealed class RecoilDoor : MonoBehaviour
     public string destinationSpawn="";
     [Header("Persistent interaction state")]
     public bool permanentlyBlocked;
-    [Tooltip("敌人等外部威胁堵门；钥匙不能绕过这种阻挡。")] public bool blockedByThreat;
+    [Tooltip("Blocked by an external threat; the debug universal key bypasses this prerequisite.")] public bool blockedByThreat;
     public string blockedPrompt="E / DAMAGED DOOR";
-    [Tooltip("机械结构严重损坏，万能测试钥匙也无法开门。") ] public bool irreparableDamage;
+    [Tooltip("Severely damaged; the debug universal key bypasses this prerequisite.") ] public bool irreparableDamage;
     public string blockedByItemId="", blockedMessage="The door is damaged and will not open.";
     public string rememberOnTravel="";
     [Tooltip("非空时第一次互动只打开，再次互动切换场景。")]
@@ -41,9 +41,9 @@ public sealed class RecoilDoor : MonoBehaviour
     public Collider2D openingBarrier;
     public Transform closedVisual,openVisual,damagedVisual;
     RecoilPrototype owner;
-    bool Blocked {get{return blockedByThreat || irreparableDamage || !(owner && owner.HasItem(RecoilPrototype.UniversalKey)) && (permanentlyBlocked || (owner && !string.IsNullOrEmpty(blockedByItemId) && owner.HasItem(blockedByItemId)));}}
+    bool Blocked {get{return !(owner && owner.UniversalInteractionEnabled) && (blockedByThreat || irreparableDamage || permanentlyBlocked || (owner && !string.IsNullOrEmpty(blockedByItemId) && owner.HasItem(blockedByItemId)));}}
     bool HatchOpen {get{return startsOpened || owner && !string.IsNullOrEmpty(openStateItemId) && owner.HasItem(openStateItemId);}}
-    public string CurrentPrompt {get{return Blocked?blockedPrompt:!string.IsNullOrEmpty(openStateItemId)?HatchOpen?travelPrompt:openPrompt:interactionPrompt;}}
+    public string CurrentPrompt {get{var talk=GetComponent<DoorDialogue>();if(talk && talk.BlocksEntry(owner))return talk.BlockedPrompt;return Blocked?blockedPrompt:!string.IsNullOrEmpty(openStateItemId)?HatchOpen?travelPrompt:openPrompt:interactionPrompt;}}
     void SyncPresentation()
     {
         if(openingBarrier)openingBarrier.enabled=!HatchOpen;
@@ -58,18 +58,20 @@ public sealed class RecoilDoor : MonoBehaviour
     public bool IsOpen {get;private set;}
     public Vector2 InteractionPosition {get{return (Vector2)transform.position+interactionOffset;}}
     public bool InRange(RecoilPrototype world)
-    {return isActiveAndEnabled && !IsOpen && world && world.Player && Vector2.Distance(world.Player.Position,InteractionPosition)<interactionRange && world.Clear(world.Player.Position,openingBarrier && openingBarrier.enabled?openingBarrier.ClosestPoint(world.Player.Position):InteractionPosition);}
+    {return isActiveAndEnabled && !IsOpen && world && world.Player && RecoilInteractionRange.Contains(world,InteractionPosition,interactionRange) && world.Clear(world.Player.Position,openingBarrier && openingBarrier.enabled?openingBarrier.ClosestPoint(world.Player.Position):InteractionPosition);}
     public bool TryInteract(RecoilPrototype world)
     {
         if(!InRange(world))return false;
         owner=world;
         world.Player.NotifyForbiddenInteraction();
+        var talk=GetComponent<DoorDialogue>();
+        if(talk && talk.BlocksEntry(world)){talk.StartConversation();return true;}
         if(Blocked){world.ShowInteractionMessage(blockedMessage=="The monsters are blocking the door."?"The Coalers are blocking the door.":blockedMessage);return true;}
-        if(!world.HasItem(RecoilPrototype.UniversalKey) && ((requiresClue && !world.HasClue) || (!string.IsNullOrEmpty(requiredItemId) && !world.HasItem(requiredItemId))))
+        if(!world.UniversalInteractionEnabled && ((requiresClue && !world.HasClue) || (!string.IsNullOrEmpty(requiredItemId) && !world.HasItem(requiredItemId))))
         {world.ShowInteractionMessage(lockedMessage);return true;}
         if(!string.IsNullOrEmpty(openStateItemId) && !HatchOpen)
         {
-            if(requiresFlyingToOpen && !world.Player.Flying && !world.HasItem(RecoilPrototype.UniversalKey)){world.ShowInteractionMessage("Fly up to open the skylight.");return true;}
+            if(requiresFlyingToOpen && !world.Player.Flying && !world.UniversalInteractionEnabled){world.ShowInteractionMessage("Fly up to open the skylight.");return true;}
             world.RememberProgress(openStateItemId);SyncPresentation();world.ShowInteractionMessage(!string.IsNullOrEmpty(firstOpenMessage)?firstOpenMessage:autoTravelAboveOpening?"Skylight opened. Fly through it to leave, or press E again.":"Skylight opened. Press E again to climb out.");return true;
         }
         if(returnToDeathMemoryCheckpoint)
@@ -95,7 +97,8 @@ public sealed class RecoilDoor : MonoBehaviour
     {
         if(!autoTravelAboveOpening || !isActiveAndEnabled || IsOpen || !world || !world.Playing || !world.Player || string.IsNullOrEmpty(destinationScene))return false;
         owner=world;
-        if(Blocked || !HatchOpen || (!world.HasItem(RecoilPrototype.UniversalKey) && ((requiresClue && !world.HasClue) || (!string.IsNullOrEmpty(requiredItemId) && !world.HasItem(requiredItemId)))))return false;
+        var talk=GetComponent<DoorDialogue>();if(talk && talk.BlocksEntry(world))return false;
+        if(Blocked || !HatchOpen || (!world.UniversalInteractionEnabled && ((requiresClue && !world.HasClue) || (!string.IsNullOrEmpty(requiredItemId) && !world.HasItem(requiredItemId)))))return false;
         var p=world.Player.Position;
         if(Mathf.Abs(p.x-transform.position.x)+.32f>autoExitHalfWidth || p.y-world.Player.BodyHeight*.5f<transform.position.y+autoExitHeightOffset)return false;
         return Travel(world);

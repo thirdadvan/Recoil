@@ -62,7 +62,7 @@ public sealed class RecoilStreetLamp : MonoBehaviour
         return depth>=0 && depth<=coneLength && side<=coneHalfWidth*depth/Mathf.Max(.1f,coneLength);
     }
     public bool InRange(RecoilPrototype world)
-    {return isOn && isActiveAndEnabled && BelongsTo(world) && Vector2.Distance(world.Player.Position,Origin)<=interactionRange && world.Clear(world.Player.Position,Origin);}
+    {return isOn && isActiveAndEnabled && BelongsTo(world) && RecoilInteractionRange.Contains(world,Origin,interactionRange) && world.Clear(world.Player.Position,Origin);}
     public bool Interact(RecoilPrototype world)
     {
         if(!InRange(world))return false;

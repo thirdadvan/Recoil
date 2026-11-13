@@ -1,0 +1,13 @@
+{
+  "triangles": 2774,
+  "vertices": 2878,
+  "bones": 36,
+  "uv_layers": [
+    1
+  ],
+  "unweighted_vertices": 0,
+  "actions": [
+    "SmartRigArmature|Running|BaseLayer",
+    "SmartRigArmature|Walking|BaseLayer"
+  ]
+}

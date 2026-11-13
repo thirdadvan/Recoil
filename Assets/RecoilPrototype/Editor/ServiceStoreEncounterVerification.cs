@@ -36,14 +36,14 @@ public static class ServiceStoreEncounterVerification
             var hatch=world.GetComponentsInChildren<RecoilDoor>(true).Single(d=>d.name=="Central skylight");
             Check(hatch.startsOpened && !hatch.openingBarrier.enabled && hatch.openVisual.gameObject.activeSelf,"Skylight must be open and physically passable.");
             Call(encounter,"Update");
-            Check(world.ConversationActive && !world.Playing && world.ConversationLineIndex==0,"Entry starts modal dialogue.");
+            Check(world.ConversationActive && world.Playing && !world.PlayerControlsAvailable && world.ConversationLineIndex==0,"Entry starts modal dialogue.");
             Check(enemy.WatchingPlayer && enemy.PlayerUnderGaze,"Visible monster watches player across store.");
             Check(enemy.GetComponentsInChildren<SpriteRenderer>(true).Any(r=>r.enabled) && !enemy.HideStatusLabel,"Monster starts visibly beside counter.");
             float clock=world.Clock;var position=player.Position;Call(world,"Update");
-            Check(world.Clock==clock && world.FrameDelta==0 && player.Position==position,"Conversation freezes world simulation.");
+            Check(world.Playing && !world.PlayerControlsAvailable && Mathf.Abs(world.Clock-clock-world.FrameDelta)<.0001f && player.Position==position,"Conversation advances the world clock while locking the player.");
             feedback.Simulate(.1f);float phase=(float)typeof(PlayerGazeFeedback).GetField("beatPhase",Flags).GetValue(feedback);
             feedback.Simulate(.1f);
-            Check(feedback.WatcherCount==1 && feedback.Visibility>0 && (float)typeof(PlayerGazeFeedback).GetField("beatPhase",Flags).GetValue(feedback)>phase,"Heartbeat continues while dialogue is paused.");
+            Check(feedback.WatcherCount==1 && feedback.Visibility>0 && (float)typeof(PlayerGazeFeedback).GetField("beatPhase",Flags).GetValue(feedback)>phase,"Heartbeat continues during dialogue.");
             Check(Time.timeScale==1 && !AudioListener.pause,"Dialogue leaves global timing and audio alone.");
             world.AdvanceConversation();Check(world.ConversationLineIndex==1,"Advance shows second line.");
             FinishDialogue(world);Check(world.Playing,"Last advance resumes gameplay.");

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Optional camera presentation. Observes broadcast phase; never drives AI or gameplay timing.
+// Shared projected flight geometry for refraction, command timing and arrival audio.
 [ExecuteAlways,RequireComponent(typeof(Camera)),DisallowMultipleComponent]
 [AddComponentMenu("Recoil/Effects/Broadcast Refraction")]
 public sealed class BroadcastRefractionEffect : MonoBehaviour
@@ -22,6 +22,13 @@ public sealed class BroadcastRefractionEffect : MonoBehaviour
     [Range(0,.4f)] public float warningTint=.08f;
     public int ActivePulseCount {get{return pulses.Count;}}
     public float Clock {get{return context?context.Clock:localClock;}}
+    public struct FlightPlan
+    {
+        public Vector3 origin;
+        public float start,end,duration,centreArrival;
+        public float ArrivalAt(float distance){return Mathf.Clamp01((distance-start)/Mathf.Max(.001f,end-start))*duration;}
+        public float RadiusAt(float age){return Mathf.Lerp(start,end,Mathf.Clamp01(age/duration));}
+    }
     sealed class Pulse
     {public Vector3 origin;public float start,end,started,duration;public int direction;public bool warning;}
     const int Capacity=4;
@@ -31,12 +38,11 @@ public sealed class BroadcastRefractionEffect : MonoBehaviour
     Material material;
     RecoilPrototype context;
     SoundWaveManager.BroadcastPhase observedPhase;
-    int observedCue;
     float localClock;
     void OnEnable()
     {
         lens=GetComponent<Camera>();context=broadcast?broadcast.GetComponentInParent<RecoilPrototype>():null;
-        observedPhase=SoundWaveManager.BroadcastPhase.Idle;observedCue=0;ClearPulses();
+        observedPhase=SoundWaveManager.BroadcastPhase.Idle;ClearPulses();
     }
     void Update()
     {
@@ -47,15 +53,17 @@ public sealed class BroadcastRefractionEffect : MonoBehaviour
         for(int i=pulses.Count-1;i>=0;i--)if(Clock-pulses[i].started>=pulses[i].duration)pulses.RemoveAt(i);
         if(!broadcast)return;
         var phase=broadcast.Phase;
-        if(phase==SoundWaveManager.BroadcastPhase.Warning && observedPhase!=phase)
-            EmitPulse(1,true,broadcast.warningDuration,broadcast.WarningStartedAt);
-        if(phase==SoundWaveManager.BroadcastPhase.Commands && (observedPhase!=phase || observedCue!=broadcast.CueIndex))
-        {EmitPulse(broadcast.Direction,true,broadcast.DirectionVisualDuration,broadcast.CueStartedAt);observedCue=broadcast.CueIndex;}
-        if(phase==SoundWaveManager.BroadcastPhase.Idle && observedPhase!=phase){ClearPulses();observedCue=0;}
+        // Command packets are emitted by the manager from a shared measured flight.
+        // The preliminary red warning has no direction-bearing ripple.
+        if(phase==SoundWaveManager.BroadcastPhase.Idle && observedPhase!=phase)ClearPulses();
         observedPhase=phase;
     }
     public void ClearPulses(){pulses.Clear();}
     public void EmitPulse(int direction,bool warning=false,float duration=2.6f,float startedAt=-1)
+    {
+        EmitMeasuredPulse(MeasureFlight(duration),warning,startedAt>=0?startedAt:Clock);
+    }
+    public FlightPlan MeasureFlight(float duration)
     {
         if(!lens)lens=GetComponent<Camera>();
         if(!context && broadcast)context=broadcast.GetComponentInParent<RecoilPrototype>();
@@ -69,8 +77,20 @@ public sealed class BroadcastRefractionEffect : MonoBehaviour
         float nearest=Vector2.Distance(origin,new Vector2(Mathf.Clamp(origin.x,rect.xMin,rect.xMax),Mathf.Clamp(origin.y,rect.yMin,rect.yMax)));
         float furthest=0;
         for(int x=0;x<2;x++)for(int y=0;y<2;y++)furthest=Mathf.Max(furthest,Vector2.Distance(origin,new Vector2(x==0?rect.xMin:rect.xMax,y==0?rect.yMin:rect.yMax)));
+        var plan=new FlightPlan{origin=originWorld,start=Mathf.Max(0,nearest-packetWidth*1.5f),end=furthest+packetWidth*1.5f,duration=Mathf.Max(.1f,duration)};
+        plan.centreArrival=plan.ArrivalAt(Vector2.Distance(origin,span*.5f));
+        return plan;
+    }
+    public float DistanceToWorld(FlightPlan plan,Vector3 position)
+    {
+        if(!lens)lens=GetComponent<Camera>();
+        var span=ViewSpan(lens.aspect);var a=lens.WorldToViewportPoint(plan.origin);var b=lens.WorldToViewportPoint(position);
+        return Vector2.Distance(new Vector2(a.x*span.x,a.y*span.y),new Vector2(b.x*span.x,b.y*span.y));
+    }
+    public void EmitMeasuredPulse(FlightPlan plan,bool warning,float startedAt)
+    {
         if(pulses.Count>=Capacity)pulses.RemoveAt(0);
-        pulses.Add(new Pulse{origin=originWorld,start=Mathf.Max(0,nearest-packetWidth*1.5f),end=furthest+packetWidth*1.5f,started=startedAt>=0?startedAt:Clock,duration=Mathf.Max(.1f,duration),direction=direction<0?-1:1,warning=warning});
+        pulses.Add(new Pulse{origin=plan.origin,start=plan.start,end=plan.end,started=startedAt,duration=plan.duration,direction=1,warning=warning});
     }
     Vector2 ViewSpan(float aspect)
     {
@@ -87,9 +107,10 @@ public sealed class BroadcastRefractionEffect : MonoBehaviour
         int count=0;
         foreach(var p in pulses)
         {
-            float t=Mathf.Clamp01((Clock-p.started)/p.duration);if(t>=1)continue;
+            float age=Clock-p.started;if(age<0)continue;
+            float t=Mathf.Clamp01(age/p.duration);if(t>=1)continue;
             float fade=Mathf.SmoothStep(0,1,t/.07f)*(1-Mathf.SmoothStep(.84f,1,t));
-            float radius=Mathf.Lerp(p.start,p.end,p.direction<0?1-t:t);
+            float radius=Mathf.Lerp(p.start,p.end,t);
             Vector3 viewport=lens.WorldToViewportPoint(p.origin);if(viewport.z<=0)continue;
             fronts[count]=new Vector4(viewport.x*span.x,viewport.y*span.y,radius,fade);
             shapes[count]=new Vector4(packetWidth,wavelength,strength,p.direction);

@@ -1,0 +1,31 @@
+RECOIL 工人游行与守厂道具：9 款
+日期：2026-11-09
+制作方式：内置 image_gen；每件独立生成。独立 PNG 原图保留生成的 alpha 通道。
+用途：道具概念设计参考；尚未制作三维模型或放入 Unity 场景。
+
+依据：项目已有的虚构 1978 年工厂冲突、NO MORE CUTS / WE STAY HERE / WHERE ARE THEY? 口号，以及 10 月 26 日值守安排、10 月 27 日工人留言。参考文件为 Assets/Recoil3D/Editor/FactoryConflictEnvironment.cs、FactoryConflictRemnantsPass.cs 及 output/poster-art-review-2026-11-09/generation-prompts.json。新增口号属于设计提案，不新增人物、组织或事件。
+
+游行期间
+01 NO MORE CUTS — 不再削减。
+   瓦楞纸板、旧木棍、黑色粗笔刷。延续现有反对削减的口号，适合普通工人单手举起。
+02 WE NEED ANSWERS — 给我们答复。
+   灰色硬质板、红色手写字、布胶带补角。把追问转成远处也能辨认的简短诉求。
+03 WHERE ARE THEY? — 他们在哪里？
+   小幅旧布旗、十字木杆、红色问号。延续追问失踪工友的线索。
+04 BRING OUR WORKMATES HOME — 让我们的工友回家。
+   双人床单横幅，HOME 用暗红色强调。由追问转向明确的共同诉求。
+
+防守工厂期间
+05 WE STAY HERE — 我们留下。
+   两块暗红旧布拼缝、白色粗笔刷字、绳索吊挂。适合厂门内侧或上层窗前。
+06 THIS FACTORY IS OUR HOME — 工厂就是我们的家。
+   三块回收木板钉成宽牌，直接刷上浅色字。适合固定在入口或障碍物上。
+07 KEEP THE WAY CLEAR / FOR THE WOUNDED — 给伤员留出通道。
+   竖长帆布条、手画向右箭头。对应值守记录中保持伤员通道畅通的要求。
+08 NO ONE LEFT BEHIND — 不落下任何人。
+   短柄胶合板举牌、布条包角、暗红下划线。呼应 10 月 27 日工人留言，可从手持转为靠墙留存。
+09 TOGETHER / UNTIL EVERYONE RETURNS — 一起等到所有人回来。
+   两只拆开的粗麻包装袋拼成横幅，四角绳绑。把团结与等待失踪工友的主题合在一起。
+
+整体风格：沿用项目英文环境文本；普通工人就地取材、徒手刷写。材质包括纸板、硬质板、棉布、木板、帆布和麻袋。以炭黑、灰白和暗锈红为主，磨损保持文字可读。
+所有完整提示词及原始生成文件来源保存在 design-manifest.json。

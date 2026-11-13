@@ -58,8 +58,8 @@ public static class FactoryYardSirenVerification
             Check(waves.StartBroadcastAt(Vector2.zero),"Start broadcast");waves.Simulate(waves.warningDuration);Check(waves.Phase==SoundWaveManager.BroadcastPhase.Commands,"First command");
             float delay=waves.CommandMoveDelay;
             // Frame subdivision must not let any move slice leak into the reaction gap.
-            for(int i=0;i<49;i++){waves.Simulate(.01f);Check(waves.MoveStep<.00001f,"Monster moves before reaction delay");}
-            Check(Mathf.Abs(delay-.5f)<.001f,"Pulse must give .5-second movement delay from onset");waves.Simulate(.03f);Check(waves.MoveStep>.001f,"Monster never moves after cue");
+            float wait=Mathf.Max(0,delay-.01f);waves.Simulate(wait);Check(waves.MoveStep<.00001f,"Monster moves before packet centre arrival");
+            Check(Mathf.Abs(delay-waves.FirstCentreArrival-(waves.CuePulseCount-1)*waves.doublePulseSpacing)<.001f,"Counted packet arrival delay mismatch");waves.Simulate(.03f);Check(waves.MoveStep>.001f,"Monster never moves after cue");
             Check(Mathf.Abs(waves.DirectionVisualDuration-waves.warningDuration)<.001f,"Warning and commands differ in visual duration");
         }
         finally{foreach(var root in test.GetRootGameObjects())UnityEngine.Object.DestroyImmediate(root);EditorSceneManager.ClosePreviewScene(test);SceneManager.SetActiveScene(original);}

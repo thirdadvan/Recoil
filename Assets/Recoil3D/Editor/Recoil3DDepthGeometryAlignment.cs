@@ -62,7 +62,14 @@ public static class Recoil3DDepthGeometryAlignment
             foreach(var v in stair.GetComponentsInChildren<Recoil3DSpriteVisual>(true).Where(Live))
             {
                 string label=v.name=="Surface - unified industrial material"?v.transform.parent.name:v.name;
-                if(label=="Grated steel tread" || label=="Steel tread" || label=="Tread front edge")
+                if(label=="Tread front edge")
+                {
+                    // A narrow front fascia; a full-depth overlay shares the tread's top plane.
+                    var b=v.meshRenderer.bounds;
+                    Top(v,PathHeight(stair,new Vector2(b.center.x,b.center.y))-.008f);
+                    Depth(v,z-.020f,.024f);steps++;
+                }
+                else if(label=="Grated steel tread" || label=="Steel tread")
                 {
                     var b=v.meshRenderer.bounds;
                     Top(v,PathHeight(stair,new Vector2(b.center.x,b.center.y)));

@@ -12190,7 +12190,7 @@ MonoBehaviour:
   fullTentacleEnrageDuration: 0.5
   growingTentacleEnrageDuration: 1
   soundInvestigationInset: 0.5
-  soundSearchPause: 0.75
+  soundSearchPause: 1.5
   soundMemoryDuration: 7.5
   world: {fileID: 1658313658}
   initialState: 0
@@ -24322,7 +24322,7 @@ MonoBehaviour:
   fullTentacleEnrageDuration: 0.5
   growingTentacleEnrageDuration: 1
   soundInvestigationInset: 0.5
-  soundSearchPause: 0.75
+  soundSearchPause: 1.5
   soundMemoryDuration: 7.5
   world: {fileID: 1658313658}
   initialState: 4
@@ -35493,7 +35493,7 @@ MonoBehaviour:
   fullTentacleEnrageDuration: 0.5
   growingTentacleEnrageDuration: 1
   soundInvestigationInset: 0.5
-  soundSearchPause: 0.75
+  soundSearchPause: 1.5
   soundMemoryDuration: 7.5
   world: {fileID: 1658313658}
   initialState: 4

@@ -26,12 +26,42 @@ public sealed class WarehouseAtmosphereTest : MonoBehaviour
     [Range(8,32)] public int volumeSteps=24;
     [Header("Rectangular skylight — independent of powered pendant lights")]
     public Transform skylightOpening;
+    [Tooltip("Additional fixed roof apertures; share the primary aperture's dimensions and daylight profile.")]
+    public Transform[] additionalSkylightOpenings=new Transform[0];
+    readonly Vector4[] skyTops=new Vector4[4];
     public Vector2 skylightWidthDepth=new Vector2(3,2.6f);
     [Min(.1f)] public float skylightHeight=4.65f;
     [Range(0,.5f)] public float skylightSpread=.10f;
     [Range(.05f,1)] public float skylightFeather=.32f;
     [Range(0,.1f)] public float skylightDensity=.018f;
     public Color skylightColour=new Color(.46f,.60f,.68f);
+    readonly Vector4[] doorOrigin=new Vector4[2],doorShape=new Vector4[2],doorColour=new Vector4[2];
+    readonly Vector4[] doorLightPosition=new Vector4[2],doorLightShape=new Vector4[2];
+    readonly Matrix4x4[] doorWorldToLight=new Matrix4x4[2];
+    DoorProximityGlow[] doorVolumes;
+    void SetDoorVolumes(){
+        if(doorVolumes==null||!Application.isPlaying){var list=new List<DoorProximityGlow>();foreach(var root in gameObject.scene.GetRootGameObjects())list.AddRange(root.GetComponentsInChildren<DoorProximityGlow>(true));doorVolumes=list.ToArray();}
+        DoorProximityGlow first=null,second=null;float a=float.PositiveInfinity,b=float.PositiveInfinity;
+        foreach(var g in doorVolumes){if(!g||g.MeshBeamActive||g.VolumeDensity<=0||!g.gameObject.activeInHierarchy)continue;var light=g.VolumeLight;if(!light||!light.enabled||!light.gameObject.activeInHierarchy||light.type!=LightType.Spot||light.intensity<=0)continue;float distance=(g.volumeOrigin-lens.transform.position).sqrMagnitude;if(distance<a){second=first;b=a;first=g;a=distance;}else if(distance<b){second=g;b=distance;}}
+        int count=0;for(int i=0;i<2;i++)
+        {
+            var g=i==0?first:second;if(!g)continue;var light=g.VolumeLight;
+            Vector3 opening;Vector2 halfSize;g.GetVolumeAperture(out opening,out halfSize);
+            doorOrigin[count]=new Vector4(opening.x,opening.y,opening.z,g.volumeLength);
+            doorShape[count]=new Vector4(halfSize.x,halfSize.y,0,g.VolumeDensity);
+            doorColour[count]=light.color;
+            var p=light.transform.position;
+            doorLightPosition[count]=new Vector4(p.x,p.y,p.z,light.range);
+            float halfAngle=light.spotAngle*.5f*Mathf.Deg2Rad;
+            doorLightShape[count]=new Vector4(Mathf.Tan(halfAngle),Mathf.Cos(halfAngle),Mathf.Cos(light.innerSpotAngle*.5f*Mathf.Deg2Rad),light.intensity);
+            // Light projection ignores parent scaling, just as the real spot light does.
+            doorWorldToLight[count]=Matrix4x4.TRS(p,light.transform.rotation,Vector3.one).inverse;
+            material.SetTexture(count==0?"_DoorCookie0":"_DoorCookie1",light.cookie?light.cookie:Texture2D.whiteTexture);
+            count++;
+        }
+        material.SetInt("_DoorCount",count);material.SetVectorArray("_DoorOrigin",doorOrigin);material.SetVectorArray("_DoorShape",doorShape);material.SetVectorArray("_DoorColour",doorColour);
+        material.SetVectorArray("_DoorLightPosition",doorLightPosition);material.SetVectorArray("_DoorLightShape",doorLightShape);material.SetMatrixArray("_DoorWorldToLight",doorWorldToLight);
+    }
     Material material;Camera lens;
     WarehouseLightingPower warehousePower;bool powerResolved;
     readonly Dictionary<Light,float> decorativeBaseIntensities=new Dictionary<Light,float>();
@@ -55,7 +85,7 @@ public sealed class WarehouseAtmosphereTest : MonoBehaviour
     readonly Vector4[] volumeProfiles=new Vector4[3],shelterExtents=new Vector4[6];
     readonly Matrix4x4[] shelterTransforms=new Matrix4x4[6];
     readonly Dictionary<Light,VolumetricLightProfile> fixtureProfiles=new Dictionary<Light,VolumetricLightProfile>();
-    void OnEnable(){powerResolved=false;lens=GetComponent<Camera>();lens.depthTextureMode|=DepthTextureMode.Depth;}
+    void OnEnable(){doorVolumes=null;powerResolved=false;lens=GetComponent<Camera>();lens.depthTextureMode|=DepthTextureMode.Depth;}
     void Update(){if(showTestControls && Application.isPlaying && Input.GetKeyDown(KeyCode.F6))testLook=!testLook;}
     void LateUpdate()
     {
@@ -64,10 +94,12 @@ public sealed class WarehouseAtmosphereTest : MonoBehaviour
         RenderSettings.fogColor=testLook?testFog:originalFog;
         RenderSettings.fogStartDistance=testLook?testStart:originalStart;
         RenderSettings.fogEndDistance=testLook?testEnd:originalEnd;
-        for(int i=0;i<originalLights.Length;i++)if(originalLights[i])originalLights[i].intensity=testLook?testIntensities[i]:originalIntensities[i];
+        for(int i=0;i<originalLights.Length;i++)if(originalLights[i]&&!originalLights[i].GetComponentInParent<FaultyFluorescentFixture>())originalLights[i].intensity=testLook?testIntensities[i]:originalIntensities[i];
         float supplyMultiplier=VolumeLightingPowered?1:.30f;
         foreach(var l in decorativeLights)if(l)
         {
+            // Animated fixtures own their surface illumination; never restore a cached steady intensity.
+            if(l.GetComponentInParent<FaultyFluorescentFixture>())continue;
             if(!decorativeBaseIntensities.ContainsKey(l))decorativeBaseIntensities[l]=l.intensity;
             l.enabled=testLook;l.intensity=decorativeBaseIntensities[l]*supplyMultiplier;
         }
@@ -83,6 +115,7 @@ public sealed class WarehouseAtmosphereTest : MonoBehaviour
     {
         if(!testLook||!effectShader||!effectShader.isSupported){Graphics.Blit(source,destination);return;}
         if(!material)material=new Material(effectShader){hideFlags=HideFlags.HideAndDontSave};
+        SetDoorVolumes();
         int count=0;
         for(int i=0;i<3;i++){nearest[i]=null;distances[i]=float.PositiveInfinity;}
         if(VolumeLightingPowered&&lamps!=null)foreach(var l in lamps)
@@ -117,11 +150,16 @@ public sealed class WarehouseAtmosphereTest : MonoBehaviour
         material.SetMatrixArray("_VolumeShelterWorldToLocal",shelterTransforms);
         material.SetVectorArray("_VolumeShelterHalfSize",shelterExtents);
         material.SetInt("_LampCount",count);
-        bool sky=skylightOpening&&skylightOpening.gameObject.activeInHierarchy;
+        int skyCount=0;
+        if(skylightOpening&&skylightOpening.gameObject.activeInHierarchy)skyTops[skyCount++]=skylightOpening.position;
+        if(additionalSkylightOpenings!=null)foreach(var opening in additionalSkylightOpenings)
+            if(opening&&opening!=skylightOpening&&opening.gameObject.activeInHierarchy&&skyCount<skyTops.Length)skyTops[skyCount++]=opening.position;
+        bool sky=skyCount>0;
+        material.SetInt("_SkyCount",skyCount);material.SetVectorArray("_SkyTops",skyTops);
         material.SetFloat("_SkyEnabled",sky?1:0);
         if(sky)
         {
-            material.SetVector("_SkyTop",skylightOpening.position);
+            material.SetVector("_SkyTop",skyTops[0]);
             material.SetVector("_SkyShape",new Vector4(skylightWidthDepth.x*.5f,skylightWidthDepth.y*.5f,skylightHeight,skylightSpread));
             material.SetVector("_SkyColour",(Vector4)(skylightColour*skylightDensity));
             material.SetFloat("_SkyFeather",skylightFeather);
@@ -146,11 +184,6 @@ public sealed class WarehouseAtmosphereTest : MonoBehaviour
             material.SetTexture("_Scattering",tight);material.SetTexture("_BroadGlow",broad);
             Graphics.Blit(source,destination,material,2);
         }finally{RenderTexture.ReleaseTemporary(tight);RenderTexture.ReleaseTemporary(broad);RenderTexture.ReleaseTemporary(temp);}
-    }
-    void OnGUI()
-    {
-        if(!Application.isPlaying||!showTestControls)return;
-        GUI.Label(new Rect(18,100,550,26),"WAREHOUSE LIGHTING TEST   |   F6: "+(testLook?"TEST LOOK":"ORIGINAL LOOK"));
     }
     void OnDisable(){foreach(var pair in decorativeBaseIntensities)if(pair.Key)pair.Key.intensity=pair.Value;decorativeBaseIntensities.Clear();fixtureProfiles.Clear();if(material){if(Application.isPlaying)Destroy(material);else DestroyImmediate(material);}}
 }

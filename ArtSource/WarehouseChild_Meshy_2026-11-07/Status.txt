@@ -1,0 +1,3 @@
+完成：新版孩子已下载并替换仓库/跟随预制体，3554三角面、66骨骼、2K贴图；臂展/身高0.98974。
+动画采用Child Walk - Relaxed Upright和Lazy Child Jog，牵手黄色连线关闭，双方上肢IK接触。
+保留放大25%、哭泣和进食；详细说明 Documents/WarehouseChild_HandContact.txt。

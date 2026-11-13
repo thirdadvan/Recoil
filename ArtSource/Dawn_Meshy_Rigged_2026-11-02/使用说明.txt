@@ -1,0 +1,21 @@
+Dawn 低模人形角色 — 2026-11-02
+
+推荐文件：Dawn_Rigged_LowPoly.fbx（内嵌贴图，平面着色）
+可编辑文件：Dawn_Rigged_LowPoly.blend（已打包贴图，保留动画）
+Meshy原始下载：Meshy_AI_Shadow_Detective_biped.zip
+
+实际模型：2837个三角面，2935个含UV接缝的顶点，1套UV，2048x2048基础色贴图。
+Mixamo命名骨架66根骨骼（含末端骨），52个顶点组，未绑定顶点0。
+动作：Walking、Running、Run_03。未加入游戏运行逻辑或替换当前主角。
+
+制作流程：
+当前账号不支持多视图订阅功能，使用正面Tpose参考，在Meshy智能拓扑T2.5下获得低模（页面目标2700，实际2837），再在人形绑定中校正下巴、骨盆等标记，生成骨骼。FBX导出选择Mixamo、骨骼和蒙皮模型、全部已添加动画、30fps。下载后本地核验骨骼、权重、UV和动画，修正外部贴图文件名引用，补充平面着色版本。原始导出包完整保留。
+
+使用限制：
+长衣摆没有独立布料骨骼或模拟，随自动蒙皮变形；大步跑跳、深度弯腿可能需要进一步手工权重修整。手指已生成骨骼，但超低面数手型对握持动作的表现有限。没有制作面部表情骨骼。
+当前Meshy生成项显示CC BY 4.0；发布游戏时应保留Meshy署名并核对账号资产许可，未购买私有许可或订阅。
+Unity可将最终FBX的Rig设为Humanoid并检查Avatar映射。当前交付只做资源，不替换场景角色。
+
+官方资料：
+https://docs.meshy.ai/en/webapp/guides/choosing/post-processing
+https://docs.meshy.ai/en/webapp/guides/3d-model/rigging

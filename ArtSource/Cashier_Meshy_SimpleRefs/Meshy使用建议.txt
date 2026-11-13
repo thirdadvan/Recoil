@@ -1,0 +1,25 @@
+简洁 Lowpoly 收银员参考图
+使用内置 image_gen 生成；图片只是建模参考，不是已验证面数的模型。
+
+推荐流程（以实际账号界面可用选项为准）：
+1. Image to 3D，选择支持 Multi-view 的 Meshy 7 / 7.1。
+2. Front.png 作主图，侧图及背图分别上传对应槽位。侧图人物面向画面右侧，请根据界面预览确认左右视角。
+3. T-Pose；关闭 Image Enhancement，避免重新添加细节。
+4. 先检查未贴图模型的脸部轮廓、发髻、腋下、手掌、裙摆及鞋跟。
+5. 满意后 Remesh / Retopology，目标约 3000 triangles；若界面写 polygons，需导出后确认三角面数，不能直接视为等价。
+6. 贴图建议纯色为主，1024–2048；眉眼唇、按钮和胸牌优先用贴图表现。
+7. 导出 FBX 给 Unity；检查法线、UV、材质及实际 triangles。
+
+Multi-view 和 Smart Topology 当前不能同时开启。多视角还原优先用 Multi-view 后再 Remesh。若账号仅支持单图，可只用 Front.png + Smart Topology，背侧形状的控制会减少。
+目标预算 2500–3500 triangles 是人工制作预估，图片不能保证 Meshy 的实际面数。
+三图为生成式视图，可能存在小幅轮廓差异，不是同一模型的精确渲染。
+
+供 Meshy 文本辅助或重新生成图片的简短提示词：
+Adult female supermarket cashier, very simple low-poly game character, T-pose, correct long arms, natural slim proportions, delicate oval face, simple painted eyebrows eyes and lips, dark brown swept updo with one compact bun, cream rolled-sleeve collared shirt, fitted burgundy vest, charcoal knee-length pencil skirt, black block-heel pumps. Large clean polygon planes, solid matte colors, minimal folds, no loose hair strands, no jewelry, no realistic skin detail. Full body centered on plain gray background. Target game mesh approximately 3000 triangles after retopology.
+
+本次图片生成规格：
+沿用用户三视图的角色和服装；正交正面、右向侧面、背面各一张；统一Tpose、灰底和柔光；去掉碎发/首饰/微小衣褶；头发归纳为大块面和发髻；脸部用简化五官；全身完整入画。
+
+官方资料（查询日期2026-10-25）：
+https://help.meshy.ai/en/articles/12634481-how-to-use-multi-view
+https://docs.meshy.ai/en/webapp/image-to-3d

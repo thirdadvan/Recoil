@@ -9,7 +9,7 @@ public sealed class WarehousePowerState
  public bool LightingTerminalPowered {get{return LightingPowered||FreightPowered;}}
  public bool LightingTerminalFree {get{return LightingCut&&!FreightConnected;}}
  public static WarehousePowerState Read(RecoilPrototype w){return new WarehousePowerState{LightingCut=w.HasItem(Prefix+"lighting_cut"),LightingHeld=w.HasItem(Prefix+"lighting_held"),FreightCut=w.HasItem(Prefix+"freight_cut"),FreightHeld=w.HasItem(Prefix+"freight_held"),FreightConnected=w.HasItem(Prefix+"freight_connected")};}
- public void Save(RecoilPrototype w){w.SetProgressFlag(Prefix+"lighting_off",false);w.SetProgressFlag(Prefix+"lighting_cut",LightingCut);w.SetProgressFlag(Prefix+"lighting_held",LightingHeld);w.SetProgressFlag(Prefix+"freight_cut",FreightCut);w.SetProgressFlag(Prefix+"freight_held",FreightHeld);w.SetProgressFlag(Prefix+"freight_connected",FreightConnected);w.SetProgressFlag(FreightPower,FreightPowered);}
+ public void Save(RecoilPrototype w){w.SetProgressFlag(Prefix+"lighting_off",false);w.SetProgressFlag(Prefix+"lighting_cut",LightingCut);w.SetProgressFlag(Prefix+"lighting_held",LightingHeld);w.SetProgressFlag(Prefix+"freight_cut",FreightCut);w.SetProgressFlag(Prefix+"freight_held",FreightHeld);w.SetProgressFlag(Prefix+"freight_connected",FreightConnected);w.SetProgressFlag(FreightPower,FreightPowered);ManagerAnetaConversation.RecordPowerRestored(w);}
  public string ReturnCable(){LightingHeld=false;FreightHeld=false;return "Cable returned to its disconnected position.";}
  public string ConnectLightingTerminal()
  {

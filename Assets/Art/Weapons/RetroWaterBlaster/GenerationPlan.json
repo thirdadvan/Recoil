@@ -1,0 +1,93 @@
+{
+  "status": "complete: generated, corrected to constant-diameter cylinders, integrated, verified",
+  "approvedReference": "References/Approved-SmallTank.png",
+  "provider": "meshy",
+  "model": "meshy-6",
+  "body": {
+    "reference": "References/Body-Meshy-Reference.png",
+    "lengthMeters": 0.5,
+    "requireSeparateReservoir": true
+  },
+  "tanks": [
+    {
+      "name": "Small",
+      "reference": "References/Tank-Small-Meshy-Reference.png",
+      "lengthMeters": 0.22
+    },
+    {
+      "name": "Medium",
+      "reference": "References/Tank-Small-Meshy-Reference.png",
+      "lengthMeters": 0.36
+    },
+    {
+      "name": "Large",
+      "reference": "References/Tank-Small-Meshy-Reference.png",
+      "lengthMeters": 0.5
+    }
+  ],
+  "constraints": [
+    "Models generated successfully with Meshy 6; body length 0.50 m; tank lengths 0.22 / 0.36 / 0.50 m.",
+    "Large reservoir matches gun body length. Common connector dimensions for all reservoirs; never scale connector with reservoir.",
+    "Tank horizontal above flat body. Closed end toward muzzle; neck toward raised rear socket. No exposed thread.",
+    "Small tank is default. Medium and large remain reusable model/prefab assets, not new gameplay capacity mechanics."
+  ],
+  "integration": {
+    "legacyWeaponRoot": "Dawn water gun visual",
+    "characterDriver": "Assets/Recoil3D/DawnPlayerAnimation.cs",
+    "editorInstaller": "Assets/Recoil3D/Editor/DawnCharacterIntegration.cs",
+    "requirements": [
+      "Replace weapon visuals and water-gun pickup where present.",
+      "Use common mount plus MainGrip, SupportGrip, Muzzle anchors.",
+      "Retain aiming, recoil, hide during climbing and escort hand behavior.",
+      "Check shaders, orientation, bounds, material imports and play-mode presentation before saving scene changes."
+    ]
+  },
+  "referenceImageTool": "built-in image_gen",
+  "referencePrompts": [
+    {
+      "key": "meshy_body_reference",
+      "prompt": "Prepare a clean image-to-3D reference of this EXACT angular retro toy water blaster BODY ONLY. Remove the entire teal water bottle, leaving the tall red rear tower and a short smooth orange socket on its left-facing surface; the connection has no external screw threads. Preserve exact moderate two-handed length, cream rectangular housing, flat top no tank-shaped recess, red/orange stripes, orange front pump, rear grip and trigger, tall red tower, orange blunt toy nozzle. One isolated complete gun body, NO water reservoir anywhere, no extra parts. Three-quarter side view with minimal perspective, pointing left, entire object centered large against uniform white seamless background, no ground plane, no cast shadow, no text or arrows. Consistent 3D toy plastic material, gentle wear, crisp geometric edges, strong clear silhouette. Intended for Meshy image-to-3D generation so object must be isolated and self-contained."
+    },
+    {
+      "key": "meshy_tank_reference",
+      "prompt": "Prepare a clean isolated image-to-3D reference of ONLY the opaque muted teal detachable water BOTTLE from this reference. Remove ALL gun body, red tower, grips, trigger and orange socket. Show exactly one standalone horizontal bottle: broad closed faceted end on LEFT, faceted rectangular teal body, tapering shoulder on RIGHT into a very short narrow plain smooth teal connector neck facing RIGHT. No external screw threads, no hoses, no handle, no second cap. Preserve reference angular chamfers and satin completely opaque teal plastic with subtle age. Bottle proportions about 2.4 length to height and about equal depth to height, not a flat sign. Three-quarter side view reveals depth, entire single bottle centered large against uniform white seamless background, no cast shadow, no text, no arrows, no other objects. Intended as modular small water reservoir Meshy image-to-3D reference."
+    }
+  ],
+  "sourceJobs": {
+    "body": "7b145e716f1e43d494c14c84910d1c8a",
+    "tank": "68c238be85874c1a895a7dc3a874c2cb"
+  },
+  "tankDiameterMeters": 0.084,
+  "tankShape": "Smooth circular cylinders. Same diameter, neck and end caps; only straight-wall length differs.",
+  "postprocessing": "Meshy body is retained with textures. Meshy reservoir source is retained; final tank surfaces were rebuilt as circular lathed meshes to meet the user correction, with a clean opaque teal material to remove baked facet lines.",
+  "validation": {
+    "assetReport": "Captures/RetroWaterBlaster/Asset-Verification.txt",
+    "gripReport": "Captures/WeaponGrip/Verification.txt",
+    "sceneReport": "Captures/RetroWaterBlaster/Scene-Integration.txt",
+    "mainGripErrorMeters": 1e-06,
+    "supportGripErrorMeters": 1e-06,
+    "leftAimTankUpright": true,
+    "hiddenDuringClimb": true,
+    "gripPoseReference": "Captures/WeaponGrip/Chest-Level-Elbows-Out.png",
+    "checks": "12 aiming directions / 540 frames, 120 running and flight frames, palm rotation lock, preserved arm lengths, shared recoil, posed firing origin, and climbing release.",
+    "armExtension": {
+      "rearElbowDegrees": 125.3,
+      "frontElbowDegrees": 160,
+      "gripsRemainFixed": true,
+      "elbowsFlaredForTorsoClearance": true
+    },
+    "downAim": {
+      "rearUpperArmToTorsoDegrees": 12.5,
+      "frontUpperArmToTorsoDegrees": 7.5,
+      "preview": "Captures/WeaponGrip/Down-Arms-Lowered.png",
+      "horizontalPosesUnchanged": true
+    },
+    "levelMuzzleToChestMeters": 0.017,
+    "torsoSurfaceCrossings": {
+      "down": 0,
+      "level": 0,
+      "up": 0,
+      "probeInwardOffsetMeters": 0.025
+    }
+  }
+}

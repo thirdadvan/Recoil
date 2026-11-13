@@ -1,0 +1,16 @@
+完成于 2026-11-06。
+Meshy 新账号 ridden-revert-duke，T2.5 智能拓扑，N1 2K 贴图，私有模型。
+参考：Body_TPose_ExtraPaint.png，脸部增加两笔黑色迷彩油彩。
+原始导出：Downloaded/Original.fbx。
+最终模型：CoalerCosplayer_Rigged.fbx、CoalerCosplayer_Rigged.blend（贴图已打包）。
+贴图：Cosplayer_BaseColor.png，2048×2048。
+身体 2850 三角面，触须及缝线 816 三角面，合计 3666。
+人体骨骼 66 根，Unity Humanoid avatar 有效。
+触须无新增骨骼、无蒙皮权重、无 Armature modifier，两个刚性网格分别挂在 Spine2 和 Hips。
+手臂单独旋转验证触须世界顶点位移为 0，胸部旋转验证附件正常跟随。
+背部已修正为黑色材质 Jacket_Black_Back；正面保留红色。
+Unity：Assets/Art/Characters/CoalerCosplayer/CoalerCosplayer.prefab。
+预制体为 T Pose，未配置动作控制器，可使用现有 Humanoid 动画。
+未替换场景中的任何角色。
+重建脚本：assemble_character.py；其输入当前读取 /tmp/CosplayerInspect.blend。
+如需从零重建，先导入 Downloaded/Original.fbx 保存到该临时文件，再执行脚本。

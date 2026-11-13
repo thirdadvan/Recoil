@@ -8,7 +8,7 @@ public sealed class KBKCraneSwitch : ContinuousInteractionItem
     {
         if(!crane)return true;
         if(crane.Activate())world.ShowInteractionMessage("Stacker crane: lift, travel, lower.");
-        else world.ShowInteractionMessage(!crane.HasPower?"Freight has no power. Check the distribution box outside.":crane.Busy?"The crane is already moving.":"The crane is at its destination.");
+        else world.ShowInteractionMessage(!crane.HasPower?"Freight has no power. Check the distribution box in the warehouse storage room.":crane.Busy?"The crane is already moving.":"The crane is at its destination.");
         Cancel();return true;
     }
     public override void ResetItem(RecoilPrototype world=null){base.ResetItem(world);if(crane)crane.ResetMachine();}

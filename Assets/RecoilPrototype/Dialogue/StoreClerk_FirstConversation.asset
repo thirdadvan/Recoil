@@ -1,0 +1,112 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f114ebc380394945b7e1405ee82cc98, type: 3}
+  m_Name: StoreClerk_FirstConversation
+  m_EditorClassIdentifier: 
+  lines:
+  - role: 2
+    speaker: Dawn
+    text: Thank you for saving me back there.
+    offerPhoto: 0
+    choices: []
+  - role: 1
+    speaker: The Counter Sales
+    text: We don't get many strangers here.
+    offerPhoto: 0
+    choices:
+    - id: show_photo
+      label: Show photo
+      text: I'm looking for someone.
+      offerPhoto: 1
+      response:
+      - role: 1
+        speaker: The Counter Sales
+        text: Aneta. I know her. She is well known around this town.
+        offerPhoto: 0
+    - id: ask_why_alone
+      label: Why alone?
+      text: Why are you here all alone?
+      offerPhoto: 0
+      response:
+      - role: 1
+        speaker: The Counter Sales
+        text: Someone always needs a little help.
+        offerPhoto: 0
+      - role: 2
+        speaker: Dawn
+        text: I'm looking for someone.
+        offerPhoto: 1
+      - role: 1
+        speaker: The Counter Sales
+        text: Aneta. I know her. She is well known around this town.
+        offerPhoto: 0
+  - role: 2
+    speaker: Dawn
+    text: Well known?
+    offerPhoto: 0
+    choices: []
+  - role: 1
+    speaker: The Counter Sales
+    text: Yes. She's been... trying to find a way to help this town.
+    offerPhoto: 0
+    choices: []
+  - role: 2
+    speaker: Dawn
+    text: Do you know where she is?
+    offerPhoto: 0
+    choices: []
+  - role: 1
+    speaker: The Counter Sales
+    text: I may have seen her not long ago. But the town government has it in for
+      her. She keeps a low profile.
+    offerPhoto: 0
+    choices: []
+  - role: 2
+    speaker: Dawn
+    text: Is someone trying to kill her?
+    offerPhoto: 0
+    choices: []
+  - role: 1
+    speaker: The Counter Sales
+    text: Maybe. But knowing her, she should be all right.
+    offerPhoto: 0
+    choices: []
+  - role: 2
+    speaker: Dawn
+    text: Who might know something about her?
+    offerPhoto: 0
+    choices: []
+  - role: 1
+    speaker: The Counter Sales
+    text: You could ask the factory manager. Though he might not tell you the truth.
+    offerPhoto: 0
+    choices: []
+  - role: 2
+    speaker: Dawn
+    text: Where can I find him?
+    offerPhoto: 0
+    choices: []
+  - role: 1
+    speaker: The Counter Sales
+    text: His office is on the fourth floor of the factory. Try there.
+    offerPhoto: 0
+    choices: []
+  - role: 1
+    speaker: The Counter Sales
+    text: Oh, and Aneta left this water gun for you the last time I saw her.
+    offerPhoto: 0
+    choices: []
+  - role: 1
+    speaker: The Counter Sales
+    text: The town is dangerous these days. Please be careful.
+    offerPhoto: 0
+    choices: []

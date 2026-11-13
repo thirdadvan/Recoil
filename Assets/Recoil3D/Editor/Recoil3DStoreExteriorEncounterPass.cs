@@ -33,7 +33,7 @@ public static class Recoil3DStoreExteriorEncounterPass
             for(int j=0;j<points.Length;j++){points[j].transform.position=enemy.transform.position+Vector3.right*new[]{-1f,0,1f,0}[j%4];points[j].duration=j==1?2:1.5f;}
             if(i==0)first=enemy;EditorUtility.SetDirty(enemy);
         }
-        var sequence=ScriptableObject.CreateInstance<NpcDialogueSequence>();sequence.lines=new[]{new NpcDialogueSequence.Line{speaker="VOICE FROM THE STORE",text=ServiceStoreOutdoorEncounter.OpeningLineOne},new NpcDialogueSequence.Line{speaker="VOICE FROM THE STORE",text=ServiceStoreOutdoorEncounter.OpeningLineTwo}};
+        var sequence=ScriptableObject.CreateInstance<NpcDialogueSequence>();sequence.lines=new[]{new NpcDialogueSequence.Line{speaker="The Counter Sales",text=ServiceStoreOutdoorEncounter.OpeningLineOne},new NpcDialogueSequence.Line{speaker="The Counter Sales",text=ServiceStoreOutdoorEncounter.OpeningLineTwo}};
         AssetDatabase.CreateAsset(sequence,"Assets/RecoilPrototype/Dialogue/StoreClerk_OutdoorWarning.asset");
         var story=root.gameObject.AddComponent<ServiceStoreOutdoorEncounter>();story.world=world;story.leftMonster=first;story.warning=sequence;
         var entrance=all.Select(t=>t.GetComponent<RecoilDoor>()).First(d=>d&&d.name=="Service store entrance");

@@ -13,7 +13,13 @@ MonoBehaviour:
   m_Name: StoreClerk_OutdoorWarning
   m_EditorClassIdentifier: 
   lines:
-  - speaker: VOICE FROM THE STORE
+  - role: 0
+    speaker: The Counter Sales
     text: Don't let them get too close.
-  - speaker: VOICE FROM THE STORE
+    offerPhoto: 0
+    choices: []
+  - role: 0
+    speaker: The Counter Sales
     text: But keep the noise down. It'll irritate them.
+    offerPhoto: 0
+    choices: []

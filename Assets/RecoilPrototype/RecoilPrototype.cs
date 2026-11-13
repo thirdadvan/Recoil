@@ -24,21 +24,26 @@ public sealed partial class RecoilPrototype : MonoBehaviour
     public bool legacyEvidenceEnabled=true;
     [Tooltip("独立测试场景可以直接配枪；室外开场关闭，去超市拾取。")]
     public bool startWithWaterGun=true;
-    public bool HasWaterGun {get{return startWithWaterGun || HasItem("water_gun");}}
+    public bool HasWaterGun {get{return WaterGunEquipped;}}
     public void SetProgressFlag(string id,bool enabled){if(enabled)inventory.Add(id);else inventory.Remove(id);}
     public void RememberProgress(string id){if(!string.IsNullOrEmpty(id))inventory.Add(id);}
     RecoilCameraController cameraController;
     void ConfigureCamera()
     {cameraController=cam.GetComponent<RecoilCameraController>();if(!cameraController)cameraController=cam.gameObject.AddComponent<RecoilCameraController>();cameraController.Initialize(this,actor);}
     sealed class SceneTravel
-    {public string scene,spawn;public string[] items;public int health;}
+    {public string scene,spawn;public string[] items;public int health;public RecoilWeaponSave weapon;}
     static SceneTravel pendingTravel;
     readonly List<string> entryInventory=new List<string>();
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void ClearPendingTravel(){pendingTravel=null;}
     public void TravelToScene(string scene,string destinationSpawn)
     {
-        pendingTravel=new SceneTravel{scene=RecoilSceneLoader.Resolve(scene),spawn=destinationSpawn,items=new List<string>(inventory).ToArray(),health=player.Health};
+        if(!RecoilSceneLoader.CanLoad(scene))throw new System.InvalidOperationException("Destination unavailable: "+scene);
+        var travelItems=new List<string>(inventory);
+        // Commit evacuation only in the arriving scene. A failed load / memory visit cannot complete it.
+        if(CompletingWarehouseEscort(scene)&&!travelItems.Contains(WarehouseChildEvacuated))travelItems.Add(WarehouseChildEvacuated);
+        pendingTravel=new SceneTravel{scene=RecoilSceneLoader.Resolve(scene),spawn=destinationSpawn,items=travelItems.ToArray(),health=player.Health,weapon=player.CaptureWeaponSave()};
+        GameManager.EnsureInstance().SaveGame();
         RecoilSceneLoader.Load(scene);
     }
     Sprite square; Material flat;
@@ -97,11 +102,15 @@ public sealed partial class RecoilPrototype : MonoBehaviour
         if(!Child && (escort||waiting)){var prefab=Resources.Load<GameObject>(Recoil3DScene.Is3D?"Recoil3DEscortChild":"RecoilEscortChild");if(prefab)Child=Instantiate(prefab,transform).GetComponent<EscortChild>();if(Child){Child.Initialize(this);spawnedEscortChild=true;}}
         if(Child){Child.gameObject.SetActive(true);Child.ResetChild(escort);if(waiting&&!escort)Child.RestoreWaiting(waitPosition);}
     }
-    public void EquipUniversalKey(){RememberProgress(UniversalKey);if(doors!=null)foreach(var d in doors)if(d)d.ResetDoor(this);ShowInteractionMessage("TEST KEY / All doors unlocked.");}
-    public void ChildKilled(){dead=true;deathReason="The child was killed.";deathTip="TIP: Keep the child away from Coalers.";InterruptInteraction();nextHudTextRefresh=float.NegativeInfinity;}
+    // Check prerequisites here; HasItem must remain an exact ownership/progress query.
+    public bool UniversalInteractionEnabled {get{return HasItem(UniversalKey);}}
+    public bool InteractionRequirementsMet(bool condition){return UniversalInteractionEnabled || condition;}
+    public bool HasInteractionRequirement(string id){return InteractionRequirementsMet(string.IsNullOrEmpty(id) || HasItem(id));}
+    public void EquipUniversalKey(){RememberProgress(UniversalKey);if(doors!=null)foreach(var d in doors)if(d)d.ResetDoor(this);ShowInteractionMessage("TEST KEY / All interaction prerequisites bypassed.");}
+    public void ChildKilled(){CancelConversation();dead=true;deathReason="The child was killed.";deathTip="TIP: Keep the child away from Coalers.";InterruptInteraction();nextHudTextRefresh=float.NegativeInfinity;}
     RecoilDoor[] doors;
     public bool HasClue {get{return hasClue;}}
-    public void CompleteLevel(string message){won=true;Say(message);}
+    public void CompleteLevel(string message){CancelConversation();won=true;Say(message);}
     public RecoilDoor NearbyDoor
     {
         get
@@ -115,7 +124,7 @@ public sealed partial class RecoilPrototype : MonoBehaviour
     ElectricalPanelInteraction[] electricalPanels;
     public ElectricalPanelInteraction ActiveElectricalPanel {get;private set;}
     public ElectricalPanelInteraction NearbyElectricalPanel {get{return electricalPanels==null?null:System.Array.Find(electricalPanels,p=>p && p.InRange(this));}}
-    public bool TryInteractElectricalPanel(bool pressed){var panel=NearbyElectricalPanel;if(!pressed||ReaderInputConsumed||!Playing||!panel)return false;var exit=NearbyDoor;if(exit && Vector2.Distance(player.Position,exit.InteractionPosition)<Vector2.Distance(player.Position,panel.transform.position))return false;InterruptInteraction();player.NotifyForbiddenInteraction();ActiveElectricalPanel=panel;FrameDelta=0;ReaderInputConsumed=true;return true;}
+    public bool TryInteractElectricalPanel(bool pressed){var panel=NearbyElectricalPanel;if(!pressed||ReaderInputConsumed||!PlayerControlsAvailable||!panel)return false;var exit=NearbyDoor;if(exit && Vector2.Distance(player.Position,exit.InteractionPosition)<Vector2.Distance(player.Position,panel.transform.position))return false;InterruptInteraction();player.NotifyForbiddenInteraction();ActiveElectricalPanel=panel;FrameDelta=0;ReaderInputConsumed=true;return true;}
     public void CloseElectricalPanel(){if(ActiveElectricalPanel){var state=WarehousePowerState.Read(this);if(state.HoldingCable){state.ReturnCable();state.Save(this);}}ActiveElectricalPanel=null;ReaderInputConsumed=true;}
     ReadableProp[] readableProps;
     public ReadableProp ActiveReadable {get;private set;}
@@ -129,10 +138,10 @@ public sealed partial class RecoilPrototype : MonoBehaviour
     }
     public bool OpenReadable(ReadableProp prop)
     {
-        if(!Playing || !prop || !prop.InRange(this))return false;
-        InterruptInteraction();player.NotifyForbiddenInteraction();ActiveReadable=prop;FrameDelta=0;ReaderInputConsumed=true;return true;
+        if(!PlayerControlsAvailable || !prop || !prop.InRange(this))return false;
+        InterruptInteraction();player.NotifyForbiddenInteraction();ActiveReadable=prop;PrepareReadableModel(prop);FrameDelta=0;ReaderInputConsumed=true;return true;
     }
-    public void CloseReadable(){ActiveReadable=null;ReaderInputConsumed=true;}
+    public void CloseReadable(){var completed=ActiveReadable;ActiveReadable=null;ReaderInputConsumed=true;if(completed)completed.OnReadingCompleted(this);}
     public bool TryInteractReadable(bool pressed)
     {
         if(!pressed || ReaderInputConsumed)return false;
@@ -146,23 +155,29 @@ public sealed partial class RecoilPrototype : MonoBehaviour
     bool interactionHeld;
     public ContinuousInteractionItem ActiveInteraction {get;private set;}
     public ContinuousInteractionItem NearbyInteraction
-    {get{if(interactionItems!=null)foreach(var item in interactionItems)if(item.InRange(this) && (!EscortingChild || item.interactionDuration<=0))return item;return null;}}
+    {get{if(interactionItems!=null)foreach(var item in interactionItems)if(item.InRange(this) && (InteractionRequirementsMet(!EscortingChild) || item.interactionDuration<=0))return item;return null;}}
     // Includes hold items even when escort restrictions currently prevent using them.
     public bool InObjectInteractionRange
     {
         get
         {
             if(interactionItems!=null)foreach(var item in interactionItems)if(item && item.isActiveAndEnabled && item.InRange(this))return true;
-            if(NearbyDoor || NearbyReadable || NearbyElectricalPanel || NearbyStreetLamp)return true;
+            if(NearbyDoor || NearbyReadable || NearbyElectricalPanel || NearbyStreetLamp || NearbyLocker)return true;
             return legacyEvidenceEnabled && clue && !hasClue && Vector2.Distance(player.Position,EvidencePosition)<1.5f;
         }
     }
     public bool CanAskChildToWait {get{return EscortingChild && !InObjectInteractionRange;}}
     public bool HasItem(string id){return inventory.Contains(id);}
-    public void GrantItem(string id,string message){if(!string.IsNullOrEmpty(id))inventory.Add(id);ShowInteractionMessage(message);}
+    public void GrantItem(string id,string message){GrantItem(id,message,null,null,null);}
+    public void GrantItem(string id,string message,string itemName,string itemDescription,Texture2D icon)
+    {
+        bool acquired=!string.IsNullOrEmpty(id)&&inventory.Add(id);
+        ShowInteractionMessage(message);
+        if(acquired)QueuePickup(id,itemName,itemDescription,icon);
+    }
     public void UpdateContinuousInteraction(bool held,float dt)
     {
-        if(EscortingChild && ActiveInteraction && ActiveInteraction.interactionDuration>0){ActiveInteraction.Cancel();ActiveInteraction=null;}
+        if(!UniversalInteractionEnabled && EscortingChild && ActiveInteraction && ActiveInteraction.interactionDuration>0){ActiveInteraction.Cancel();ActiveInteraction=null;}
         // A cancelled or completed hold must be released before a new session starts.
         if(!held){if(ActiveInteraction)ActiveInteraction.Cancel();ActiveInteraction=null;interactionHeld=false;return;}
         if(ActiveInteraction && !ActiveInteraction.InRange(this)){ActiveInteraction.Cancel();ActiveInteraction=null;}
@@ -202,7 +217,10 @@ public sealed partial class RecoilPrototype : MonoBehaviour
     public Camera ViewCamera {get{return cam;}}
     public float Clock {get{return simTime;}}
     public float FrameDelta {get;private set;}
-    public bool Playing {get{return started && !paused && !dead && !won && !ActiveReadable && !ActiveElectricalPanel && !ConversationBlocksInput;}}
+    // World simulation and player control are separate: conversations only own the player's input.
+    public bool HasStarted {get{return started;}}
+    public bool Playing {get{return started && !ConversationPausesWorld && !paused && !dead && !won && !ActiveReadable && !ActiveElectricalPanel && !InventoryBlocksGameplay && !LockerBlocksGameplay && !InformationOpen;}}
+    public bool PlayerControlsAvailable {get{return Playing && !ConversationBlocksInput && !PropOperationActive;}}
     public Material SprayMaterial {get{return flat;}}
     public IEnumerable<Rect> SolidRects
     {
@@ -239,8 +257,12 @@ public sealed partial class RecoilPrototype : MonoBehaviour
                 foreach(var marker in GetComponentsInChildren<Transform>(true))if(marker.name==travel.spawn){spawn=marker.position;break;}
         }
         ResetRun(true);
-        if(arriving){player.RestoreHealth(travel.health);started=true;Say(locationLabel);}
+        var coalerTutorial=GetComponent<CoalerGameplayTutorial>();
+        if(!coalerTutorial)coalerTutorial=gameObject.AddComponent<CoalerGameplayTutorial>();
+        coalerTutorial.Initialize(this);
+        if(arriving){player.RestoreWeaponSave(travel.weapon);player.RestoreHealth(travel.health);started=true;Say(locationLabel);}
         RegisterMemorySceneEntry();
+        GameManager.EnsureInstance().Bind(this);
 #if UNITY_EDITOR
         Debug.Log("RECOIL_SCENE_READY: "+gameObject.scene.path+" | Rampagers: "+enemies.Count,this);
 #endif
@@ -296,7 +318,8 @@ public sealed partial class RecoilPrototype : MonoBehaviour
         {
             player.InitializeNoise(this);player.InitializeDepthPlane(this);
             var grab=player.GetComponent<PlayerGrabPressure>();if(!grab)grab=player.gameObject.AddComponent<PlayerGrabPressure>();grab.Initialize(this);
-            RecoilBackgroundMusic.Bind(player);
+            var whispers=player.GetComponent<CoalerSlowdownWhispers>();if(!whispers)whispers=player.gameObject.AddComponent<CoalerSlowdownWhispers>();whispers.Initialize(this,player);
+            RecoilBackgroundMusic.Bind(player,this);
             var gaze=player.GetComponent<PlayerGazeFeedback>();if(!gaze)gaze=player.gameObject.AddComponent<PlayerGazeFeedback>();gaze.Initialize(this);
         }
         if(player && !player.GetComponent<PlayerAmmoRingUI>())player.gameObject.AddComponent<PlayerAmmoRingUI>();
@@ -310,6 +333,7 @@ public sealed partial class RecoilPrototype : MonoBehaviour
         chains=GetComponentsInChildren<SwingingChain>(true);
         handholds=GetComponentsInChildren<EquipmentHandhold>(true);
         stairways=GetComponentsInChildren<WalkableStairway>(true);
+        workerLockers=GetComponentsInChildren<WorkerLocker>(true);
         interactionItems=GetComponentsInChildren<ContinuousInteractionItem>(true);readableProps=GetComponentsInChildren<ReadableProp>(true);
         spawn=spawnPoint? (Vector2)spawnPoint.position : spawn;
         blocks.Clear();Physics2D.SyncTransforms();
@@ -393,19 +417,21 @@ public sealed partial class RecoilPrototype : MonoBehaviour
     }
     void ResetRun(bool full)
     {
-        CancelConversation();
+        if(inventoryUI!=null)inventoryUI.Close();pendingPickups.Clear();inventoryReleasePending=false;inventoryReleaseFrame=-1;
+        CloseLocker();CancelConversation();
         deathReason=deathTip="";
         deathCountedForMemory=false;
-        ActiveElectricalPanel=null;ActiveReadable=null;ReaderInputConsumed=false;nextHudTextRefresh=float.NegativeInfinity;hudEnemyLabels.Clear();dialogue="";dialogueUntil=float.NegativeInfinity;
+        ResetPropOperation();ActiveElectricalPanel=null;ActiveReadable=null;ReaderInputConsumed=false;nextHudTextRefresh=float.NegativeInfinity;hudEnemyLabels.Clear();dialogue="";dialogueUntil=float.NegativeInfinity;
         if (full) { checkpoint=false; hasClue=false;  elapsed=0; attempts=1; }
         foreach(var lamp in RecoilStreetLamp.Active)if(lamp.BelongsTo(this))lamp.ResetLamp();
         var retained=new List<string>();
         if(!full)foreach(var id in inventory)if(RetainedOnRetry(id))retained.Add(id);
-        inventory.Clear();foreach(var item in entryInventory)inventory.Add(item);foreach(var id in retained)inventory.Add(id);ActiveInteraction=null;interactionHeld=false;interactionSession=0;
+        inventory.Clear();foreach(var item in entryInventory)inventory.Add(item);foreach(var id in retained)inventory.Add(id);ChildFoodQuest.RestoreConsumption(this);ActiveInteraction=null;interactionHeld=false;interactionSession=0;
         if(interactionItems!=null)foreach(var item in interactionItems)item.ResetItem(this);
         if(doors!=null)foreach(var exitDoor in doors)if(exitDoor)exitDoor.ResetDoor(this);
         if(dialogueTriggers!=null)foreach(var trigger in dialogueTriggers)if(trigger)trigger.ResetTrigger();
-        player.ResetController(checkpoint ? CheckpointPosition : spawn);
+        PrepareWarehouseEscortRetry(full);
+        player.ResetController(full?spawn:RetryPosition);
         var gazeFeedback=player.GetComponent<PlayerGazeFeedback>();if(gazeFeedback)gazeFeedback.ResetFeedback();
         ResetEscortChild();
         dead=won=paused=hasClue=false;if(clue)clue.gameObject.SetActive(legacyEvidenceEnabled);
@@ -415,6 +441,7 @@ public sealed partial class RecoilPrototype : MonoBehaviour
         Say(checkpoint ? "The doorway. Again. This time, slower." : "A plastic water gun. I somehow remember what it does.");
         if(cameraController)cameraController.SnapToTarget();
         if(RunReset!=null)RunReset();
+        if(GameManager.Instance)GameManager.Instance.ResetSafePosition();
     }
     public void Say(string s) { monologue=s; monologueUntil=simTime+5; nextHudTextRefresh=float.NegativeInfinity; }
     public void ShowDialogue(string message,float duration=5)
@@ -424,46 +451,63 @@ public sealed partial class RecoilPrototype : MonoBehaviour
     {
         if(dead && TryEnterDeathMemory())return;
         ReaderInputConsumed=false;
-        if(ConsumeConversationInput())return;
-        if(ActiveElectricalPanel){if(Input.GetKeyDown(KeyCode.E)||Input.GetKeyDown(KeyCode.Escape))CloseElectricalPanel();FrameDelta=0;return;}
+        RecoilInput.Sample();
+        if(HandleInformationInput())return;
+        if(HandleLockerInput())return;
+        if(HandleInventoryInput())return;
+        if(RecoilInput.ConfirmPressed&&(!started||dead||won||paused)) {
+            if(!started){if(GameManager.EnsureInstance().HasSave)GameManager.Instance.ContinueGame();else BeginGame();}
+            else if(dead){attempts++;ResetRun(false);}
+            else if(won)ResetRun(true);
+            else paused=false;
+            ReaderInputConsumed=true;FrameDelta=0;return;
+        }
+        if(ConsumeConversationInput()){Physics2D.SyncTransforms();AdvanceWorldClock();return;}
+        if(ActiveElectricalPanel){if(RecoilInput.InteractPressed||RecoilInput.PausePressed)CloseElectricalPanel();FrameDelta=0;return;}
         if(ActiveReadable)
         {
-            if(Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Escape))CloseReadable();
+            if(RecoilInput.InteractPressed || RecoilInput.PausePressed)CloseReadable();
             FrameDelta=0;return;
         }
         Physics2D.SyncTransforms();
         if(Input.GetKeyDown(KeyCode.R)){attempts++;bool full=Input.GetKey(KeyCode.LeftShift);if(full){EscortChild.ClearWaiting();RestartFullGameMemory();}ResetRun(full);}
-        if(Input.GetKeyDown(KeyCode.Escape) && started && !dead && !won)paused=!paused;
+        if(RecoilInput.PausePressed && started && !dead && !won)paused=!paused;
         if(Playing && Input.GetKeyDown(KeyCode.B) && SoundWaves)SoundWaves.StartBroadcast();
-        FrameDelta=Playing?Mathf.Min(Time.deltaTime,.033f):0;
-        simTime+=FrameDelta;elapsed+=FrameDelta;
+        AdvanceWorldClock();
     }
+    void AdvanceWorldClock(){FrameDelta=Playing?Mathf.Min(Time.deltaTime,.033f):0;simTime+=FrameDelta;elapsed+=FrameDelta;}
     void RecoverPlayerHealth(float dt)
     {bool observed=false;foreach(var enemy in enemies)if(enemy.CanSeePlayer()){observed=true;break;}if(!observed && crawlerEncounter)observed=crawlerEncounter.ObservingPlayer;player.AdvanceRecovery(dt,observed);}
     void LateUpdate()
     {
         if(Playing)
         {
-            if(doors!=null)foreach(var exit in doors)if(exit && exit.TryAutoTravel(this))return;
-            if(dialogueTriggers!=null)foreach(var trigger in dialogueTriggers)if(trigger)trigger.CheckPlayer(this);
-            RecoverPlayerHealth(FrameDelta);
+            if(PlayerControlsAvailable)
+            {
+                if(doors!=null)foreach(var exit in doors)if(exit && exit.TryAutoTravel(this))return;
+                if(dialogueTriggers!=null)foreach(var trigger in dialogueTriggers)if(trigger)trigger.CheckPlayer(this);
+            }
+            else if(ConversationBlocksInput && player.GrabPressure)
+            {player.GrabPressure.Simulate(FrameDelta);player.GrabPressure.CompleteMovement(0);}
+            if(Playing)RecoverPlayerHealth(FrameDelta);
         }
         UpdateVisuals(FrameDelta);
     }
     public void InterruptInteraction()
     {if(ActiveInteraction)ActiveInteraction.Cancel();ActiveInteraction=null;interactionHeld=true;}
     public void DragPlayerToDeath()
-    {if(!Playing)return;InterruptInteraction();player.CancelEscortFlight();dead=true;deathReason="Dawn has become one with the Coalers.";deathTip="TIP: Keep your distance from Coalers to avoid becoming one of them.";nextHudTextRefresh=float.NegativeInfinity;}
+    {if(!Playing)return;CancelConversation();InterruptInteraction();player.CancelEscortFlight();dead=true;deathReason="Dawn has become one with the Coalers.";deathTip="TIP: Keep your distance from Coalers to avoid becoming one of them.";nextHudTextRefresh=float.NegativeInfinity;}
     public void CatchPlayer(){CatchPlayer(Vector2.zero);}
     public void CatchPlayer(Vector2 knockback)
     {
         if(!player.TakeMonsterHit())return;
+        if(ConversationActive){conversationInputFrame=Time.frameCount;ReaderInputConsumed=true;CancelConversation();}
         if(knockback.sqrMagnitude>0)player.ApplyMonsterKnockback(knockback);
         if(player.Health<=0){dead=true;deathReason="Dawn has died.";deathTip="TIP: Break line of sight and keep your distance from Coalers.";nextHudTextRefresh=float.NegativeInfinity;}
     }
     public void ObservePlayer(bool interact)
     {
-        if(enableCheckpoint && player.Position.x>CheckpointPosition.x-.6f && !checkpoint) { checkpoint=true; Say("Walk normally to blend in. Visible shooting or interaction irritates them. Release E quickly."); }
+        if(enableCheckpoint && player.Position.x>CheckpointPosition.x-.6f && !checkpoint) { checkpoint=true; GameManager.EnsureInstance().SetCheckpoint(); Say("Walk normally to blend in. Visible shooting or interaction irritates them. Release E quickly."); }
         if(interact && NearbyStreetLamp){NearbyStreetLamp.Interact(this);return;}
         if(interact && !NearbyInteraction && !ActiveInteraction)
         {
@@ -472,8 +516,23 @@ public sealed partial class RecoilPrototype : MonoBehaviour
             var exitDoor=NearbyDoor;if(exitDoor)exitDoor.TryInteract(this);
         }
     }
-    public void ApplyWaterHit(Vector2 start,Vector2 direction,float range,Vector2 source)
-    {foreach(var enemy in enemies)enemy.TakeWaterHit(start,direction,range,source);if(crawlerEncounter && crawlerEncounter.crawler)crawlerEncounter.crawler.TakeWaterHit(start,direction,range);}
+    // Ray is constrained to the player's current depth plane; only the first target receives impact.
+    public static bool WaterRayDistance(Vector3 start,Vector3 direction,Vector3 centre,float radius,float range,out float distance)
+    {
+        distance=range;direction.Normalize();var delta=centre-start;float along=Vector3.Dot(delta,direction),perpendicular=delta.sqrMagnitude-along*along;
+        if(perpendicular>radius*radius)return false;float half=Mathf.Sqrt(Mathf.Max(0,radius*radius-perpendicular));float far=along+half;
+        if(far<0)return false;float near=Mathf.Max(0,along-half);if(near>range)return false;distance=near;return true;
+    }
+    public float ApplyWaterHit(Vector2 start,Vector2 direction,float range,Vector2 source)
+    {
+        RampagerController first=null;float nearest=range;
+        foreach(var enemy in enemies){if(!enemy)continue;float distance;if(enemy.TryWaterIntersection(start,direction,range,out distance)&&distance<nearest){nearest=distance;first=enemy;}}
+        var crawler=crawlerEncounter?crawlerEncounter.crawler:null;float crawlerDistance=range;
+        bool hitCrawler=crawler&&crawler.TryWaterIntersection(start,direction,range,out crawlerDistance);if(!hitCrawler)crawlerDistance=range;
+        if(hitCrawler&&crawlerDistance<nearest){crawler.TakeWaterHit(start,direction,range);return crawlerDistance;}
+        if(first)first.ReceiveWaterImpact(start,direction,range,source);
+        return nearest;
+    }
     public static float RayRect(Vector2 origin,Vector2 dir,Rect r,float max)
     {
         float near=0,far=max;
@@ -519,6 +578,7 @@ public sealed partial class RecoilPrototype : MonoBehaviour
         if(!player || now<nextHudTextRefresh)return;
         nextHudTextRefresh=now+HudTextInterval;
         string sceneObjective=HasItem("employee_access_card")?objectiveWithCard:objectiveWithoutCard;
+        var managerObjective=ManagerAnetaConversation.Objective(this);if(!string.IsNullOrEmpty(managerObjective))sceneObjective=managerObjective;
         hudObjective=!string.IsNullOrEmpty(sceneObjective)?sceneObjective:hasClue?"02  /  Reach the green exit. Press E.":"01  /  Search the factory for the missing person's clue.";
         string status=player.Climbing?"CLIMBING":player.Flying?"HOVERING":player.SilentWalking?"STEALTH WALK":player.Running?"RUNNING":player.Grounded?"GROUNDED":"FALLING";
         if(EscortingChild)status+=" / HOLDING HANDS";
@@ -531,7 +591,7 @@ public sealed partial class RecoilPrototype : MonoBehaviour
         hudSummary="Clue recovered   /   "+Mathf.FloorToInt(elapsed)+" seconds   /   "+attempts+" attempts";
         if(SoundWaves && SoundWaves.Contains(player.Position))
         {
-            var sw=SoundWaves;string direction=sw.Direction<0?"< LEFT / SHRINKING":"RIGHT > / EXPANDING";
+            var sw=SoundWaves;string direction=sw.Direction<0?"1 WAVE / 1 BEAT: LEFT":"2 WAVES / 2 BEATS: RIGHT";
             string phase=sw.CueDelay>0?"MOVE IN "+sw.CueDelay.ToString("0.0")+"s":sw.CueHold>0?"HOLD "+sw.CueHold.ToString("0.0")+"s":sw.CueMove>0?"MOVE "+sw.CueMove.ToString("0.0")+"s":"WAITING FOR NEXT WAVE";
             hudWave=sw.Phase==SoundWaveManager.BroadcastPhase.Idle?"B: test waves / next in "+sw.Remaining.ToString("0.0")+"s":sw.Phase==SoundWaveManager.BroadcastPhase.Recovery?"SEQUENCE COMPLETE":sw.Phase==SoundWaveManager.BroadcastPhase.Warning?"RED ALERT / FIRST DIRECTION IN "+sw.Remaining.ToString("0.0")+"s":phase+" / "+direction+" / wave "+sw.CueIndex+"/"+sw.TotalWaves;
         }
@@ -551,50 +611,61 @@ public sealed partial class RecoilPrototype : MonoBehaviour
             hudEnemyLabels[e]=state;
         }
     }
-    void Text(float x,float y,float w,float h,string s,GUIStyle style=null) { GUI.Label(new Rect(x,y,w,h),s,style??label); }
+    void Text(float x,float y,float w,float h,string s,GUIStyle style=null) { GUI.Label(new Rect(x,y,w,h),RecoilInput.Prompt(s),style??label); }
     void Panel(Rect r,Color c) { GUI.color=c;GUI.DrawTexture(r,white);GUI.color=Color.white; }
     void OnGUI()
     {
+        if(ActiveLocker&&ActiveLocker.PageReady){DrawLockerPage();return;}
+        if(InformationOpen){InformationJournal.Draw();return;}
+        if(InventoryOpen){inventoryUI.Draw();return;}
         if(ActiveElectricalPanel){ActiveElectricalPanel.DrawPage(this);return;}
         Styles(); RefreshHudText(); GUI.matrix=Matrix4x4.TRS(Vector3.zero,Quaternion.identity,new Vector3(Screen.width/1280f,Screen.height/720f,1));
         if(ConversationActive){DrawConversation();return;}
         if(ActiveReadable)
         {
-            Panel(new Rect(0,0,1280,720),Hex(0x05090d,.98f));
-            if(ActiveReadable.pageImage)
-                GUI.DrawTexture(new Rect(160,16,960,644),ActiveReadable.pageImage,ScaleMode.ScaleToFit,true);
-            else {Text(270,60,740,50,ActiveReadable.displayName,center);Text(270,125,740,500,ActiveReadable.pageText,label);}
-            Text(350,674,580,28,"E / CLOSE     ESC / CLOSE",center);return;
+            var hudMatrix=GUI.matrix;
+            var readerColour=GUI.color;
+            bool readerEnabled=GUI.enabled;
+            try
+            {
+                GUI.color=Color.white;GUI.enabled=true;
+                GUI.matrix=Matrix4x4.identity;
+                Panel(new Rect(0,0,Screen.width,Screen.height),new Color(0,0,0,RecoilInventoryUI.PickupShadeOpacity));
+                // A uniform scale preserves the page image's aspect ratio on every screen shape.
+                float readerScale=Mathf.Min(Screen.width/1280f,Screen.height/720f);
+                var readerOffset=new Vector3((Screen.width-1280*readerScale)*.5f,(Screen.height-720*readerScale)*.5f,0);
+                GUI.matrix=Matrix4x4.TRS(readerOffset,Quaternion.identity,Vector3.one*readerScale);
+                if(ActiveReadable.pageImage)
+                    DrawReadableImage(new Rect(160,16,960,644),ActiveReadable.pageImage,ActiveReadable.pageDisplayScale,ActiveReadable.pageMesh);
+                else {Text(270,60,740,50,ActiveReadable.displayName,center);Text(270,125,740,500,ActiveReadable.pageText,label);}
+                Text(350,674,580,28,"E / CLOSE     ESC / CLOSE",center);
+            }
+            finally
+            {
+                GUI.color=readerColour;
+                GUI.enabled=readerEnabled;GUI.matrix=hudMatrix;
+            }
+            return;
         }
-        Panel(new Rect(0,0,1280,96),Hex(0x0c151b,.94f));
-        Text(28,14,280,40,"R E C O I L",hudTitle);
-        Text(29,53,360,24,"PLAYABLE STUDY  /  TOWN ENTRANCE",small);
-        Text(480,20,770,30,hudObjective);
-        Text(480,55,770,25,"A/D move   •   Mouse + hold click fire   •   W launch   •   W/S fly   •   Hold Shift run   •   E hold to search",small);
-        Panel(new Rect(0,664,1280,56),Hex(0x0c151b,.94f));
-        Text(28,678,380,24,hudStatus,small);
         Text(28,597,390,24,hudHealth,small);
         Text(28,621,390,24,hudIllumination,small);
-        Text(930,678,330,24,"R retry   /   Shift+R restart   /   Esc pause",small);
         if(HasItem("employee_access_card"))Text(430,650,450,22,"INVENTORY: EMPLOYEE ACCESS CARD",small);
         if(CanAskChildToWait && Playing){Text(390,370,500,26,"HOLD E / ASK THE CHILD TO WAIT",center);if(Child.WaitHoldProgress>0){Panel(new Rect(440,400,400,5),Hex(0x35464c));Panel(new Rect(440,400,400*Child.WaitHoldProgress,5),Hex(0xe2c88d));}}
         if(NearbyElectricalPanel && Playing)Text(390,408,500,28,NearbyElectricalPanel.interactionPrompt,center);
+        if(NearbyLocker && Playing)Text(390,408,500,28,RecoilInput.Prompt("E / OPEN LOCKER"),center);
         if(NearbyReadable && Playing)Text(390,408,500,28,NearbyReadable.interactionPrompt,center);
         if(NearbyStreetLamp && Playing)Text(390,440,500,28,"E / SWITCH OFF LAMP HEAD",center);
         var nearby=NearbyInteraction;
         if(nearby && started && !dead && !won)
         {
-            Text(390,470,500,28,(nearby.interactionDuration<=0?"E / ":"HOLD E / ")+nearby.displayName,center);
+            var visibility=nearby.GetComponent<PickupVisibility>();
+            if(!visibility || !visibility.isActiveAndEnabled)
+                Text(390,470,500,28,(nearby.interactionDuration<=0?"E / ":"HOLD E / ")+nearby.displayName,center);
             if(ActiveInteraction)
             {
                 Panel(new Rect(440,508,400,8),Hex(0x35464c));Panel(new Rect(440,508,400*Mathf.Clamp01(ActiveInteraction.Progress/ActiveInteraction.interactionDuration),8),Hex(0xe2c88d));
                 Text(320,528,640,24,"SEARCHING / RELEASE E TO CANCEL. INTERACTION SEEN DURING WAVES TRIGGERS ATTACK.",small);
             }
-        }
-        if(player.Flying)
-        {
-            Panel(new Rect(435,684,130,6),Hex(0x35464c));Panel(new Rect(435,684,130*Mathf.Clamp01(1-(simTime-player.LastShot)),6),Hex(0x63d3ec));
-            Text(580,675,330,25,player.Ammo>0?"Fire again within 1 second":"NO WATER / LAND TO REFILL",small);
         }
         if(Playing && (ActiveInteraction || (simTime<dialogueUntil && !string.IsNullOrEmpty(dialogue))))
         {
@@ -603,11 +674,6 @@ public sealed partial class RecoilPrototype : MonoBehaviour
         }
         if(started && !dead && !won)
         {
-            if(SoundWaves && SoundWaves.Contains(player.Position))
-            {
-                Panel(new Rect(230,110,820,65),Hex(0x102733,.94f));Text(245,115,790,28,hudWave,center);
-                Text(245,145,790,22,"EXPAND > RIGHT / SHRINK < LEFT. Random direction. Delay 0.1s, MOVE 1s, then WAIT 1.5s.",small);
-            }
             if(showMonsterStateUI)foreach(var e in enemies) if(e.OnGameplayPlane && !e.HideStatusLabel && e.Alert>.02f && (!lighting || lighting.VisibilityAt(e.Position+Vector2.up*1.25f)>.08f))
             {
                 Vector3 p=cam.WorldToViewportPoint(e.transform.position+Vector3.up*1.25f);
@@ -625,21 +691,25 @@ public sealed partial class RecoilPrototype : MonoBehaviour
         }
         if(!started || dead || won || paused)
         {
-            Panel(new Rect(0,96,1280,568),Hex(0x0a141b,.94f));
+            Panel(new Rect(0,0,1280,720),Hex(0x0a141b,.94f));
             Text(260,151,760,70,!started?"R E C O I L":dead?"CAUGHT":won?"AN ADDRESS. A MEMORY.":"PAUSED",title);
             if(!started)
             {
                 Text(260,245,760,55,"A detective. A plastic water gun. A town that won't let go.");
-                Text(260,311,800,135,"Fire in any direction to enter flight, including while falling.\nW / Space rises, S descends. Three shots; landing refills one shot per second.\nEach shot stores 0.75 seconds of recoil. Falling over one body height angers witnesses.\nInside: walking is safe; shooting or flying is a violation. Hold E 1.5s to search the backpack for an employee access card.");
-                if(SoundWaves && SoundWaves.buildingBroadcastsEnabled)
-                    Text(260,465,760,60,"B tests the broadcast. RIGHT: expanding rings. LEFT: shrinking rings. Follow the arrows.",small);
-                if(GUI.Button(new Rect(260,532,300,52),"ENTER THE TOWN")) { started=true;Say("Fire. Then use W to rise. I remember this."); }
+                Text(260,311,800,135,RecoilInput.UsingGamepad?"LEFT STICK: move / climb / steer in flight. RIGHT STICK: aim.\nSQUARE: fire. CROSS: jump / confirm. CIRCLE: interact; hold for longer actions.\nClick L3 while moving to run. Stop moving to return to stealth walking.\nLEFT STICK DOWN + CROSS: drop from soft platforms / stairs. OPTIONS: pause.":"WASD / arrow keys: move, climb and steer in flight. Mouse: aim.\nLeft mouse: fire. Space: jump. E: interact; hold for longer actions.\nHold SHIFT while moving to run. Prolonged noise can provoke Coalers.\nS + Space: drop from soft platforms / stairs. Escape: pause.");
+                var manager=GameManager.EnsureInstance();
+                if(manager.HasSave)
+                {
+                    if(GUI.Button(new Rect(260,532,300,52),RecoilInput.UsingGamepad?"CROSS / CONTINUE GAME":"CONTINUE GAME"))manager.ContinueGame();
+                    if(GUI.Button(new Rect(580,532,260,52),"NEW GAME"))manager.NewGame();
+                }
+                else if(GUI.Button(new Rect(260,532,300,52),RecoilInput.UsingGamepad?"CROSS / ENTER THE TOWN":"ENTER THE TOWN"))BeginGame();
             }
             else if(dead)
             {
                 Text(260,258,760,50,hudDeath);
                 Text(260,316,760,35,hudDeathTip,small);
-                if(GUI.Button(new Rect(260,360,300,52),"RETRY FROM CHECKPOINT  [R]")) { attempts++;ResetRun(false); }
+                if(GUI.Button(new Rect(260,360,300,52),RecoilInput.UsingGamepad?"CROSS / RETRY FROM CHECKPOINT":"RETRY FROM CHECKPOINT  [R]")) { attempts++;ResetRun(false); }
             }
             else if(won)
             {
@@ -648,7 +718,14 @@ public sealed partial class RecoilPrototype : MonoBehaviour
                 Text(260,420,800,50,"Prototype complete. Try a quieter route, or stay airborne outside.",small);
                 if(GUI.Button(new Rect(260,510,300,52),"PLAY AGAIN"))ResetRun(true);
             }
-            else if(GUI.Button(new Rect(260,360,300,52),"CONTINUE"))paused=false;
+            else
+            {
+                if(GUI.Button(new Rect(260,360,300,52),"CONTINUE"))paused=false;
+                if(!GameManager.EnsureInstance().debugStartInCurrentScene && GUI.Button(new Rect(260,425,300,45),"SAVE GAME"))ShowInteractionMessage(GameManager.EnsureInstance().SaveGame()?"Game saved.":"Save failed. "+GameManager.Instance.LastError);
+                if(GameManager.EnsureInstance().HasSave && GUI.Button(new Rect(580,425,260,45),"LOAD GAME"))GameManager.Instance.ContinueGame();
+                var saves=GameManager.EnsureInstance();
+                Text(260,490,800,50,!string.IsNullOrEmpty(saves.LastError)?"SAVE: "+saves.LastError:!string.IsNullOrEmpty(saves.LastSavedUtc)?"Last saved: "+saves.LastSavedUtc:"No save yet.",small);
+            }
         }
     }
 }

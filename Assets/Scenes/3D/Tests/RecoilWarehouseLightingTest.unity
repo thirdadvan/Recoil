@@ -2632,14 +2632,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 12900168}
   meshRenderer: {fileID: 2124060222}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &12956735
 GameObject:
   m_ObjectHideFlags: 0
@@ -2667,8 +2667,8 @@ Transform:
   m_GameObject: {fileID: 12956735}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2119236615}
@@ -4006,6 +4006,7 @@ GameObject:
   m_Component:
   - component: {fileID: 18840565}
   - component: {fileID: 18840566}
+  - component: {fileID: 18840567}
   m_Layer: 0
   m_Name: Leave warehouse
   m_TagString: Untagged
@@ -4046,7 +4047,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f5da826cd95406b9909d4a2eda7c094, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactionRange: 1.7
+  interactionRange: 0.5
   interactionOffset: {x: 0, y: -0.25}
   interactionPrompt: E / LEAVE WAREHOUSE
   requiresClue: 0
@@ -4080,6 +4081,43 @@ MonoBehaviour:
   onOpened:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &18840567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 18840564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff66adf7f30d34f519cf06801d8880df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  door: {fileID: 18840566}
+  world: {fileID: 1658313658}
+  doorwayLights: []
+  halo: {fileID: 0}
+  brightnessMultiplier: 1
+  reflectiveSurfaces: []
+  surfaceSources: []
+  volumeEnabled: 1
+  useTrapezoidMesh: 1
+  foregroundExtension: 32
+  beamEdgeFeather: 0.02
+  beamEndFeather: 0.31
+  beamBrightness: 1.8
+  volumeLight: {fileID: 0}
+  volumeOrigin: {x: 1.8000001, y: 0.46, z: -3.1}
+  apertureHalfSize: {x: 0.51, y: 0.76}
+  volumeLength: 3.35
+  volumeSpread: 0.156
+  restingDensity: 0.009
+  activeDensity: 0.04
+  fadeIn: 0.89
+  fadeOut: 2.39
+  haloStrength: 0.34
+  haloTint: {r: 0.62, g: 0.77, b: 0.84, a: 1}
+  editorPreview: 0
 --- !u!1 &18886906
 GameObject:
   m_ObjectHideFlags: 0
@@ -4371,14 +4409,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 20233863}
   meshRenderer: {fileID: 2132381480}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &20252344
 GameObject:
   m_ObjectHideFlags: 0
@@ -5943,14 +5981,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 30831780}
   meshRenderer: {fileID: 788999108}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &31491460
 GameObject:
   m_ObjectHideFlags: 0
@@ -7363,14 +7401,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 41513928}
   meshRenderer: {fileID: 204171931}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &41550233
 GameObject:
   m_ObjectHideFlags: 0
@@ -10538,14 +10576,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 53110190}
   meshRenderer: {fileID: 990219283}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &53116925
 GameObject:
   m_ObjectHideFlags: 0
@@ -12688,14 +12726,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 70765755}
   meshRenderer: {fileID: 234077055}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &70943327
 GameObject:
   m_ObjectHideFlags: 0
@@ -13355,14 +13393,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 73979046}
   meshRenderer: {fileID: 1878971251}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &74343191
 GameObject:
   m_ObjectHideFlags: 0
@@ -17581,8 +17619,8 @@ Transform:
   m_GameObject: {fileID: 95794629}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 689129421}
@@ -23486,14 +23524,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 136195145}
   meshRenderer: {fileID: 207594955}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &136361691
 GameObject:
   m_ObjectHideFlags: 0
@@ -23859,14 +23897,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 139587965}
   meshRenderer: {fileID: 1742760243}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &140045560
 GameObject:
   m_ObjectHideFlags: 0
@@ -24002,8 +24040,8 @@ Transform:
   m_GameObject: {fileID: 141701056}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1175985348}
@@ -24085,8 +24123,8 @@ Transform:
   m_GameObject: {fileID: 142222150}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2007060725}
@@ -26348,6 +26386,7 @@ MonoBehaviour:
   moveDelay: 0.1
   directionWaveDuration: 3
   commandReactionDelay: 0.5
+  doublePulseSpacing: 0.4
 --- !u!1 &155120560
 GameObject:
   m_ObjectHideFlags: 0
@@ -28598,8 +28637,8 @@ Transform:
   m_GameObject: {fileID: 164837478}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 250047726}
@@ -29934,13 +29973,13 @@ MonoBehaviour:
   source: {fileID: 173162299}
   meshRenderer: {fileID: 629198780}
   depth: 0.24
-  depthOffset: 3
+  depthOffset: 2.66
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
   appliedDepth: 0.24
-  appliedOffset: 3
+  appliedOffset: 2.66
 --- !u!1 &173451544
 GameObject:
   m_ObjectHideFlags: 0
@@ -31584,8 +31623,8 @@ Transform:
   m_GameObject: {fileID: 182020067}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 721822078}
@@ -32736,14 +32775,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 186124253}
   meshRenderer: {fileID: 558034788}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &186365864
 GameObject:
   m_ObjectHideFlags: 0
@@ -34982,8 +35021,8 @@ Transform:
   m_GameObject: {fileID: 199200257}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1385300232}
@@ -36122,8 +36161,8 @@ Transform:
   m_GameObject: {fileID: 204171929}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 41513927}
@@ -36681,8 +36720,8 @@ Transform:
   m_GameObject: {fileID: 207594953}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 136195144}
@@ -38434,8 +38473,8 @@ Transform:
   m_GameObject: {fileID: 221866776}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 4}
-  m_LocalScale: {x: 1, y: 1, z: 14}
+  m_LocalPosition: {x: 0, y: 0, z: 2.66}
+  m_LocalScale: {x: 1, y: 1, z: 0.14}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 621778142}
@@ -38460,7 +38499,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 83ff0e0d760b9460c90390c35714951a, type: 2}
+  - {fileID: 2100000, guid: 8ecd6a520dbc540668ae87e27c85e817, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -39088,14 +39127,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 225065829}
   meshRenderer: {fileID: 976541996}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &226388530
 GameObject:
   m_ObjectHideFlags: 0
@@ -40146,8 +40185,8 @@ Transform:
   m_GameObject: {fileID: 234077053}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 70765754}
@@ -42225,14 +42264,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 244848280}
   meshRenderer: {fileID: 580057671}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &244919942
 GameObject:
   m_ObjectHideFlags: 0
@@ -42593,14 +42632,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 245633993}
   meshRenderer: {fileID: 1062599952}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &245947878
 GameObject:
   m_ObjectHideFlags: 0
@@ -44027,14 +44066,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 250047727}
   meshRenderer: {fileID: 164837480}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &252350178
 GameObject:
   m_ObjectHideFlags: 0
@@ -46443,14 +46482,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 266033990}
   meshRenderer: {fileID: 1041984715}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &266996795
 GameObject:
   m_ObjectHideFlags: 0
@@ -49451,14 +49490,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 284649488}
   meshRenderer: {fileID: 1289373005}
-  depth: 14
-  depthOffset: 4
+  depth: 0.14
+  depthOffset: 2.66
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 14
-  appliedOffset: 4
+  appliedDepth: 0.14
+  appliedOffset: 2.66
 --- !u!1 &284720571
 GameObject:
   m_ObjectHideFlags: 0
@@ -51832,8 +51871,8 @@ Transform:
   m_GameObject: {fileID: 298944376}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 4}
-  m_LocalScale: {x: 1, y: 1, z: 14}
+  m_LocalPosition: {x: 0, y: 0, z: 2.66}
+  m_LocalScale: {x: 1, y: 1, z: 0.14}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 949586101}
@@ -51858,7 +51897,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 83ff0e0d760b9460c90390c35714951a, type: 2}
+  - {fileID: 2100000, guid: 8ecd6a520dbc540668ae87e27c85e817, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -52413,8 +52452,8 @@ Transform:
   m_GameObject: {fileID: 301848029}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 978167755}
@@ -53301,9 +53340,10 @@ MonoBehaviour:
   displayName: Stacker crane ground switch
   description: 
   interactionDuration: 0
-  interactionRange: 2
+  interactionRange: 0.5
   resultId: 
   resultMessage: 
+  inventoryIcon: {fileID: 0}
   crane: {fileID: 116260027}
 --- !u!114 &305961115
 MonoBehaviour:
@@ -54820,8 +54860,8 @@ Transform:
   m_GameObject: {fileID: 314207236}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1092971477}
@@ -62008,8 +62048,8 @@ Transform:
   m_GameObject: {fileID: 355408450}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 796052712}
@@ -62091,8 +62131,8 @@ Transform:
   m_GameObject: {fileID: 355622399}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1384836978}
@@ -62174,8 +62214,8 @@ Transform:
   m_GameObject: {fileID: 355904912}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2107607851}
@@ -64387,14 +64427,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 365825232}
   meshRenderer: {fileID: 2010172105}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &366411247
 GameObject:
   m_ObjectHideFlags: 0
@@ -64982,7 +65022,7 @@ MonoBehaviour:
   fullTentacleEnrageDuration: 0.5
   growingTentacleEnrageDuration: 1
   soundInvestigationInset: 0.5
-  soundSearchPause: 0.75
+  soundSearchPause: 1.5
   soundMemoryDuration: 7.5
   world: {fileID: 1658313658}
   initialState: 0
@@ -65016,6 +65056,11 @@ MonoBehaviour:
   attackSearchRadius: 2
   attackSearchMoveInterval: {x: 1.5, y: 2.5}
   searchRoarDuration: 0.9
+  waterBlockDuration: 1.2
+  exposedCoreRecoveryDuration: 4
+  coreFoldDuration: 1
+  coreStillDuration: 2.5
+  coreAttackTransitionDuration: 0.5
 --- !u!114 &368287136
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -67209,7 +67254,7 @@ Transform:
   m_GameObject: {fileID: 378069470}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.5200005, y: 6.62, z: 3}
+  m_LocalPosition: {x: 1.5200005, y: 6.62, z: 2.66}
   m_LocalScale: {x: 0.22, y: 0.22, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -70179,14 +70224,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 398379317}
   meshRenderer: {fileID: 1941200465}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &399540866
 GameObject:
   m_ObjectHideFlags: 0
@@ -72547,8 +72592,8 @@ Transform:
   m_GameObject: {fileID: 415385959}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1296636094}
@@ -74890,8 +74935,8 @@ Transform:
   m_GameObject: {fileID: 425980600}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 618850540}
@@ -75663,14 +75708,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 429928532}
   meshRenderer: {fileID: 599175117}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &429943777
 GameObject:
   m_ObjectHideFlags: 0
@@ -79623,14 +79668,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 454900697}
   meshRenderer: {fileID: 1899159086}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &455395157
 GameObject:
   m_ObjectHideFlags: 0
@@ -79849,8 +79894,8 @@ Transform:
   m_GameObject: {fileID: 455968548}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 479026651}
@@ -80943,8 +80988,8 @@ Transform:
   m_GameObject: {fileID: 461752317}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 954148895}
@@ -82655,8 +82700,8 @@ Transform:
   m_GameObject: {fileID: 475328955}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 632431244}
@@ -82976,8 +83021,8 @@ Transform:
   m_GameObject: {fileID: 476036140}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1026275758}
@@ -83486,14 +83531,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 479026652}
   meshRenderer: {fileID: 455968550}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &479160465
 GameObject:
   m_ObjectHideFlags: 0
@@ -85175,7 +85220,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &496004721
 Transform:
   m_ObjectHideFlags: 0
@@ -85958,14 +86003,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 500047206}
   meshRenderer: {fileID: 1953695454}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &500473468
 GameObject:
   m_ObjectHideFlags: 0
@@ -86288,14 +86333,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 501974189}
   meshRenderer: {fileID: 2132882327}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &504808122
 GameObject:
   m_ObjectHideFlags: 0
@@ -87273,14 +87318,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 507175448}
   meshRenderer: {fileID: 1397923550}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &507315471
 GameObject:
   m_ObjectHideFlags: 0
@@ -87781,8 +87826,8 @@ Transform:
   m_GameObject: {fileID: 511591082}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2104343675}
@@ -88813,8 +88858,8 @@ Transform:
   m_GameObject: {fileID: 516559937}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1294076291}
@@ -90892,14 +90937,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 527216520}
   meshRenderer: {fileID: 1196645614}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &528657275
 GameObject:
   m_ObjectHideFlags: 0
@@ -92227,7 +92272,7 @@ MonoBehaviour:
   depthOffset: 2
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
-  suppressed: 1
+  suppressed: 0
   geometryBaked: 1
   appliedDepth: 0.18
   appliedOffset: 2
@@ -93174,8 +93219,8 @@ Transform:
   m_GameObject: {fileID: 541277601}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 863837866}
@@ -93247,7 +93292,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &541295253
 Transform:
   m_ObjectHideFlags: 0
@@ -95612,8 +95657,8 @@ Transform:
   m_GameObject: {fileID: 554460438}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1511889558}
@@ -96171,8 +96216,8 @@ Transform:
   m_GameObject: {fileID: 558034786}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 186124252}
@@ -99734,14 +99779,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 575588751}
   meshRenderer: {fileID: 2069075911}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &575668898
 GameObject:
   m_ObjectHideFlags: 0
@@ -100685,8 +100730,8 @@ Transform:
   m_GameObject: {fileID: 580057669}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 244848279}
@@ -102016,8 +102061,8 @@ Transform:
   m_GameObject: {fileID: 587450692}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1406326666}
@@ -102943,8 +102988,8 @@ Transform:
   m_GameObject: {fileID: 593562972}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 4}
-  m_LocalScale: {x: 1, y: 1, z: 14}
+  m_LocalPosition: {x: 0, y: 0, z: 2.66}
+  m_LocalScale: {x: 1, y: 1, z: 0.14}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 719018069}
@@ -102969,7 +103014,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 83ff0e0d760b9460c90390c35714951a, type: 2}
+  - {fileID: 2100000, guid: 8ecd6a520dbc540668ae87e27c85e817, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -103746,8 +103791,8 @@ Transform:
   m_GameObject: {fileID: 599175115}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 429928531}
@@ -106392,7 +106437,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &616016455
 Transform:
   m_ObjectHideFlags: 0
@@ -106749,14 +106794,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 618558950}
   meshRenderer: {fileID: 1935228075}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &618714112
 GameObject:
   m_ObjectHideFlags: 0
@@ -106940,14 +106985,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 618850541}
   meshRenderer: {fileID: 425980602}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &619431409
 GameObject:
   m_ObjectHideFlags: 0
@@ -107369,14 +107414,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 621778143}
   meshRenderer: {fileID: 221866778}
-  depth: 14
-  depthOffset: 4
+  depth: 0.14
+  depthOffset: 2.66
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 14
-  appliedOffset: 4
+  appliedDepth: 0.14
+  appliedOffset: 2.66
 --- !u!1 &622121684
 GameObject:
   m_ObjectHideFlags: 0
@@ -108585,7 +108630,7 @@ Transform:
   m_GameObject: {fileID: 629198778}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 3}
+  m_LocalPosition: {x: 0, y: 0, z: 2.66}
   m_LocalScale: {x: 1, y: 1, z: 0.24}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -108751,8 +108796,8 @@ Transform:
   m_GameObject: {fileID: 629545603}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 22.5, y: -0.4, z: 0}
-  m_LocalScale: {x: 63, y: 0.7, z: 65}
+  m_LocalPosition: {x: 22.5, y: -0.35, z: -17.75}
+  m_LocalScale: {x: 63, y: 0.7, z: 29.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1658313657}
@@ -109383,14 +109428,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 632431245}
   meshRenderer: {fileID: 475328957}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &632646545
 GameObject:
   m_ObjectHideFlags: 0
@@ -111756,8 +111801,8 @@ Transform:
   m_GameObject: {fileID: 647597070}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 4}
-  m_LocalScale: {x: 1, y: 1, z: 14}
+  m_LocalPosition: {x: 0, y: 0, z: 2.66}
+  m_LocalScale: {x: 1, y: 1, z: 0.14}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1432777169}
@@ -111782,7 +111827,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 83ff0e0d760b9460c90390c35714951a, type: 2}
+  - {fileID: 2100000, guid: 8ecd6a520dbc540668ae87e27c85e817, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -113444,8 +113489,8 @@ Transform:
   m_GameObject: {fileID: 653680932}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1985279208}
@@ -115599,14 +115644,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 670193735}
   meshRenderer: {fileID: 2085921934}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.28
+  depthOffset: 2.66
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.28
+  appliedOffset: 2.66
 --- !u!1 &670917574
 GameObject:
   m_ObjectHideFlags: 0
@@ -118487,14 +118532,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 689129422}
   meshRenderer: {fileID: 95794631}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &689389542
 GameObject:
   m_ObjectHideFlags: 0
@@ -121573,8 +121618,8 @@ Transform:
   m_GameObject: {fileID: 711169480}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1227108983}
@@ -123607,14 +123652,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 719018070}
   meshRenderer: {fileID: 593562974}
-  depth: 14
-  depthOffset: 4
+  depth: 0.14
+  depthOffset: 2.66
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 14
-  appliedOffset: 4
+  appliedDepth: 0.14
+  appliedOffset: 2.66
 --- !u!1 &719150453
 GameObject:
   m_ObjectHideFlags: 0
@@ -124296,14 +124341,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 721822079}
   meshRenderer: {fileID: 182020069}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &722821741
 GameObject:
   m_ObjectHideFlags: 0
@@ -135013,7 +135058,7 @@ MonoBehaviour:
   fullTentacleEnrageDuration: 0.5
   growingTentacleEnrageDuration: 1
   soundInvestigationInset: 0.5
-  soundSearchPause: 0.75
+  soundSearchPause: 1.5
   soundMemoryDuration: 7.5
   world: {fileID: 1658313658}
   initialState: 4
@@ -135047,6 +135092,11 @@ MonoBehaviour:
   attackSearchRadius: 2
   attackSearchMoveInterval: {x: 1.5, y: 2.5}
   searchRoarDuration: 0.9
+  waterBlockDuration: 1.2
+  exposedCoreRecoveryDuration: 4
+  coreFoldDuration: 1
+  coreStillDuration: 2.5
+  coreAttackTransitionDuration: 0.5
 --- !u!114 &786779895
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -135871,8 +135921,8 @@ Transform:
   m_GameObject: {fileID: 788999106}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 30831779}
@@ -136027,14 +136077,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 790288933}
   meshRenderer: {fileID: 1393470383}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &791165726
 GameObject:
   m_ObjectHideFlags: 0
@@ -136589,14 +136639,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 796052713}
   meshRenderer: {fileID: 355408452}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &796408441
 GameObject:
   m_ObjectHideFlags: 0
@@ -137220,14 +137270,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 799683514}
   meshRenderer: {fileID: 1546080252}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &799763488
 GameObject:
   m_ObjectHideFlags: 0
@@ -140217,8 +140267,8 @@ Transform:
   m_GameObject: {fileID: 816608782}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1705665289}
@@ -142733,8 +142783,8 @@ Transform:
   m_GameObject: {fileID: 832652193}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1955173865}
@@ -144885,14 +144935,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 842284212}
   meshRenderer: {fileID: 1295423770}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &842315985
 GameObject:
   m_ObjectHideFlags: 0
@@ -145620,8 +145670,8 @@ Transform:
   m_GameObject: {fileID: 847162206}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1045018060}
@@ -145894,8 +145944,8 @@ Transform:
   m_GameObject: {fileID: 850386514}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2108647066}
@@ -146772,14 +146822,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 855944505}
   meshRenderer: {fileID: 1514733333}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &856398722
 GameObject:
   m_ObjectHideFlags: 0
@@ -148355,14 +148405,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 863837867}
   meshRenderer: {fileID: 541277603}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &863973545
 GameObject:
   m_ObjectHideFlags: 0
@@ -148878,7 +148928,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &868236525
 Transform:
   m_ObjectHideFlags: 0
@@ -149362,8 +149412,8 @@ Transform:
   m_GameObject: {fileID: 871805017}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1339867467}
@@ -150807,8 +150857,8 @@ Transform:
   m_GameObject: {fileID: 883608670}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1571528597}
@@ -153815,8 +153865,8 @@ Transform:
   m_GameObject: {fileID: 902314212}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1397618898}
@@ -154979,8 +155029,8 @@ Transform:
   m_GameObject: {fileID: 912041105}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1455192807}
@@ -159759,14 +159809,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 938927043}
   meshRenderer: {fileID: 1539552400}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &939078274
 GameObject:
   m_ObjectHideFlags: 0
@@ -161268,8 +161318,8 @@ Transform:
   m_GameObject: {fileID: 947352971}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 4}
-  m_LocalScale: {x: 1, y: 1, z: 14}
+  m_LocalPosition: {x: 0, y: 0, z: 2.66}
+  m_LocalScale: {x: 1, y: 1, z: 0.14}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2121978987}
@@ -161294,7 +161344,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 83ff0e0d760b9460c90390c35714951a, type: 2}
+  - {fileID: 2100000, guid: 8ecd6a520dbc540668ae87e27c85e817, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -161735,14 +161785,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 949586102}
   meshRenderer: {fileID: 298944378}
-  depth: 14
-  depthOffset: 4
+  depth: 0.14
+  depthOffset: 2.66
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 14
-  appliedOffset: 4
+  appliedDepth: 0.14
+  appliedOffset: 2.66
 --- !u!1 &950096061
 GameObject:
   m_ObjectHideFlags: 0
@@ -162402,14 +162452,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 954148896}
   meshRenderer: {fileID: 461752319}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &955007880
 GameObject:
   m_ObjectHideFlags: 0
@@ -164515,7 +164565,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &968835268
 Transform:
   m_ObjectHideFlags: 0
@@ -166453,8 +166503,8 @@ Transform:
   m_GameObject: {fileID: 976541994}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 225065828}
@@ -166847,14 +166897,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 978167756}
   meshRenderer: {fileID: 301848031}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &978346753
 GameObject:
   m_ObjectHideFlags: 0
@@ -166882,8 +166932,8 @@ Transform:
   m_GameObject: {fileID: 978346753}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1789281918}
@@ -168983,8 +169033,8 @@ Transform:
   m_GameObject: {fileID: 990219281}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 53110189}
@@ -170620,14 +170670,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 997488746}
   meshRenderer: {fileID: 1517621602}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &997805680
 GameObject:
   m_ObjectHideFlags: 0
@@ -172015,14 +172065,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1003482347}
   meshRenderer: {fileID: 1330898565}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &1005611448
 GameObject:
   m_ObjectHideFlags: 0
@@ -175361,8 +175411,8 @@ Transform:
   m_GameObject: {fileID: 1020568954}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.66}
+  m_LocalScale: {x: 1, y: 1, z: 0.28}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1060462046}
@@ -176730,14 +176780,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1026275759}
   meshRenderer: {fileID: 476036142}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &1027361176
 GameObject:
   m_ObjectHideFlags: 0
@@ -178763,14 +178813,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1038809619}
   meshRenderer: {fileID: 1984071629}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &1040013052
 GameObject:
   m_ObjectHideFlags: 0
@@ -179072,8 +179122,8 @@ Transform:
   m_GameObject: {fileID: 1041984713}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 266033989}
@@ -179834,14 +179884,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1045018061}
   meshRenderer: {fileID: 847162208}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &1045050629
 GameObject:
   m_ObjectHideFlags: 0
@@ -181893,14 +181943,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1060462047}
   meshRenderer: {fileID: 1020568956}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.28
+  depthOffset: 2.66
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.28
+  appliedOffset: 2.66
 --- !u!1 &1061686320
 GameObject:
   m_ObjectHideFlags: 0
@@ -182095,8 +182145,8 @@ Transform:
   m_GameObject: {fileID: 1062599950}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 245633992}
@@ -182799,7 +182849,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1066323855
 Transform:
   m_ObjectHideFlags: 0
@@ -187534,14 +187584,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1092971478}
   meshRenderer: {fileID: 314207238}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &1093343563
 GameObject:
   m_ObjectHideFlags: 0
@@ -194954,14 +195004,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1141140227}
   meshRenderer: {fileID: 2000882770}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &1141412749
 GameObject:
   m_ObjectHideFlags: 0
@@ -197695,7 +197745,7 @@ MonoBehaviour:
   fullTentacleEnrageDuration: 0.5
   growingTentacleEnrageDuration: 1
   soundInvestigationInset: 0.5
-  soundSearchPause: 0.75
+  soundSearchPause: 1.5
   soundMemoryDuration: 7.5
   world: {fileID: 1658313658}
   initialState: 4
@@ -197729,6 +197779,11 @@ MonoBehaviour:
   attackSearchRadius: 2
   attackSearchMoveInterval: {x: 1.5, y: 2.5}
   searchRoarDuration: 0.9
+  waterBlockDuration: 1.2
+  exposedCoreRecoveryDuration: 4
+  coreFoldDuration: 1
+  coreStillDuration: 2.5
+  coreAttackTransitionDuration: 0.5
 --- !u!114 &1152584006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -199618,8 +199673,8 @@ Transform:
   m_GameObject: {fileID: 1164804452}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1483333690}
@@ -201608,14 +201663,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1175985349}
   meshRenderer: {fileID: 141701058}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &1176167050
 GameObject:
   m_ObjectHideFlags: 0
@@ -204735,8 +204790,8 @@ Transform:
   m_GameObject: {fileID: 1196332532}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1418669730}
@@ -204818,8 +204873,8 @@ Transform:
   m_GameObject: {fileID: 1196645612}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 527216519}
@@ -209644,14 +209699,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1227108984}
   meshRenderer: {fileID: 711169482}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &1228556548
 GameObject:
   m_ObjectHideFlags: 0
@@ -210429,8 +210484,8 @@ Transform:
   m_GameObject: {fileID: 1235143914}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1328222309}
@@ -212522,8 +212577,8 @@ Transform:
   m_GameObject: {fileID: 1252960675}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1555415249}
@@ -213668,8 +213723,8 @@ Transform:
   m_GameObject: {fileID: 1259585838}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1956656502}
@@ -214973,8 +215028,8 @@ Transform:
   m_GameObject: {fileID: 1267481312}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1288442226}
@@ -218040,14 +218095,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1288442227}
   meshRenderer: {fileID: 1267481314}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &1288640927
 GameObject:
   m_ObjectHideFlags: 0
@@ -218266,8 +218321,8 @@ Transform:
   m_GameObject: {fileID: 1289373003}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 4}
-  m_LocalScale: {x: 1, y: 1, z: 14}
+  m_LocalPosition: {x: 0, y: 0, z: 2.66}
+  m_LocalScale: {x: 1, y: 1, z: 0.14}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 284649487}
@@ -218292,7 +218347,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 83ff0e0d760b9460c90390c35714951a, type: 2}
+  - {fileID: 2100000, guid: 8ecd6a520dbc540668ae87e27c85e817, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -219722,14 +219777,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1294076292}
   meshRenderer: {fileID: 516559939}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &1294328140
 GameObject:
   m_ObjectHideFlags: 0
@@ -220006,8 +220061,8 @@ Transform:
   m_GameObject: {fileID: 1295423768}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 842284211}
@@ -220328,14 +220383,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1296636095}
   meshRenderer: {fileID: 415385961}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &1296960155
 GameObject:
   m_ObjectHideFlags: 0
@@ -220446,8 +220501,8 @@ Transform:
   m_GameObject: {fileID: 1297899058}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1772299457}
@@ -220674,8 +220729,8 @@ Transform:
   m_GameObject: {fileID: 1299489751}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1419579386}
@@ -226189,14 +226244,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1328222310}
   meshRenderer: {fileID: 1235143916}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &1328232877
 GameObject:
   m_ObjectHideFlags: 0
@@ -226380,14 +226435,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1328554183}
   meshRenderer: {fileID: 1996998908}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!114 &1328961307
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -226852,8 +226907,8 @@ Transform:
   m_GameObject: {fileID: 1330898563}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1003482346}
@@ -228673,14 +228728,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1339867468}
   meshRenderer: {fileID: 871805019}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &1339889245
 GameObject:
   m_ObjectHideFlags: 0
@@ -229148,8 +229203,8 @@ Transform:
   m_GameObject: {fileID: 1341026783}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1574999930}
@@ -232801,14 +232856,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1365489154}
   meshRenderer: {fileID: 1760289584}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &1365889915
 GameObject:
   m_ObjectHideFlags: 0
@@ -235793,8 +235848,8 @@ Transform:
   m_GameObject: {fileID: 1384548412}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1694238525}
@@ -235971,14 +236026,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1384836979}
   meshRenderer: {fileID: 355622401}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &1384896808
 GameObject:
   m_ObjectHideFlags: 0
@@ -236245,14 +236300,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1385300233}
   meshRenderer: {fileID: 199200259}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &1385516124
 GameObject:
   m_ObjectHideFlags: 0
@@ -237470,8 +237525,8 @@ Transform:
   m_GameObject: {fileID: 1393470381}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 790288932}
@@ -238651,14 +238706,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1397618899}
   meshRenderer: {fileID: 902314214}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &1397923548
 GameObject:
   m_ObjectHideFlags: 0
@@ -238686,8 +238741,8 @@ Transform:
   m_GameObject: {fileID: 1397923548}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 507175447}
@@ -239652,13 +239707,13 @@ MonoBehaviour:
   source: {fileID: 1403186132}
   meshRenderer: {fileID: 1663504827}
   depth: 0.24
-  depthOffset: 3
+  depthOffset: 2.66
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
   appliedDepth: 0.24
-  appliedOffset: 3
+  appliedOffset: 2.66
 --- !u!1 &1403275616
 GameObject:
   m_ObjectHideFlags: 0
@@ -240401,14 +240456,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1406326667}
   meshRenderer: {fileID: 587450694}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &1406777718
 GameObject:
   m_ObjectHideFlags: 0
@@ -242348,8 +242403,8 @@ Transform:
   m_GameObject: {fileID: 1416535233}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1543018516}
@@ -242872,14 +242927,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1418669731}
   meshRenderer: {fileID: 1196332534}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &1418682074
 GameObject:
   m_ObjectHideFlags: 0
@@ -243099,14 +243154,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1419579387}
   meshRenderer: {fileID: 1299489753}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &1419606212
 GameObject:
   m_ObjectHideFlags: 0
@@ -245627,14 +245682,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1431992608}
   meshRenderer: {fileID: 1911916945}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &1432417890
 GameObject:
   m_ObjectHideFlags: 0
@@ -245901,14 +245956,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1432777170}
   meshRenderer: {fileID: 647597072}
-  depth: 14
-  depthOffset: 4
+  depth: 0.14
+  depthOffset: 2.66
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 14
-  appliedOffset: 4
+  appliedDepth: 0.14
+  appliedOffset: 2.66
 --- !u!1 &1433268009
 GameObject:
   m_ObjectHideFlags: 0
@@ -249336,14 +249391,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1455192808}
   meshRenderer: {fileID: 912041107}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &1455273183
 GameObject:
   m_ObjectHideFlags: 0
@@ -253695,14 +253750,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1483333691}
   meshRenderer: {fileID: 1164804454}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &1484614096
 GameObject:
   m_ObjectHideFlags: 0
@@ -258142,8 +258197,8 @@ Transform:
   m_GameObject: {fileID: 1503730395}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1864469252}
@@ -258381,14 +258436,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1505530746}
   meshRenderer: {fileID: 1564377337}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &1506026387
 GameObject:
   m_ObjectHideFlags: 0
@@ -259820,14 +259875,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1511889559}
   meshRenderer: {fileID: 554460440}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &1512064410
 GameObject:
   m_ObjectHideFlags: 0
@@ -260490,8 +260545,8 @@ Transform:
   m_GameObject: {fileID: 1514733331}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 855944504}
@@ -261201,8 +261256,8 @@ Transform:
   m_GameObject: {fileID: 1517621600}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 997488745}
@@ -263434,8 +263489,8 @@ Transform:
   m_GameObject: {fileID: 1534384891}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1929570837}
@@ -264243,14 +264298,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1538476568}
   meshRenderer: {fileID: 1657004415}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &1538528664
 GameObject:
   m_ObjectHideFlags: 0
@@ -264480,8 +264535,8 @@ Transform:
   m_GameObject: {fileID: 1539552398}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 938927042}
@@ -264968,14 +265023,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1543018517}
   meshRenderer: {fileID: 1416535235}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &1543157109
 GameObject:
   m_ObjectHideFlags: 0
@@ -265501,8 +265556,8 @@ Transform:
   m_GameObject: {fileID: 1546080250}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 799683513}
@@ -267035,14 +267090,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1555415250}
   meshRenderer: {fileID: 1252960677}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &1555443395
 GameObject:
   m_ObjectHideFlags: 0
@@ -267842,8 +267897,8 @@ Transform:
   m_GameObject: {fileID: 1564377335}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1505530745}
@@ -269019,14 +269074,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1571528598}
   meshRenderer: {fileID: 883608672}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &1571851695
 GameObject:
   m_ObjectHideFlags: 0
@@ -269443,14 +269498,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1574999931}
   meshRenderer: {fileID: 1341026785}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &1576374756
 GameObject:
   m_ObjectHideFlags: 0
@@ -282273,8 +282328,8 @@ Transform:
   m_GameObject: {fileID: 1657004413}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1538476567}
@@ -283253,7 +283308,7 @@ Transform:
   m_GameObject: {fileID: 1663504825}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 3}
+  m_LocalPosition: {x: 0, y: 0, z: 2.66}
   m_LocalScale: {x: 1, y: 1, z: 0.24}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -283746,7 +283801,7 @@ Transform:
   m_GameObject: {fileID: 1670063026}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.6800003, y: 6.62, z: 3}
+  m_LocalPosition: {x: 0.6800003, y: 6.62, z: 2.66}
   m_LocalScale: {x: 0.22, y: 0.22, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -285027,6 +285082,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1678156821}
   - component: {fileID: 1678156822}
+  - component: {fileID: 1678156823}
   m_Layer: 0
   m_Name: Locked storeroom
   m_TagString: Untagged
@@ -285066,7 +285122,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f5da826cd95406b9909d4a2eda7c094, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactionRange: 1.7
+  interactionRange: 0.5
   interactionOffset: {x: 0, y: -0.25}
   interactionPrompt: E / LOCKED STOREROOM
   requiresClue: 0
@@ -285100,6 +285156,43 @@ MonoBehaviour:
   onOpened:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1678156823
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1678156820}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff66adf7f30d34f519cf06801d8880df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  door: {fileID: 1678156822}
+  world: {fileID: 1658313658}
+  doorwayLights: []
+  halo: {fileID: 0}
+  brightnessMultiplier: 1
+  reflectiveSurfaces: []
+  surfaceSources: []
+  volumeEnabled: 0
+  useTrapezoidMesh: 1
+  foregroundExtension: 32
+  beamEdgeFeather: 0.18
+  beamEndFeather: 0.3
+  beamBrightness: 1.8
+  volumeLight: {fileID: 0}
+  volumeOrigin: {x: 45.510002, y: 1.15, z: -3.1}
+  apertureHalfSize: {x: 0.68, y: 1.15}
+  volumeLength: 3.5
+  volumeSpread: 0.12
+  restingDensity: 0.006
+  activeDensity: 0.042
+  fadeIn: 0.22
+  fadeOut: 0.4
+  haloStrength: 0.32
+  haloTint: {r: 0.48, g: 0.6, b: 0.64, a: 1}
+  editorPreview: 0
 --- !u!1 &1678349764
 GameObject:
   m_ObjectHideFlags: 0
@@ -288268,14 +288361,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1694238526}
   meshRenderer: {fileID: 1384548414}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &1695744830
 GameObject:
   m_ObjectHideFlags: 0
@@ -290348,14 +290441,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1705665290}
   meshRenderer: {fileID: 816608784}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &1705919053
 GameObject:
   m_ObjectHideFlags: 0
@@ -290859,8 +290952,8 @@ Transform:
   m_GameObject: {fileID: 1708548138}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2003240584}
@@ -291533,8 +291626,8 @@ Transform:
   m_GameObject: {fileID: 1713478819}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2014057213}
@@ -296023,8 +296116,8 @@ Transform:
   m_GameObject: {fileID: 1740395767}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1991203394}
@@ -296768,8 +296861,8 @@ Transform:
   m_GameObject: {fileID: 1742760241}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 139587964}
@@ -299183,8 +299276,8 @@ Transform:
   m_GameObject: {fileID: 1760289582}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1365489153}
@@ -300225,7 +300318,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1761893621
 Transform:
   m_ObjectHideFlags: 0
@@ -301868,14 +301961,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1772299458}
   meshRenderer: {fileID: 1297899060}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &1772415754
 GameObject:
   m_ObjectHideFlags: 0
@@ -304613,14 +304706,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1789281919}
   meshRenderer: {fileID: 978346755}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &1789782585
 GameObject:
   m_ObjectHideFlags: 0
@@ -315056,14 +315149,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1864469253}
   meshRenderer: {fileID: 1503730397}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &1865164420
 GameObject:
   m_ObjectHideFlags: 0
@@ -317422,8 +317515,8 @@ Transform:
   m_GameObject: {fileID: 1878971249}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 73979045}
@@ -320915,8 +321008,8 @@ Transform:
   m_GameObject: {fileID: 1899159084}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 454900696}
@@ -322935,8 +323028,8 @@ Transform:
   m_GameObject: {fileID: 1911916943}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431992607}
@@ -325780,14 +325873,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1929570838}
   meshRenderer: {fileID: 1534384893}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &1930524109
 GameObject:
   m_ObjectHideFlags: 0
@@ -326753,8 +326846,8 @@ Transform:
   m_GameObject: {fileID: 1935228073}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 618558949}
@@ -328087,8 +328180,8 @@ Transform:
   m_GameObject: {fileID: 1941200463}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 398379316}
@@ -329858,8 +329951,8 @@ Transform:
   m_GameObject: {fileID: 1953695452}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 500047205}
@@ -330382,14 +330475,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1955173866}
   meshRenderer: {fileID: 832652195}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &1955762584
 GameObject:
   m_ObjectHideFlags: 0
@@ -330764,14 +330857,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1956656503}
   meshRenderer: {fileID: 1259585840}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &1956659287
 GameObject:
   m_ObjectHideFlags: 0
@@ -335190,8 +335283,8 @@ Transform:
   m_GameObject: {fileID: 1984071627}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1038809618}
@@ -335346,14 +335439,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1985279209}
   meshRenderer: {fileID: 653680934}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &1985452608
 GameObject:
   m_ObjectHideFlags: 0
@@ -335371,7 +335464,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1985452609
 Transform:
   m_ObjectHideFlags: 0
@@ -336425,14 +336518,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 1991203395}
   meshRenderer: {fileID: 1740395769}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &1991474643
 GameObject:
   m_ObjectHideFlags: 0
@@ -337484,8 +337577,8 @@ Transform:
   m_GameObject: {fileID: 1996998906}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1328554182}
@@ -338007,8 +338100,8 @@ Transform:
   m_GameObject: {fileID: 2000882768}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1141140226}
@@ -338520,14 +338613,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 2003240585}
   meshRenderer: {fileID: 1708548140}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &2003518443
 GameObject:
   m_ObjectHideFlags: 0
@@ -339303,14 +339396,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 2007060726}
   meshRenderer: {fileID: 142222152}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &2007313343
 GameObject:
   m_ObjectHideFlags: 0
@@ -339706,8 +339799,8 @@ Transform:
   m_GameObject: {fileID: 2010172103}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 365825231}
@@ -340421,14 +340514,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 2014057214}
   meshRenderer: {fileID: 1713478821}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &2015240374
 GameObject:
   m_ObjectHideFlags: 0
@@ -348214,8 +348307,8 @@ Transform:
   m_GameObject: {fileID: 2069075909}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 575588750}
@@ -350633,8 +350726,8 @@ Transform:
   m_GameObject: {fileID: 2085921932}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.66}
+  m_LocalScale: {x: 1, y: 1, z: 0.28}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 670193734}
@@ -351658,7 +351751,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2094069966}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -353188,14 +353281,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 2104343676}
   meshRenderer: {fileID: 511591084}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &2104676656
 GameObject:
   m_ObjectHideFlags: 0
@@ -354306,14 +354399,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 2107607852}
   meshRenderer: {fileID: 355904914}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.035
+  depthOffset: 2.515
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.035
+  appliedOffset: 2.515
 --- !u!1 &2108005172
 GameObject:
   m_ObjectHideFlags: 0
@@ -354580,14 +354673,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 2108647067}
   meshRenderer: {fileID: 850386516}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &2108650470
 GameObject:
   m_ObjectHideFlags: 0
@@ -355853,14 +355946,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 2119236616}
   meshRenderer: {fileID: 12956737}
-  depth: 0.24
-  depthOffset: 0
+  depth: 0.018
+  depthOffset: 2.4850001
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 0.24
-  appliedOffset: 0
+  appliedDepth: 0.018
+  appliedOffset: 2.4850001
 --- !u!1 &2119461301
 GameObject:
   m_ObjectHideFlags: 0
@@ -356293,14 +356386,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: {fileID: 2121978988}
   meshRenderer: {fileID: 947352973}
-  depth: 14
-  depthOffset: 4
+  depth: 0.14
+  depthOffset: 2.66
   tint: {r: 1, g: 1, b: 1, a: 1}
   followSpriteGeometry: 0
   suppressed: 0
   geometryBaked: 1
-  appliedDepth: 14
-  appliedOffset: 4
+  appliedDepth: 0.14
+  appliedOffset: 2.66
 --- !u!1 &2123011600
 GameObject:
   m_ObjectHideFlags: 0
@@ -356563,8 +356656,8 @@ Transform:
   m_GameObject: {fileID: 2124060220}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 12900167}
@@ -357965,8 +358058,8 @@ Transform:
   m_GameObject: {fileID: 2132381478}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.4850001}
+  m_LocalScale: {x: 1, y: 1, z: 0.018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 20233862}
@@ -358156,8 +358249,8 @@ Transform:
   m_GameObject: {fileID: 2132882325}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.24}
+  m_LocalPosition: {x: 0, y: 0, z: 2.515}
+  m_LocalScale: {x: 1, y: 1, z: 0.035}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 501974188}

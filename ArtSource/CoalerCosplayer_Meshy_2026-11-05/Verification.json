@@ -1,0 +1,20 @@
+{
+  "body_triangles": 2850,
+  "costume_triangles": 816,
+  "bones": 66,
+  "texture": "2048x2048",
+  "height_m": 1.8,
+  "arm_motion_costume_max_delta_m": 0.0,
+  "chest_motion_costume_max_delta_m": 0.1967378756009497,
+  "costume_bones_added": 0,
+  "costume_objects": [
+    [
+      "Costume_Chest",
+      "mixamorig:Spine2"
+    ],
+    [
+      "Costume_Hips",
+      "mixamorig:Hips"
+    ]
+  ]
+}

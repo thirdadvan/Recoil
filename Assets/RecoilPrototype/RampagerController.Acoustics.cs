@@ -14,22 +14,24 @@ public sealed partial class RampagerController
     public float growingTentacleEnrageDuration=1;
     [Min(0),Tooltip("声音检查在衰减半径减去此距离的边缘停下。")]
     public float soundInvestigationInset=.5f;
-    [Min(.01f)] public float soundSearchPause=.75f;
+    [Min(.01f)] public float soundSearchPause=1.5f;
     [Min(.01f)] public float soundMemoryDuration=7.5f;
     float heardRadius,lastSoundAt=-100,lastEnergyAt=-100,attackPreparationRemaining;
     float soundPulseAt=-100,soundPulseStrength;
     int preparationStartCount;float preparationStartEnergy;float attackPreparationDuration,soundBlockedTime;
     RampagerGrab closeSense;
     Vector3 cachedSound,cachedDestination;bool hasSoundDestination;
+    bool soundInvestigationPriority;
+    public bool PrioritizingSound {get{return soundInvestigationPriority && State!=Behaviour.Attack && !PreparingAttack && !ReactingToWater && !waveActive;}}
     public bool PreparingAttack {get{return attackPreparationRemaining>0;}}
     public float AttackPreparationProgress {get{return PreparingAttack?Mathf.Clamp01(1-attackPreparationRemaining/Mathf.Max(.01f,attackPreparationDuration)):0;}}
     public int LitTentacleGroups {get{return Mathf.Clamp(Mathf.FloorToInt(TentacleGlowEnergy*4+.00001f),0,4);}}
     public float TentacleGlowEnergy
-    {get{return State==Behaviour.Attack?1:PreparingAttack?Mathf.Lerp(preparationStartEnergy,1,Mathf.SmoothStep(0,1,Mathf.InverseLerp(0,.55f,AttackPreparationProgress))):Mathf.Clamp01(detectionProgress);}}
+    {get{return WaterForcesRed?1:State==Behaviour.Attack?1:PreparingAttack?Mathf.Lerp(preparationStartEnergy,1,Mathf.SmoothStep(0,1,Mathf.InverseLerp(0,.55f,AttackPreparationProgress))):Mathf.Clamp01(detectionProgress);}}
     public float AttackChargeProgress
     {get{return PreparingAttack?(preparationStartCount>=4?AttackPreparationProgress:Mathf.InverseLerp(.55f,1,AttackPreparationProgress)):State==Behaviour.Attack?1:0;}}
     void RequestAttack()
-    {if(State!=Behaviour.Attack && !PreparingAttack)StartAcousticAttackPreparation();}
+    {if(!ReactingToWater && State!=Behaviour.Attack && !PreparingAttack)StartAcousticAttackPreparation();}
     void AdvanceAttackPreparation(float dt)
     {
         attackPreparationRemaining=Mathf.Max(0,attackPreparationRemaining-dt);
@@ -39,6 +41,7 @@ public sealed partial class RampagerController
     }
     void StartAcousticAttackPreparation()
     {
+        soundInvestigationPriority=false;
         float startingEnergy=detectionProgress;
         if(State==Behaviour.Sleeping)SetState(Behaviour.Roaming);
         waking=noticing=checking=false;wakeRemaining=noticeRemaining=0;watching=true;CancelReturn();
@@ -54,7 +57,7 @@ public sealed partial class RampagerController
     public float CloseSenseRadius
     {get{if(!closeSense)closeSense=GetComponent<RampagerGrab>();return closeSense && closeSense.isActiveAndEnabled?closeSense.reach:contactRadius;}}
     void ResetAcoustics()
-    {lastSoundAt=lastEnergyAt=soundPulseAt=-100;attackPreparationRemaining=soundPulseStrength=0;heardRadius=1;hasSoundDestination=false;preparationStartEnergy=0;preparationStartCount=0;attackPreparationDuration=1;soundBlockedTime=0;StopAttackSearch();}
+    {soundInvestigationPriority=false;lastSoundAt=lastEnergyAt=soundPulseAt=-100;attackPreparationRemaining=soundPulseStrength=0;heardRadius=1;hasSoundDestination=false;preparationStartEnergy=0;preparationStartCount=0;attackPreparationDuration=1;soundBlockedTime=0;StopAttackSearch();}
     void RememberSound(Vector2 source,float depth)
     {
         lastHeardPosition=target=source;lastHeardDepth=targetDepth=depth;lastSoundAt=world.Clock;
@@ -63,6 +66,7 @@ public sealed partial class RampagerController
     void ReceiveAcousticNoise(Vector2 source,float depth,float radius)
     {
         RememberSound(source,depth);
+        if(ReactingToWater)return;
         float contribution=Mathf.Lerp(soundEnergyNearFar.x,soundEnergyNearFar.y,
             Mathf.Clamp01(DistanceToSound(new Vector3(source.x,source.y,depth))/Mathf.Max(.01f,radius)));
         soundPulseAt=world.Clock;soundPulseStrength=Mathf.Clamp01(contribution/Mathf.Max(1,soundEnergyNearFar.x));
@@ -72,6 +76,7 @@ public sealed partial class RampagerController
             ReportSight(true);return;
         }
         lastEnergyAt=world.Clock;
+        if(!PreparingAttack)soundInvestigationPriority=true;
         if(!PreparingAttack)detectionProgress=Mathf.Clamp01(detectionProgress+contribution*.01f);
         if(!WatchingPlayer && !PreparingAttack)BeginNotice(source,false,depth);
     }
@@ -79,6 +84,7 @@ public sealed partial class RampagerController
     {
         // Calls pass a remembered location, with no energy and no propagation feedback loop.
         RememberSound(report.position,report.depth);
+        if(State!=Behaviour.Attack && !PreparingAttack && !ReactingToWater)soundInvestigationPriority=true;
         if(State!=Behaviour.Attack && !WatchingPlayer && !PreparingAttack)BeginNotice(report.position,true,report.depth);
     }
     void BeginAcousticWatch()
@@ -110,6 +116,12 @@ public sealed partial class RampagerController
             if(target.x>=r.xMin && target.x<=r.xMax && r.yMax<=ceiling && r.yMax>best && SoundSurfaceExists(r.yMax))best=r.yMax;
         }
         destination.y=float.IsNegativeInfinity(best)?Position.y:best+.8f;
+        // Sound may originate inside a solid clock, machine or shelf. Investigate the
+        // reachable surface selected by navigation, rather than waiting forever inside its collider.
+        if(depthArrival && depthArrival.navigation){
+            Vector3 surface;
+            if(depthArrival.navigation.Project(destination-Vector3.up*.8f,out surface))destination=surface+Vector3.up*.8f;
+        }
         cachedDestination=destination;return destination;
     }
     bool SoundSurfaceExists(float y)
@@ -129,7 +141,8 @@ public sealed partial class RampagerController
         {noticeRemaining=Mathf.Max(0,noticeRemaining-dt);if(noticeRemaining<=.000001f)CompleteNotice();}
         Senses.Sense();bool close=Senses.LastObservation.sees;
         if(close)StopAttackSearch();
-        if(close)
+        // Ordinary sound investigation wins over nearby live actors until inspected.
+        if(close && !PrioritizingSound)
         {
             target=Senses.TargetPosition;targetDepth=Senses.TargetWorldPosition.z;lastSight=world.Clock;
             if(State!=Behaviour.Attack && !watching && !noticing)BeginCloseWatch();
@@ -149,16 +162,16 @@ public sealed partial class RampagerController
             // Proximity is the only live-position exception; otherwise silence expires the sound memory.
             if(!close && world.Clock-lastSoundAt>=soundMemoryDuration)BeginReturn(attentionFromSleeping);
         }
-        Vector3 destination=close?LastKnownWorldPosition:AcousticDestination();float budget=0,stopDistance=0;bool navigate=false;
+        Vector3 destination=close && !PrioritizingSound?LastKnownWorldPosition:AcousticDestination();float budget=0,stopDistance=0;bool navigate=false;
         if(State==Behaviour.Attack || WatchingPlayer)
         {
             TrackPosition(LastKnownWorldPosition);
             if(noticing){if(depthArrival)depthArrival.Stop();Motor.SimulateVertical(dt);return;}
             float gap=new Vector2(destination.x-Position.x,destination.z-Motor.MovementPlaneZ).magnitude;
-            stopDistance=State!=Behaviour.Attack?Mathf.Max(.22f,CloseSenseRadius-soundInvestigationInset):.22f;
+            stopDistance=State!=Behaviour.Attack && !PrioritizingSound?Mathf.Max(.22f,CloseSenseRadius-soundInvestigationInset):.22f;
             if(gap>stopDistance+.04f)
             {budget=Mathf.Min(gap-stopDistance,CurrentMoveSpeed*dt);navigate=true;inspectionRemaining=soundSearchPause;}
-            else if(State!=Behaviour.Attack && !close)
+            else if(State!=Behaviour.Attack && (!close || PrioritizingSound))
             {inspectionRemaining=Mathf.Max(0,inspectionRemaining-dt);if(inspectionRemaining<=0)BeginReturn(attentionFromSleeping || returnToSleepAfterSound);}
         }
         if(State==Behaviour.Attack && !close)

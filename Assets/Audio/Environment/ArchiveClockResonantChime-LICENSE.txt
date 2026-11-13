@@ -1,0 +1,5 @@
+Source: 1 pendulum chime, BigSoundBank sound 3360
+Authors: Joseph SARDIN & Axeline T.
+https://bigsoundbank.com/1-sonnerie-pendule-s3360.html
+License: CC0 (public domain); modification and commercial use permitted.
+Adaptation: extracted single bell attack, lowered pitch to 90%, stereo room reverb, 14-second ring-out, level adjustment.

@@ -7,6 +7,8 @@ public sealed class FuelPumpInteraction : ContinuousInteractionItem
     public Transform nozzle;
     [Tooltip("原本就已损坏：黑屏且无法取用油枪，不记录为剧情完成。")]
     public bool startsBroken;
+    [Tooltip("仅关闭显示屏，保留油枪原有互动规则。")]
+    public bool screenBlack;
     public GameObject serviceDisplay,outOfOrderDisplay;
     [Min(.1f)] public float pickupPoseDuration=.8f;
     RecoilPrototype owner;
@@ -19,12 +21,18 @@ public sealed class FuelPumpInteraction : ContinuousInteractionItem
     void CaptureRestPose()
     {if(!restCaptured && nozzle){restPosition=nozzle.localPosition;restRotation=nozzle.localRotation;restCaptured=true;}}
     void SyncDisplay()
-    {if(serviceDisplay)serviceDisplay.SetActive(!startsBroken && !Completed);if(outOfOrderDisplay)outOfOrderDisplay.SetActive(!startsBroken && Completed);}
+    {if(serviceDisplay)serviceDisplay.SetActive(!screenBlack && !startsBroken && !Completed);if(outOfOrderDisplay)outOfOrderDisplay.SetActive(!screenBlack && !startsBroken && Completed);}
     void ReturnNozzle()
     {holdingNozzle=false;if(nozzle && restCaptured){nozzle.localPosition=restPosition;nozzle.localRotation=restRotation;}}
+    public override bool InRange(RecoilPrototype world)
+    {
+        if(startsBroken && world && world.UniversalInteractionEnabled)
+            return !world.HasItem(resultId) && world.Player && RecoilInteractionRange.Contains(world,transform.position,interactionRange) && world.Clear(world.Player.Position,transform.position);
+        return base.InRange(world);
+    }
     public override bool Advance(RecoilPrototype world,float dt)
     {
-        if(startsBroken || Completed)return false;
+        if(!world || (startsBroken && !world.UniversalInteractionEnabled) || (Completed && !(startsBroken && world.UniversalInteractionEnabled && !world.HasItem(resultId))))return false;
         CaptureRestPose();Progress=interactionDuration;Completed=true;owner=world;
         world.Player.NotifyForbiddenInteraction();world.RememberProgress(resultId);
         pickupUntil=world.Clock+pickupPoseDuration;holdingNozzle=true;

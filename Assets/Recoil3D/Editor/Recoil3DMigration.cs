@@ -64,12 +64,14 @@ public static class Recoil3DMigration
         if(BackgroundName(n)){v.depth=.45f;v.depthOffset=9-Mathf.Clamp(s.sortingOrder,-12,10)*.045f;}
         else if(n.Contains("wall") && !terrain){v.depth=.4f;v.depthOffset=7;}
         bool fixture=n.Contains("lamp")||n.Contains("fixture")||n.Contains("indicator")||n.Contains("status")||n.Contains("lens");
-        if((n.Contains("ceiling")||n.Contains("floor")) && !fixture){v.depth=14;v.depthOffset=4;}
+        if((n.Contains("ceiling")||n.Contains("floor")) && !fixture && n!="rail ceiling suspension"){v.depth=14;v.depthOffset=4;}
         if(s.GetComponentInParent<ContinuousInteractionItem>() || s.GetComponentInParent<ReadableProp>()){v.depth=.18f;v.depthOffset=-.3f;}
         if(s.GetComponentInParent<RecoilDoor>()){v.depth=.18f;v.depthOffset=2-s.sortingOrder*.006f;}
         if(s.GetComponentInParent<ClimbableLadder>()){v.depth=.16f;v.depthOffset=.35f;}
         if(n.Contains("wheel")||n.Contains("valve")||n.Contains("hub")){v.depth=.4f;}
         if(fixture && Mathf.Max(b.size.x,b.size.y)<2 && !n.Contains("pole")){v.depth=Mathf.Clamp(Mathf.Min(b.size.x,b.size.y)*.45f,.035f,.12f);if(n.Contains("ceiling"))v.depthOffset=0;}
+        // Crane hangers are thin metal hardware, not an architectural ceiling slab.
+        if(n=="rail ceiling suspension"){v.depth=.14f;v.depthOffset=3;}
         v.Sync();converted++;
     }
     static Transform Joint(string name,Transform parent,Vector3 position){return Group(name,parent,position);}
@@ -155,6 +157,7 @@ public static class Recoil3DMigration
     }
     static void InteriorDepth(RecoilPrototype world,bool factory,bool warehouse)
     {
+        bool retail=world.gameObject.scene.path.EndsWith("/RecoilServiceStore.unity")||world.gameObject.scene.path.EndsWith("/RecoilServiceStore_PS1.unity");
         var floors=world.GetComponentsInChildren<BoxCollider2D>(true).Where(c=>!c.isTrigger && c.bounds.size.x>5 && c.bounds.size.y<1.6f).ToArray();
         if(floors.Length==0)return;float left=floors.Min(c=>c.bounds.min.x),right=floors.Max(c=>c.bounds.max.x),top=factory?20:warehouse?7.5f:5;
         var set=Group("3D depth set - foreground midground distant",world.transform,Vector3.zero);
@@ -163,8 +166,10 @@ public static class Recoil3DMigration
         Shape("Floor into depth",rear,new Vector3((left+right)*.5f,-.25f,13),new Vector3(right-left,.5f,19),concrete);
         for(float x=left+2;x<right;x+=6)
         {
+            if(!retail){
             Shape("Rear column",rear,new Vector3(x,top*.5f,19),new Vector3(.45f,top,.6f),steel);
             Shape("Roof girder",rear,new Vector3(x,top-.3f,9),new Vector3(.3f,.4f,25),black);
+            }
             for(float y=3;y<top;y+=4)
             {
                 // Underground drains have sealed concrete walls, never facade windows.
@@ -175,14 +180,16 @@ public static class Recoil3DMigration
                 }
                 Shape("Damp patch",rear,new Vector3(x-.3f,y-1.3f,21.65f),new Vector3(.9f,1.3f,.03f),black);
             }
+            if(!retail){
             Rod("Ceiling service main",mid,new Vector3(x,top-.7f,5),new Vector3(x+5.9f,top-.7f,5),.095f,rust);
             Rod("Small cable tray",mid,new Vector3(x,top-1.1f,7),new Vector3(x+5.9f,top-1.1f,7),.035f,black);
             if(factory && x<right-3)Machinery(mid,new Vector3(x+1,0,7+(int)x%3),Mathf.RoundToInt(x));
             Lamp("Rear working lamp",rear,new Vector3(x+1,Mathf.Min(top-.7f,5),12),new Color(.66f,.78f,.72f),1.2f,7,LightType.Spot);
             if(((int)x)%3==0)Shape("Near structural silhouette",front,new Vector3(x,top*.5f,-4),new Vector3(.16f,top,.22f),black);
             for(int n=0;n<3;n++)Shape("Foreground abandoned drum",front,new Vector3(x+n*.6f,.35f,-5.5f),new Vector3(.45f,.35f,.45f),black,PrimitiveType.Cylinder);
+            }
         }
-        foreach(var floor in floors.Where(c=>c.bounds.max.y>2))
+        foreach(var floor in floors.Where(c=>!retail && c.bounds.max.y>2))
         {var b=floor.bounds;Shape("Upper floor extends into office depth",rear,new Vector3(b.center.x,b.center.y,14),new Vector3(b.size.x,b.size.y,14),concrete);}
         foreach(var stair in world.GetComponentsInChildren<WalkableStairway>(true))
         {
@@ -205,7 +212,10 @@ public static class Recoil3DMigration
     {
         var additions=Group("3D factory yard - editable perimeter truck and gate",world.transform,Vector3.zero);
         var truck=world.GetComponentsInChildren<Transform>(true).First(t=>t.name=="Truck - soft canvas roof");
-        var leftDoor=world.GetComponentsInChildren<RecoilDoor>(true).First(d=>d.requiredItemId=="employee_access_card");var rightDoor=world.GetComponentsInChildren<RecoilDoor>(true).First(d=>d.name=="Factory right service door");
+        var leftDoor=world.GetComponentsInChildren<RecoilDoor>(true).First(d=>d.name.StartsWith("Factory Entrance")||d.requiredItemId=="employee_access_card");var rightDoor=world.GetComponentsInChildren<RecoilDoor>(true).First(d=>d.name=="Factory right service door");
+        leftDoor.requiredItemId="";leftDoor.requiresClue=false;leftDoor.lockedMessage="";
+        foreach(var bag in world.GetComponentsInChildren<Backpack>(true))UnityEngine.Object.DestroyImmediate(bag.gameObject);
+        world.objectiveWithoutCard=world.objectiveWithCard="Visit the service store, then enter the factory.";
         float centre=(leftDoor.transform.position.x+rightDoor.transform.position.x)*.5f;truck.position+=Vector3.right*(centre-truck.position.x);
         // The cab and cargo body now physically block ground traversal; loading pallets form a jump route.
         SolidBox("Truck solid cargo body",truck,new Vector3(-.5f,.85f,0),new Vector3(5.8f,1.7f,2.6f),green);

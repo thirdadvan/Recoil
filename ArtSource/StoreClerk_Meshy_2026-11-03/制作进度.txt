@@ -1,0 +1,13 @@
+商店柜员 Meshy 制作进度，2026-11-03
+用户参考：/Users/zhangxiuyu/Downloads/ChatGPT Image 3 Nov 2026, 14_15_57.png
+建模用参考：Clerk_TPose.png，已去掉柜台、背景、扫码枪，改为正面 T Pose。
+Meshy 原账号工作区：T2.5 智能拓扑，目标 2700，实际 2826 三角面，贴图模型 2801 顶点（含 UV 分裂）。
+模型已生成贴图，并完成人形自动骨骼绑定。Meshy 中可播放预览动作。
+导出阻碍：选择 FBX、Mixamo、骨骼和蒙皮模型、全部已添加动画后，下载按钮标有 PRO；点击后弹出“订阅以下载”。未购买订阅，未下载到本地。
+Unity 尚未替换柜员，原商店场景保持未修改。
+原柜员：Assets/Scenes/3D/RecoilServiceStore.unity 中 Adult store clerk - assembled 2D art。
+剧情组件 ServiceStoreEncounter 的对话、approachPoint 与 monster 引用应全部保留，仅替换柜员视觉。
+下一步：用户处理 Meshy 导出权限，或提供本次 FBX/GLB 文件，再导入并在柜台后匹配朝向、身高与待机姿势。
+
+后续完成：用户切换到新账号后重新生成并成功导出。
+最终实际面数 2774，骨骼 36；Unity 商店柜员已替换，详细说明见 Documents/商店柜员Meshy替换说明.txt。

@@ -8,7 +8,7 @@ public sealed class KBKStackerCrane : MonoBehaviour
     public SoftRoofPlatform forkPlatform;
     public SpriteRenderer statusLamp;
     public string requiredPowerItem="";
-    public bool HasPower {get{if(string.IsNullOrEmpty(requiredPowerItem))return true;if(!world)world=GetComponentInParent<RecoilPrototype>();return world && world.HasItem(requiredPowerItem);}}
+    public bool HasPower {get{if(string.IsNullOrEmpty(requiredPowerItem))return true;if(!world)world=GetComponentInParent<RecoilPrototype>();return world && world.HasInteractionRequirement(requiredPowerItem);}}
     [Min(.1f)] public float liftHeight=3.4f,liftDuration=2,travelDuration=5,lowerDuration=2;
     [Tooltip("落点再次操作开关时，按同样的升起、移动、下降顺序返回起点。")]
     public bool allowReturn=true;

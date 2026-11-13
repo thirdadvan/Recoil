@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f114ebc380394945b7e1405ee82cc98, type: 3}
+  m_Name: ManagerAneta_Denial
+  m_EditorClassIdentifier: 
+  lines:
+  - role: 2
+    speaker: Dawn
+    text: The woman in the photo. Her name is Aneta. Did she work here?
+    offerPhoto: 0
+    slidePhotoUnderDoor: 0
+    progressFlag: 
+    choices: []
+  - role: 1
+    speaker: The Manager
+    text: Please... keep your voice down.
+    offerPhoto: 0
+    slidePhotoUnderDoor: 0
+    progressFlag: 
+    choices: []
+  - role: 1
+    speaker: The Manager
+    text: I don't know her. I really don't.
+    offerPhoto: 0
+    slidePhotoUnderDoor: 0
+    progressFlag: 
+    choices: []
+  - role: 2
+    speaker: Dawn
+    text: Are you sure?
+    offerPhoto: 0
+    slidePhotoUnderDoor: 0
+    progressFlag: 
+    choices: []
+  - role: 1
+    speaker: The Manager
+    text: I've had a terrible few days. I can't take any more trouble.
+    offerPhoto: 0
+    slidePhotoUnderDoor: 0
+    progressFlag: 
+    choices: []
+  - role: 2
+    speaker: Dawn
+    text: I'm asking about Aneta.
+    offerPhoto: 0
+    slidePhotoUnderDoor: 0
+    progressFlag: 
+    choices: []
+  - role: 1
+    speaker: The Manager
+    text: And I'm trying to help. Please don't be angry with me.
+    offerPhoto: 0
+    slidePhotoUnderDoor: 0
+    progressFlag: 
+    choices: []
+  - role: 2
+    speaker: Dawn
+    text: Where are the employee records?
+    offerPhoto: 0
+    slidePhotoUnderDoor: 0
+    progressFlag: 
+    choices: []
+  - role: 1
+    speaker: The Manager
+    text: The archive room. You can look for yourself.
+    offerPhoto: 0
+    slidePhotoUnderDoor: 0
+    progressFlag: 
+    choices: []
+  - role: 1
+    speaker: The Manager
+    text: Just... leave everything where you found it. They'll hold me responsible.
+    offerPhoto: 0
+    slidePhotoUnderDoor: 0
+    progressFlag: 
+    choices: []

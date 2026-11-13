@@ -8,6 +8,9 @@ public sealed partial class RecoilPrototype
 {
     IEnumerator Start()
     {
+        yield return null;
+        GameManager.EnsureInstance().RestoreParticipants(this);
+        if(SaveSessionStarted)GameManager.Instance.SaveGame();
         if(Array.IndexOf(Environment.GetCommandLineArgs(),"-recoil-verify")<0)yield break;
         yield return null;int result=0;
         try{VerifyMechanics();Debug.Log("RECOIL_ATTENTION_VERIFY_PASSED");}
